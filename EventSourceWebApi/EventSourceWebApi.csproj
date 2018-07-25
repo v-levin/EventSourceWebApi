@@ -11,10 +11,17 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.9" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.1.1.1" />
   </ItemGroup>
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Source\Repos\dotnet3\EventSource\EventSource.Contracts\EventSource.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Source\Repos\dotnet3\EventSource\EventSource.DataContext\EventSource.DataContext.csproj" />
+    <ProjectReference Include="..\..\..\Source\Repos\dotnet3\EventSource\EventSource.Domain\EventSource.Domain.csproj" />
   </ItemGroup>
 
 </Project>
