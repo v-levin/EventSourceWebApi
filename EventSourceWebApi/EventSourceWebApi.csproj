@@ -19,9 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Source\Repos\dotnet3\EventSource\EventSource.Contracts\EventSource.Contracts.csproj" />
-    <ProjectReference Include="..\..\..\Source\Repos\dotnet3\EventSource\EventSource.DataContext\EventSource.DataContext.csproj" />
-    <ProjectReference Include="..\..\..\Source\Repos\dotnet3\EventSource\EventSource.Domain\EventSource.Domain.csproj" />
+    <ProjectReference Include="..\EventSourceWebApi.Contracts\EventSourceWebApi.Contracts.csproj" />
+    <ProjectReference Include="..\EventSourceWebApi.DataContext\EventSourceWebApi.DataContext.csproj" />
+    <ProjectReference Include="..\EventSourceWebApi.Domain\EventSourceWebApi.Domain.csproj" />
   </ItemGroup>
 
 </Project>
