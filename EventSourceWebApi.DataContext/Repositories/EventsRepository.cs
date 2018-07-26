@@ -3,6 +3,7 @@ using EventSourceWebApi.Contracts.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace EventSourceWebApi.DataContext.Repositories
@@ -20,7 +21,7 @@ namespace EventSourceWebApi.DataContext.Repositories
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {
-                return db.Events;
+                return db.Events.ToList();
             }
         }
 
@@ -28,7 +29,7 @@ namespace EventSourceWebApi.DataContext.Repositories
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {
-                return db.Events.FirstOrDefaultAsync(e => e.Id == id).Result;
+                return db.Events.FirstOrDefault(e => e.Id == id);
             }
         }
 
@@ -46,6 +47,23 @@ namespace EventSourceWebApi.DataContext.Repositories
             using (var db = new EventSourceDbContext(_dbContext))
             {
                 db.Entry(@event).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+        }
+
+        public Event Find(int id)
+        {
+            using (var db = new EventSourceDbContext(_dbContext))
+            {
+                return db.Events.FirstOrDefault(e => e.Id == id);
+            }
+        }
+
+        public void DeleteEvent(Event eventToDelete)
+        {
+            using (var db = new EventSourceDbContext(_dbContext))
+            {
+                db.Remove(eventToDelete);
                 db.SaveChanges();
             }
         }

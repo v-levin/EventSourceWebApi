@@ -27,10 +27,13 @@ namespace EventSourceWebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IEnumerable<Event> GetEvents()
+        public IActionResult GetEvents()
         {
             _logger.Information(LoggingMessages.GettingAllEvents);
-            return _eventsService.GetEvents();
+            var events = _eventsService.GetEvents();
+
+            _logger.Information(LoggingMessages.GetEventsSuccessfully);
+            return Ok(events);
         }
 
 
@@ -47,11 +50,11 @@ namespace EventSourceWebApi.Controllers
 
             if (@event == null)
             {
-                _logger.Error(LoggingMessages.NullData);
+                _logger.Error(LoggingMessages.EventNotFound(id));
                 return NotFound(@event);
             }
 
-            _logger.Information(LoggingMessages.GetEventSuccessfully);
+            _logger.Information(LoggingMessages.GetEventSuccessfully(id));
             return Ok(@event);
         }
 
@@ -100,6 +103,28 @@ namespace EventSourceWebApi.Controllers
             _eventsService.UpdateEvent(@event);
             _logger.Information(LoggingMessages.EventSuccessfullyModified(id));
             return Ok(@event);
+        }
+
+        /// <summary>
+        /// Deletes an individual Event.
+        /// </summary>
+        /// <param name="id">The Event id.</param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        public IActionResult DeleteEvent(int id)
+        {
+            _logger.Information(LoggingMessages.LookingForEventToDelete(id));
+            var eventToDelete = _eventsService.Find(id);
+
+            if (eventToDelete == null)
+            {
+                _logger.Error(LoggingMessages.EventNotFound(id));
+                return NotFound(eventToDelete);
+            }
+
+            _eventsService.DeleteEvent(eventToDelete);
+            _logger.Information(LoggingMessages.EventSuccessfullyDeleted(id));
+            return NoContent();
         }
     }
 }
