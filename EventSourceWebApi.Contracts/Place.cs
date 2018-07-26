@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace EventSourceWebApi.Contracts
@@ -10,6 +11,7 @@ namespace EventSourceWebApi.Contracts
 
         public DateTime DateRegistered { get; set; }
 
+        [Required]
         public int Capacity { get; set; }
 
         public string Location { get; set; }
