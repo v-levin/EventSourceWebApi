@@ -30,6 +30,9 @@ namespace EventSourceWebApi
 
             services.AddTransient<IEventsService, EventsService>();
             services.AddTransient<IEventsRepository, EventsRepository>();
+            services.AddTransient<IPlacesRepository, PlacesRepository>();
+            services.AddTransient<IPlacesService, PlacesService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

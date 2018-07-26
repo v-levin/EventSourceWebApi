@@ -3,15 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EventSourceWebApi.Contracts;
+using EventSourceWebApi.Contracts.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventSourceWebApi.Controllers
 {
-    [Produces("application/json")]
-    [Route("api/Places")]
+    [Route("api/[controller]")]
     public class PlacesController : ControllerBase
     {
+        private readonly IPlacesService _placeServices;
+
+        public PlacesController(IPlacesService placeServices)
+        {
+            _placeServices = placeServices;
+        }
 
         /// <summary>
         /// 
@@ -19,9 +25,10 @@ namespace EventSourceWebApi.Controllers
         /// <returns></returns>
         ///
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<Place> GetAll()
         {
-            return new string[] { "public room", "mkc" };
+            var _allPlaces = _placeServices.GetAll();
+            return _allPlaces;
         }
         /// <summary>
         /// 
@@ -31,8 +38,12 @@ namespace EventSourceWebApi.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-
-            return Ok();
+            var _place = _placeServices.Get(id);
+            if (_place == null)
+            {
+                return BadRequest(_place);
+            }
+            return Ok(_place);
         }
         /// <summary>
         /// 
@@ -45,30 +56,38 @@ namespace EventSourceWebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            return CreatedAtAction("Get", new { id = place.Id });
-
+            _placeServices.Save(place);
+            return CreatedAtAction("Post", place);
         }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="id"></param>
         /// <param name="value"></param>
-        [HttpPut]
-        public void Put(int id, [FromBody] Place place)
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, [FromBody] Place place)
         {
-
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _placeServices.Edit(place, id);
+            return Ok(place);
         }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="id"></param>
         /// 
-        [HttpDelete]
-        public void Delete(int id)
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
         {
-
+            var isDeleted = _placeServices.Delete(id);
+            if (!isDeleted)
+            {
+                return BadRequest($"place with id: {id} doesn't exist");
+            }
+            return Ok();
         }
-
     }
 }
