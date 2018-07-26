@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\EventSourceWebApi.Contracts\EventSourceWebApi.Contracts.csproj" />
     <ProjectReference Include="..\EventSourceWebApi.DataContext\EventSourceWebApi.DataContext.csproj" />
   </ItemGroup>
