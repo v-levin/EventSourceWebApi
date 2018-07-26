@@ -43,14 +43,63 @@ namespace EventSourceWebApi.Controllers
         public IActionResult GetEvent(int id)
         {
             _logger.Information(LoggingMessages.GettingEventById(id));
-            var eventById = _eventsService.GetEvent(id);
+            var @event = _eventsService.GetEvent(id);
 
-            if (eventById == null)
+            if (@event == null)
             {
-                return BadRequest();
+                _logger.Error(LoggingMessages.NullData);
+                return NotFound(@event);
             }
 
-            return Ok(eventById);
+            _logger.Information(LoggingMessages.GetEventSuccessfully);
+            return Ok(@event);
+        }
+
+        /// <summary>
+        /// Creates a new Event.
+        /// </summary>
+        /// <param name="event">The Event object.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult PostEvent([FromBody]Event @event)
+        {
+            _logger.Information(LoggingMessages.CreatingEvent);
+            if (!ModelState.IsValid)
+            {
+                _logger.Error(LoggingMessages.DataNotValid);
+                return BadRequest(ModelState);
+            }
+
+            _eventsService.CreateEvent(@event);
+            _logger.Information(LoggingMessages.EventSuccessfullyCreated);
+            return Ok(@event);
+        }
+
+        /// <summary>
+        /// Updates an individual Event.
+        /// </summary>
+        /// <param name="id">The Event id.</param>
+        /// <param name="event">The Event object.</param>
+        /// <returns></returns>
+        [HttpPut("{id}")]
+        public IActionResult PutEvent(int id, [FromBody]Event @event)
+        {
+            _logger.Information(LoggingMessages.EditingEventById(id));
+            if (!ModelState.IsValid)
+            {
+                _logger.Error(LoggingMessages.DataNotValid);
+                return BadRequest(ModelState);
+            }
+
+            if (id != @event.Id)
+            {
+                _logger.Error(LoggingMessages.PassedIdNotMatchWithEventId(id, @event.Id));
+                return BadRequest(LoggingMessages.IdsNotMatch);
+            }
+
+            _eventsService.UpdateEvent(@event);
+            _logger.Information(LoggingMessages.EventSuccessfullyModified(id));
+            return Ok(@event);
         }
     }
 }

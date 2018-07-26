@@ -8,5 +8,7 @@ namespace EventSourceWebApi.Contracts.Interfaces
     {
         IEnumerable<Event> GetEvents();
         Event GetEvent(int id);
+        void CreateEvent(Event @event);
+        void UpdateEvent(Event @event);
     }
 }

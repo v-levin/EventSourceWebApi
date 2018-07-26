@@ -40,5 +40,31 @@ namespace EventSourceWebApi.Domain.Services
                 throw;
             }
         }
+
+        public void CreateEvent(Event @event)
+        {
+            try
+            {
+                _eventsRepository.CreateEvent(@event);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public void UpdateEvent(Event @event)
+        {
+            try
+            {
+                _eventsRepository.UpdateEvent(@event);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

@@ -31,5 +31,23 @@ namespace EventSourceWebApi.DataContext.Repositories
                 return db.Events.FirstOrDefaultAsync(e => e.Id == id).Result;
             }
         }
+
+        public void CreateEvent(Event @event)
+        {
+            using (var db = new EventSourceDbContext(_dbContext))
+            {
+                db.Events.Add(@event);
+                db.SaveChanges();
+            }
+        }
+
+        public void UpdateEvent(Event @event)
+        {
+            using (var db = new EventSourceDbContext(_dbContext))
+            {
+                db.Entry(@event).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+        }
     }
 }
