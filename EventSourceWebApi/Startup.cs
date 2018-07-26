@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace EventSourceWebApi
 {
@@ -14,6 +16,12 @@ namespace EventSourceWebApi
     {
         public Startup(IConfiguration configuration)
         {
+            Log.Logger = new LoggerConfiguration()
+             .Enrich.FromLogContext()
+             .WriteTo.Console()
+             .WriteTo.File("log.txt")
+             .CreateLogger();
+
             Configuration = configuration;
         }
 
@@ -27,7 +35,8 @@ namespace EventSourceWebApi
            opt.UseNpgsql(Configuration.GetConnectionString("EventSourceDbConnection")));
 
             services.AddMvc();
-
+            
+            services.AddSingleton(Log.Logger);
             services.AddTransient<IEventsService, EventsService>();
             services.AddTransient<IEventsRepository, EventsRepository>();
         }
