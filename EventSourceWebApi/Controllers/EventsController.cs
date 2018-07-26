@@ -6,7 +6,17 @@ using System.Threading.Tasks;
 
 namespace EventSourceWebApi.Controllers
 {
-    public class EventsController : Controller
+    public class EventsController : ControllerBase
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Get()
+        {
+
+            return Ok();
+        }
+
     }
 }

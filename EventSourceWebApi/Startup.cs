@@ -19,6 +19,7 @@ namespace EventSourceWebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddEntityFrameworkNpgsql().AddDbContext<EventSourceDbContext>(opt =>
            opt.UseNpgsql(Configuration.GetConnectionString("EventSourceDbConnection")));
 
