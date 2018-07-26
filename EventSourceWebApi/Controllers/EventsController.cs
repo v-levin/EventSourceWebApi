@@ -1,5 +1,6 @@
 ﻿using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Interfaces;
+using EventSourceWebApi.Contracts.Messages;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using System;
@@ -22,16 +23,29 @@ namespace EventSourceWebApi.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Returns the Event Collection.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IEnumerable<Event> GetAll()
+        public IEnumerable<Event> GetEvents()
         {
-            _logger.Information("Getting all events...");
-            var allEvents = _eventsService.GetAll();
+            _logger.Information(LoggingMessages.GettingAllEvents);
+            return _eventsService.GetEvents();
+        }
 
-            return allEvents;
+
+        /// <summary>
+        /// Returns an individual Event.
+        /// </summary>
+        /// <param name="id">The Event id.</param>
+        /// <returns></returns>
+        [HttpGet("{id}")]
+        public IActionResult GetEvent(int id)
+        {
+            _logger.Information(LoggingMessages.GettingEventById(id));
+            var eventById = _eventsService.GetEvent(id);
+
+            return Ok(eventById);
         }
     }
 }

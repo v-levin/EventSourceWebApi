@@ -16,14 +16,20 @@ namespace EventSourceWebApi.DataContext.Repositories
             _dbContext = dbContext;
         }
 
-        public IEnumerable<Event> GetAll()
+        public IEnumerable<Event> GetEvents()
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {
-
+                return db.Events;
             }
+        }
 
-            return null;
+        public Event GetEvent(int id)
+        {
+            using (var db = new EventSourceDbContext(_dbContext))
+            {
+                return db.Events.FirstOrDefaultAsync(e => e.Id == id).Result;
+            }
         }
     }
 }

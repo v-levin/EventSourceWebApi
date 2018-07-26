@@ -6,6 +6,7 @@ namespace EventSourceWebApi.Contracts.Interfaces
 {
     public interface IEventsService
     {
-        IEnumerable<Event> GetAll();
+        IEnumerable<Event> GetEvents();
+        Event GetEvent(int id);
     }
 }

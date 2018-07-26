@@ -15,9 +15,30 @@ namespace EventSourceWebApi.Domain.Services
             _eventsRepository = eventsRepository;
         }
 
-        public IEnumerable<Event> GetAll()
+        public IEnumerable<Event> GetEvents()
         {
-            return _eventsRepository.GetAll();
+            try
+            {
+                return _eventsRepository.GetEvents();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public Event GetEvent(int id)
+        {
+            try
+            {
+                return _eventsRepository.GetEvent(id);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }
