@@ -45,6 +45,11 @@ namespace EventSourceWebApi.Controllers
             _logger.Information(LoggingMessages.GettingEventById(id));
             var eventById = _eventsService.GetEvent(id);
 
+            if (eventById == null)
+            {
+                return BadRequest();
+            }
+
             return Ok(eventById);
         }
     }
