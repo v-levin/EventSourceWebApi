@@ -1,4 +1,7 @@
-﻿using EventSourceWebApi.DataContext;
+﻿using EventSourceWebApi.Contracts.Interfaces;
+using EventSourceWebApi.DataContext;
+using EventSourceWebApi.DataContext.Repositories;
+using EventSourceWebApi.Domain.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +26,9 @@ namespace EventSourceWebApi
            opt.UseNpgsql(Configuration.GetConnectionString("EventSourceDbConnection")));
 
             services.AddMvc();
+
+            services.AddTransient<IEventsService, EventsService>();
+            services.AddTransient<IEventsRepository, EventsRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
