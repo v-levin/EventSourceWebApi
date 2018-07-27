@@ -1,5 +1,6 @@
 ﻿using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Interfaces;
+using EventSourceWebApi.Contracts.Requests;
 using EventSourceWebApi.Contracts.Responses;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -16,13 +17,29 @@ namespace EventSourceWebApi.DataContext.Repositories
             _dbContext = dbContext;
         }
 
-        public EventResponse GetEvents()
+        public EventResponse GetEvents(Request request)
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {
+                if (!string.IsNullOrEmpty(request.Keyword))
+                {
+                    return new EventResponse
+                    {
+                        Events = db.Events
+                                   .Where(e => e.Name.ToLower().Contains(request.Keyword) ||
+                                               e.City.ToLower().Contains(request.Keyword))
+                                   .Skip((request.PageIndex - 1) * request.PageSize)
+                                   .Take(request.PageSize)
+                                   .ToList()
+                    };
+                }
+
                 return new EventResponse
                 {
-                    Events = db.Events.ToList()
+                    Events = db.Events
+                               .Skip((request.PageIndex - 1) * request.PageSize)
+                               .Take(request.PageSize)
+                               .ToList()
                 };
             }
         }

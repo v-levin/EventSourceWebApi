@@ -2,6 +2,7 @@
 using EventSourceWebApi.Contracts.Extensions;
 using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.Contracts.Messages;
+using EventSourceWebApi.Contracts.Requests;
 using EventSourceWebApi.Contracts.Responses;
 using EventSourceWebApi.Domain.Validators;
 using Serilog;
@@ -22,13 +23,13 @@ namespace EventSourceWebApi.Domain.Services
             _logger = logger;
         }
 
-        public EventResponse GetEvents()
+        public EventResponse GetEvents(Request request)
         {
             var response = new EventResponse();
 
             try
             {
-                response = _eventsRepository.GetEvents();
+                response = _eventsRepository.GetEvents(request);
 
                 if (response.Events.Count() > 0)
                     _logger.Information("The Events has been successfully taken.");

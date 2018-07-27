@@ -1,6 +1,7 @@
 ﻿using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.Contracts.Messages;
+using EventSourceWebApi.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
@@ -23,9 +24,10 @@ namespace EventSourceWebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetEvents()
+        public IActionResult GetEvents(string keyword)
         {
-            var response = _eventsService.GetEvents();
+            var request = new Request() { Keyword = keyword.ToLower() };
+            var response = _eventsService.GetEvents(request);
 
             if (!response.Result)
             {
