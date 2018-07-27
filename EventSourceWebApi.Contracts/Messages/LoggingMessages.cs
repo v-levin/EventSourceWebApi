@@ -17,14 +17,14 @@ namespace EventSourceWebApi.Contracts.Messages
 
         public static string EventSuccessfullyCreated = "The Event has successfully creted.";
         
-        public static string GetEventSuccessfully(int id)
+        public static string GetAlluccessfully(int id)
         {
             return $"The Event with Id: {id} has successfully taken.";
         }
 
         public static string IdsNotMatch = "Ids did not match.";
 
-        public static string GetEventsSuccessfully = "The Events has successfully taken.";
+        public static string GetAllSuccessfully = "The Events has successfully taken.";
 
         public static string PassedIdNotMatchWithEventId(int id, int eventId)
         {
@@ -69,9 +69,9 @@ namespace EventSourceWebApi.Contracts.Messages
            return $"{errors} invalid inputs";
         }
 
-        public static string PlaceSucessfullyCreated(string placeName)
+        public static string PlaceSucessfullyCreated(int placeId)
         {
-            return $"{placeName} is sucessfully created";
+            return $"Place with id: {placeId} is sucessfully created";
         }
 
     }

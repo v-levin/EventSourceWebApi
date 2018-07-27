@@ -77,7 +77,7 @@ namespace EventSourceWebApi.Controllers
             //    _logger.Error(LoggingMessages.InvalidInputs(ModelState.ErrorCount));
             //    return BadRequest(ModelState);
             //}
-            _logger.Information(LoggingMessages.PlaceSucessfullyCreated(place.Name));
+            _logger.Information(LoggingMessages.PlaceSucessfullyCreated(place.Id));
             return CreatedAtAction("Post", place);
         }
 

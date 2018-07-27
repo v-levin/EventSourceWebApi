@@ -7,14 +7,16 @@ namespace EventSourceWebApi.Contracts.Interfaces
 {
     public interface IPlacesService
     {
-        IEnumerable<Place> GetAll(); //todo GetAllPlacesResponse //search, paging?! limit. MAX LIMIT = 1000 (search, consider nwew method)
+        PlaceResponse GetAllPlaces(); //todo GetAllPlacesResponse //search, paging?! limit. MAX LIMIT = 1000 (search, consider nwew method)
 
-        PlaceResponse Get(int id); //todo GetPlace
+        PlaceResponse SearchPlace(string searchString);
 
-        PlaceResponse Create(Place place); //todo CretePlaceResponse (int) => 201 (int creaed)
+        PlaceResponse GetPlace(int id); //todo GetPlace
 
-        PlaceResponse Update(Place place, int id); //todo Response 200
+        PlaceResponse CreatePlace(Place place); //todo CretePlaceResponse (int) => 201 (int creaed)
 
-        Response Delete(int id); //Response 200
+        PlaceResponse UpdatePlace(Place place, int id); //todo Response 200
+
+        Response DeletePlace(int id); //Response 200 
     }
 }
