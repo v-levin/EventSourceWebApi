@@ -57,5 +57,24 @@ namespace EventSourceWebApi.Contracts.Messages
         {
             return $"The Event with Id: {id} has been successfully deleted.";
         }
+        public static string GettingAllPlaces = "Getting all places...";
+
+        public static string GettingPlaceById(int id)
+        {
+            return $"Getting Place by Id: {id}";
+        }
+
+        public static string CreatingPlace = "Creating new Place...";
+
+        public static string InvalidInputs(int errors)
+        {
+           return $"{errors} invalid inputs";
+        }
+
+        public static string PlaceSucessfullyCreated(string placeName)
+        {
+            return $"{placeName} is sucessfully created";
+        }
+
     }
 }

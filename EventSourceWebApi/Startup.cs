@@ -1,7 +1,9 @@
-﻿using EventSourceWebApi.Contracts.Interfaces;
+﻿using EventSourceWebApi.Contracts;
+using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.DataContext;
 using EventSourceWebApi.DataContext.Repositories;
 using EventSourceWebApi.Domain.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
