@@ -23,9 +23,17 @@ namespace EventSourceWebApi.DataContext.Repositories
         {
             using (var db = new EventSourceDbContext(_contextOptions))
             {
+
+                var places = string.IsNullOrEmpty(placeRequest.Keyword) ? db.Places.ToList() : db.Places
+                    .Where(s => s.Name.Contains(placeRequest.Keyword.ToLower()) || s.City.Contains(placeRequest.Keyword.ToLower()) || s.Location.Contains(placeRequest.Keyword.ToLower())).ToList();
+
+
                 return new PlaceResponse()
                 {
-                    Places = db.Places.Where(s => s.Name.Contains(placeRequest.Keyword) || s.City.Contains(placeRequest.Keyword))
+                    Places = places
+                    .Skip(placeRequest.PageSize * placeRequest.PageIndex)
+                    .Take(placeRequest.PageSize)
+                                                           
                 };
             }
         }

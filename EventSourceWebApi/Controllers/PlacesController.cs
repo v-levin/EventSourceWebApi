@@ -26,20 +26,24 @@ namespace EventSourceWebApi.Controllers
         }
 
         /// <summary>
-        ///
+        /// Gets all places 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Collection of Places</returns>
         ///
         [HttpGet]
-        public IActionResult GetAllPlaces(string keyword)
+        public IActionResult GetAllPlaces(string keyword, int limitSize)
         {
-            var placeRequest = new Request() { Keyword = keyword };
-;           var allPlaces = _placeServices.GetAllPlaces(placeRequest);
-            return Ok(allPlaces);
+            var placeRequest = new Request() { Keyword = keyword, PageSize = limitSize };
+            var placeResponse = _placeServices.GetAllPlaces(placeRequest);
+            if (!placeResponse.Result)
+            {
+                return BadRequest();
+            }
+            return Ok(placeResponse.Places);
         }
 
         /// <summary>
-        /// Getting place by id 
+        /// Gets place by id 
         /// </summary>
         /// <param name="id">Place.id</param>
         /// <returns>Returns an individual Place</returns>
@@ -47,13 +51,13 @@ namespace EventSourceWebApi.Controllers
         public IActionResult Get(int id)
         {
             _logger.Information(LoggingMessages.GettingPlaceById(id));
-            var getPlaceResponse = _placeServices.GetPlace(id);
-            if (getPlaceResponse.Place == null)
+            var placeResponse = _placeServices.GetPlace(id);
+            if (!placeResponse.Result)
             {
                 _logger.Error($"The place with id:{id} doesn't exist");
                 return BadRequest();
             }
-            return Ok(getPlaceResponse.Place);
+            return Ok(placeResponse.Place);
         }
 
         /// <summary>
@@ -64,45 +68,40 @@ namespace EventSourceWebApi.Controllers
         public IActionResult Post([FromBody] Place place)
         {
             _logger.Information(LoggingMessages.CreatingPlace);
-            var result = _placeServices.CreatePlace(place);
+            var placeResponse = _placeServices.CreatePlace(place);
 
-                if (!result.Result)
-                {
-                    
-                    return BadRequest(result);
-                }
-            
+            if (!placeResponse.Result)
+            {
+                return BadRequest(placeResponse.Errors);
+            }
 
-            //if (!ModelState.IsValid)
-            //{
-            //    _logger.Error(LoggingMessages.InvalidInputs(ModelState.ErrorCount));
-            //    return BadRequest(ModelState);
-            //}
-            _logger.Information(LoggingMessages.PlaceSucessfullyCreated(place.Id));
-            return CreatedAtAction("Post", place);
+            _logger.Information(LoggingMessages.PlaceSucessfullyCreated(placeResponse.PlaceId));
+            return CreatedAtAction("Post", placeResponse.PlaceId);
         }
 
         /// <summary>
-        /// 
+        /// Updates an individual Place
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="value"></param>
+        /// <param name="id">Place.Id</param>
+        /// <param name="value">Place object</param>
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Place place)
         {
             _logger.Information($"Editing place with id: {id}");
-            if (!ModelState.IsValid)
+
+            var placeResponse = _placeServices.UpdatePlace(place, id);
+
+            if (!placeResponse.Result)
             {
-                _logger.Error(ModelState.ErrorCount + " Invalid input/s");
-                return BadRequest(ModelState);
+                return BadRequest(placeResponse.Errors);
             }
-            _placeServices.UpdatePlace(place, id);
-            _logger.Information(place.Name + " is succesffuly edited");
-            return Ok(place);
+           
+            _logger.Information($"Place with id: {placeResponse.PlaceId} is succesffuly edited");
+            return Ok(placeResponse.PlaceId);
         }
 
         /// <summary>
-        /// 
+        /// Deletes an individual Place
         /// </summary>
         /// <param name="id">Place.Id</param>
         /// 
@@ -110,13 +109,11 @@ namespace EventSourceWebApi.Controllers
         public IActionResult Delete(int id)
         {
             _logger.Information($"Deleting place with id: {id}");
-            var isDeleted = _placeServices.DeletePlace(id);
-            //if (!isDeleted)
-            //{
-            //    _logger.Error($"Place with id: {id} doesn't exist");
-            //    return BadRequest();
-            //}
-            _logger.Information($"Place with id: {id} is succesffuly deleted");
+            var deletePlaceResponse  = _placeServices.DeletePlace(id);
+            if(!deletePlaceResponse.Result)
+            {
+                return BadRequest();
+            }
             return Ok();
         }
     }
