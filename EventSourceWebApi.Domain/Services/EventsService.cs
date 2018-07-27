@@ -1,7 +1,10 @@
 ﻿using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Interfaces;
+using EventSourceWebApi.Contracts.Messages;
+using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace EventSourceWebApi.Domain.Services
@@ -9,21 +12,29 @@ namespace EventSourceWebApi.Domain.Services
     public class EventsService : IEventsService
     {
         private readonly IEventsRepository _eventsRepository;
+        private readonly ILogger _logger;
 
-        public EventsService(IEventsRepository eventsRepository)
+        public EventsService(IEventsRepository eventsRepository, ILogger logger)
         {
             _eventsRepository = eventsRepository;
+            _logger = logger;
         }
 
         public IEnumerable<Event> GetEvents()
         {
             try
             {
-                return _eventsRepository.GetEvents();
-            }
-            catch (Exception)
-            {
+                var events = _eventsRepository.GetEvents();
 
+                if (events.Count() > 0)
+                    _logger.Information(LoggingMessages.GetEventsSuccessfully);
+                else
+                    _logger.Information(LoggingMessages.NoDataInDb);
+                
+                return events;
+            }
+            catch (Exception ex)
+            {
                 throw;
             }
         }

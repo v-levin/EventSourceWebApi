@@ -26,6 +26,8 @@ namespace EventSourceWebApi.Contracts.Messages
 
         public static string GetEventsSuccessfully = "The Events has successfully taken.";
 
+        public static string NoDataInDb = "There is no data in the database.";
+
         public static string PassedIdNotMatchWithEventId(int id, int eventId)
         {
             return $"Passed id {id} did not match with Event id {eventId}.";

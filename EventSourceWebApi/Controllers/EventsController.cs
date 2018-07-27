@@ -31,8 +31,7 @@ namespace EventSourceWebApi.Controllers
         {
             _logger.Information(LoggingMessages.GettingAllEvents);
             var events = _eventsService.GetEvents();
-
-            _logger.Information(LoggingMessages.GetEventsSuccessfully);
+            
             return Ok(events);
         }
 
@@ -75,7 +74,7 @@ namespace EventSourceWebApi.Controllers
 
             _eventsService.CreateEvent(@event);
             _logger.Information(LoggingMessages.EventSuccessfullyCreated);
-            return Ok(@event);
+            return CreatedAtRoute("events", new { id = @event.Id }, @event);
         }
 
         /// <summary>
