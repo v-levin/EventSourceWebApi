@@ -1,4 +1,6 @@
-﻿using System;
+﻿using EventSourceWebApi.Contracts.Requests;
+using EventSourceWebApi.Contracts.Responses;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,14 +8,14 @@ namespace EventSourceWebApi.Contracts.Interfaces
 {
     public interface IPlacesRepository
     {
-        IEnumerable<Place> GetAll();
+        PlaceResponse GetAllPlaces(Request placeRequest);
 
-        Place Get(int id);
+        PlaceResponse GetPlace(int id);
 
-        void Save(Place place);
+        PlaceResponse CreatePlace(Place place);
 
-        void Edit(Place place, int id);
+        PlaceResponse UpdatePlace(Place place, int id);
 
-        bool Delete(int id);
+        Response DeletePlace(int id);
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.Contracts.Messages;
+using EventSourceWebApi.Contracts.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -30,10 +31,10 @@ namespace EventSourceWebApi.Controllers
         /// <returns></returns>
         ///
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetAllPlaces(string keyword)
         {
-            _logger.Information(LoggingMessages.GettingAllPlaces);
-            var allPlaces = _placeServices.GetAll();
+            var placeRequest = new Request() { Keyword = keyword };
+;           var allPlaces = _placeServices.GetAllPlaces(placeRequest);
             return Ok(allPlaces);
         }
 
@@ -46,7 +47,7 @@ namespace EventSourceWebApi.Controllers
         public IActionResult Get(int id)
         {
             _logger.Information(LoggingMessages.GettingPlaceById(id));
-            var getPlaceResponse = _placeServices.Get(id);
+            var getPlaceResponse = _placeServices.GetPlace(id);
             if (getPlaceResponse.Place == null)
             {
                 _logger.Error($"The place with id:{id} doesn't exist");
@@ -63,7 +64,7 @@ namespace EventSourceWebApi.Controllers
         public IActionResult Post([FromBody] Place place)
         {
             _logger.Information(LoggingMessages.CreatingPlace);
-            var result = _placeServices.Create(place);
+            var result = _placeServices.CreatePlace(place);
 
                 if (!result.Result)
                 {
@@ -95,7 +96,7 @@ namespace EventSourceWebApi.Controllers
                 _logger.Error(ModelState.ErrorCount + " Invalid input/s");
                 return BadRequest(ModelState);
             }
-            _placeServices.Update(place, id);
+            _placeServices.UpdatePlace(place, id);
             _logger.Information(place.Name + " is succesffuly edited");
             return Ok(place);
         }
@@ -109,7 +110,7 @@ namespace EventSourceWebApi.Controllers
         public IActionResult Delete(int id)
         {
             _logger.Information($"Deleting place with id: {id}");
-            var isDeleted = _placeServices.Delete(id);
+            var isDeleted = _placeServices.DeletePlace(id);
             //if (!isDeleted)
             //{
             //    _logger.Error($"Place with id: {id} doesn't exist");

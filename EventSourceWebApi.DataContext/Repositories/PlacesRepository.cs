@@ -1,5 +1,7 @@
 ﻿using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Interfaces;
+using EventSourceWebApi.Contracts.Requests;
+using EventSourceWebApi.Contracts.Responses;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -17,23 +19,49 @@ namespace EventSourceWebApi.DataContext.Repositories
             _contextOptions = contextOptions;
         }
 
-        public bool Delete(int id)
+        public PlaceResponse GetAllPlaces(Request placeRequest)
         {
             using (var db = new EventSourceDbContext(_contextOptions))
             {
-                var _place = db.Places.Find(id);
-
-                if (_place == null)
+                return new PlaceResponse()
                 {
-                    return false;
-                }
-                db.Places.Remove(_place);
-                db.SaveChanges();
-                return true;
+                    Places = db.Places.Where(s => s.Name.Contains(placeRequest.Keyword) || s.City.Contains(placeRequest.Keyword))
+                };
             }
         }
 
-        public void Edit(Place place, int id)
+        public PlaceResponse GetPlace(int id)
+        {
+            using (var db = new EventSourceDbContext(_contextOptions))
+            {
+                return new PlaceResponse
+                {
+                    Place = db.Places.Where(p => p.Id == id)
+                    .FirstOrDefault()
+                };
+            }
+
+        }
+        public PlaceResponse CreatePlace(Place place)
+        {
+            using (var db = new EventSourceDbContext(_contextOptions))
+            {
+                var newPlace = new Place()
+                {
+                    DateRegistered = place.DateRegistered,
+                    Capacity = place.Capacity,
+                    Location = place.Location,
+                    Name = place.Name,
+                    Description = place.Description,
+                    City = place.City
+                };
+                db.Places.Add(newPlace);
+                db.SaveChanges();
+                return new PlaceResponse() { PlaceId = newPlace.Id };
+            }
+        }
+
+        public PlaceResponse UpdatePlace(Place place, int id)
         {
             using (var db = new EventSourceDbContext(_contextOptions))
             {
@@ -51,43 +79,23 @@ namespace EventSourceWebApi.DataContext.Repositories
                     db.Places.Attach(place);
                     db.SaveChanges();
                 }
+                return new PlaceResponse() { PlaceId = _place.Id };
             }
         }
 
-        public Place Get(int id)
+        public Response DeletePlace(int id)
         {
             using (var db = new EventSourceDbContext(_contextOptions))
             {
-                var _place = db.Places.Where(p => p.Id == id).FirstOrDefault();
+                var _place = db.Places.Find(id);
 
-                return _place;
-
-            }
-        }
-
-        public IEnumerable<Place> GetAll()
-        {
-            using (var db = new EventSourceDbContext(_contextOptions))
-            {
-                return db.Places.ToList();
-            }
-        }
-
-        public void Save(Place place)
-        {
-            using (var db = new EventSourceDbContext(_contextOptions))
-            {
-                var _place = new Place()
+                if (_place == null)
                 {
-                    DateRegistered = place.DateRegistered,
-                    Capacity = place.Capacity,
-                    Location = place.Location,
-                    Name = place.Name,
-                    Description = place.Description,
-                    City = place.City
-                };
-                db.Places.Add(_place);
+                    return new Response() { Result = false };
+                }
+                db.Places.Remove(_place);
                 db.SaveChanges();
+                return new Response() { Result = true };
             }
         }
     }

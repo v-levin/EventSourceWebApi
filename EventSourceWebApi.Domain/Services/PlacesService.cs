@@ -1,6 +1,7 @@
 ﻿using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Extensions;
 using EventSourceWebApi.Contracts.Interfaces;
+using EventSourceWebApi.Contracts.Requests;
 using EventSourceWebApi.Contracts.Responses;
 using EventSourceWebApi.Domain.Validators;
 using FluentValidation;
@@ -19,49 +20,36 @@ namespace EventSourceWebApi.Domain.Services
             _placeRepository = placeRepository;
         }
 
-        public Response Delete(int id)
+        public PlaceResponse GetAllPlaces(Request placeRequest)
         {
-            var isDeleted = _placeRepository.Delete(id);
-            return new Response();
-        }
-
-        public PlaceResponse Update(Place place, int id)
-        {
-            _placeRepository.Edit(place, id);
-            return new  PlaceResponse();
-        }
-
-        public PlaceResponse Get(int id)
-        {
-            var _getPlaceResponse = new PlaceResponse();
             try
             {
-                var _place = _placeRepository.Get(id);
-                _getPlaceResponse.Place = _place;
-                return _getPlaceResponse;
+                return _placeRepository.GetAllPlaces(placeRequest);
             }
             catch (Exception ex)
             {
-                _getPlaceResponse.Message = ex.Message;
-                return _getPlaceResponse;
+                return new PlaceResponse { Message = ex.Message};
             }
         }
 
+        public PlaceResponse GetPlace(int id)
+        {
+            var  getPlaceResponse = new PlaceResponse();
+            try
+            {
+                var _place = _placeRepository.GetPlace(id);
+                getPlaceResponse.Place = _place.Place;
+                return getPlaceResponse;
+            }
+            catch (Exception ex)
+            {
+                getPlaceResponse.Message = ex.Message;
+                return getPlaceResponse;
+            }
+        }
 
         //todo: pretty please put this as response
-        public IEnumerable<Place> GetAll()
-        {
-            try
-            {
-                return _placeRepository.GetAll();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public PlaceResponse Create(Place place)
+        public PlaceResponse CreatePlace(Place place)
         {
             var response = new PlacesValidator().Validate(place).ToResponse();
 
@@ -70,7 +58,7 @@ namespace EventSourceWebApi.Domain.Services
 
             try
             {
-                _placeRepository.Save(place); //todo => Create
+                _placeRepository.CreatePlace(place); //todo => Create
                 return new PlaceResponse(); //todo new reponse
             }
             catch (Exception ex)
@@ -80,6 +68,18 @@ namespace EventSourceWebApi.Domain.Services
                 //return isValidPlace;
                 throw;
             }
+        }
+
+        public PlaceResponse UpdatePlace(Place place, int id)
+        {
+            _placeRepository.UpdatePlace(place, id);
+            return new PlaceResponse();
+        }
+
+        public Response DeletePlace(int id)
+        {
+            var isDeleted = _placeRepository.DeletePlace(id);
+            return new Response();
         }
     }
 }
