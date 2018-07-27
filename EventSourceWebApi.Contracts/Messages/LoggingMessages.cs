@@ -31,8 +31,6 @@ namespace EventSourceWebApi.Contracts.Messages
 
         public static string CreatingPlace = "Creating new Place...";
 
-        public static string InvalidInput = "Invalid Input.";
-
         public static string PlaceSucessfullyCreated(int placeId)
         {
             return $"Place with id: {placeId} is sucessfully created";

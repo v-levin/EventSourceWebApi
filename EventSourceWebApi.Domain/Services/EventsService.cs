@@ -72,10 +72,19 @@ namespace EventSourceWebApi.Domain.Services
 
         public EventResponse CreateEvent(Event @event)
         {
+            if (@event == null)
+            {
+                return new EventResponse()
+                {
+                    Result = false,
+                    Message = "Value cannot be null."
+                };
+            }
+
             var response = new EventsValidator().Validate(@event).ToResponse();
 
             if (!response.Result)
-                return new EventResponse() { Message = LoggingMessages.InvalidInput, Result = false };
+                return ErrorResponse(response);
 
             var eventResponse = new EventResponse();
 
@@ -99,7 +108,7 @@ namespace EventSourceWebApi.Domain.Services
             var response = new EventsValidator().Validate(@event).ToResponse();
 
             if (!response.Result)
-                return new EventResponse() { Message = LoggingMessages.InvalidInput, Result = false };
+                return ErrorResponse(response);
 
             var eventResponse = new EventResponse();
 
@@ -126,6 +135,15 @@ namespace EventSourceWebApi.Domain.Services
                 eventResponse.Message = ex.Message;
                 return eventResponse;
             }
+        }
+
+        private static EventResponse ErrorResponse(Response response)
+        {
+            return new EventResponse()
+            {
+                Result = false,
+                Message = string.Join(Environment.NewLine, response.Errors.Select(e => e.Error))
+            };
         }
 
         public Response DeleteEvent(int id)
