@@ -1,7 +1,9 @@
-﻿using EventSourceWebApi.Contracts.Interfaces;
+﻿using EventSourceWebApi.Contracts;
+using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.DataContext;
 using EventSourceWebApi.DataContext.Repositories;
 using EventSourceWebApi.Domain.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +43,7 @@ namespace EventSourceWebApi
             services.AddTransient<IEventsRepository, EventsRepository>();
             services.AddTransient<IPlacesRepository, PlacesRepository>();
             services.AddTransient<IPlacesService, PlacesService>();
+            services.AddTransient<IPlaceValidator, PlacesValidator>();
 
         }
 

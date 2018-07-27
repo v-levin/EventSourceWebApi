@@ -29,7 +29,7 @@ namespace EventSourceWebApi.Controllers
         [HttpGet]
         public IEnumerable<Event> GetEvents()
         {
-            _logger.Information(LoggingMessages.GettingAllEvents);
+            _logger.Information("Invalid input");
             return _eventsService.GetEvents();
         }
 

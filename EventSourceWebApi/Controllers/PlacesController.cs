@@ -4,8 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Interfaces;
+using EventSourceWebApi.Contracts.Messages;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Serilog;
 
 namespace EventSourceWebApi.Controllers
 {
@@ -13,38 +16,45 @@ namespace EventSourceWebApi.Controllers
     public class PlacesController : ControllerBase
     {
         private readonly IPlacesService _placeServices;
+        private readonly ILogger _logger;
 
-        public PlacesController(IPlacesService placeServices)
+        public PlacesController(IPlacesService placeServices, ILogger logger)
         {
             _placeServices = placeServices;
+            _logger = logger;
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         ///
         [HttpGet]
-        public IEnumerable<Place> GetAll()
+        public IActionResult GetAll()
         {
-            var _allPlaces = _placeServices.GetAll();
-            return _allPlaces;
+            _logger.Information(LoggingMessages.GettingAllPlaces);
+            var allPlaces = _placeServices.GetAll();
+            return Ok(allPlaces);
         }
+
         /// <summary>
-        /// 
+        /// Getting place by id 
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">Place.id</param>
+        /// <returns>Returns an individual Place</returns>
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var _place = _placeServices.Get(id);
-            if (_place == null)
+            _logger.Information(LoggingMessages.GettingPlaceById(id));
+            var getPlaceResponse = _placeServices.Get(id);
+            if (getPlaceResponse.Place == null)
             {
-                return BadRequest(_place);
+                _logger.Error($"The place with id:{id} doesn't exist");
+                return BadRequest();
             }
-            return Ok(_place);
+            return Ok(getPlaceResponse.Place);
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -52,13 +62,21 @@ namespace EventSourceWebApi.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Place place)
         {
+            _logger.Information("Creating place...");
+            var result = _placeServices.Save(place);
+            foreach (var s in result.Errors)
+            {
+                ModelState.AddModelError(place.Name,s);
+            }
             if (!ModelState.IsValid)
             {
+                _logger.Error(ModelState.ErrorCount + " Invalid input/s");
                 return BadRequest(ModelState);
             }
-            _placeServices.Save(place);
+            _logger.Information(place.Name + " is succesffuly created");
             return CreatedAtAction("Post", place);
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -67,26 +85,33 @@ namespace EventSourceWebApi.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Place place)
         {
+            _logger.Information($"Editing place with id: {id}");
             if (!ModelState.IsValid)
             {
+                _logger.Error(ModelState.ErrorCount + " Invalid input/s");
                 return BadRequest(ModelState);
             }
             _placeServices.Edit(place, id);
+            _logger.Information(place.Name + " is succesffuly edited");
             return Ok(place);
         }
+
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">Place.Id</param>
         /// 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
+            _logger.Information($"Deleting place with id: {id}");
             var isDeleted = _placeServices.Delete(id);
             if (!isDeleted)
             {
-                return BadRequest($"place with id: {id} doesn't exist");
+                _logger.Error($"Place with id: {id} doesn't exist");
+                return BadRequest();
             }
+            _logger.Information($"Place with id: {id} is succesffuly deleted");
             return Ok();
         }
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EventSourceWebApi.Contracts.Responses;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,9 +9,9 @@ namespace EventSourceWebApi.Contracts.Interfaces
     {
         IEnumerable<Place> GetAll();
 
-        Place Get(int id);
+        GetPlaceResponse Get(int id);
 
-        void Save(Place place);
+        ValdatePlaceResponse Save(Place place);
 
         void Edit(Place place, int id);
 

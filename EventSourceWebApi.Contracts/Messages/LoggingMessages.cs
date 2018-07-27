@@ -12,5 +12,11 @@ namespace EventSourceWebApi.Contracts.Messages
         {
             return $"Getting Event by Id: {id}";
         }
+        public static string GettingAllPlaces = "Getting all places...";
+
+        public static string GettingPlaceById(int id)
+        {
+            return $"Getting Place by Id: {id}";
+        }
     }
 }
