@@ -60,9 +60,9 @@ namespace EventSourceWebApi.Contracts.Messages
            return $"{errors} invalid inputs";
         }
 
-        public static string PlaceSucessfullyCreated(string placeName)
+        public static string PlaceSucessfullyCreated(int placeId)
         {
-            return $"{placeName} is sucessfully created";
+            return $"Place with id: {placeId} is sucessfully created";
         }
 
     }

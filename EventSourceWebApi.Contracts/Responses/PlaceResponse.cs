@@ -10,5 +10,8 @@ namespace EventSourceWebApi.Contracts.Responses
 
         public Place Place { get; set; }
 
+        public IEnumerable<Place> Places {get; set;}
+
+        public int PlaceId { get; set; }
     }
 }

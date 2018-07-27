@@ -1,4 +1,5 @@
-﻿using EventSourceWebApi.Contracts.Responses;
+﻿using EventSourceWebApi.Contracts.Requests;
+using EventSourceWebApi.Contracts.Responses;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,14 +8,14 @@ namespace EventSourceWebApi.Contracts.Interfaces
 {
     public interface IPlacesService
     {
-        IEnumerable<Place> GetAll(); //todo GetAllPlacesResponse //search, paging?! limit. MAX LIMIT = 1000 (search, consider nwew method)
+        PlaceResponse GetAllPlaces(Request placeRequest); //todo GetAllPlacesResponse //search, paging?! limit. MAX LIMIT = 1000 (search, consider nwew method)
 
-        PlaceResponse Get(int id); //todo GetPlace
+        PlaceResponse GetPlace(int id); //todo GetPlace
 
-        PlaceResponse Create(Place place); //todo CretePlaceResponse (int) => 201 (int creaed)
+        PlaceResponse CreatePlace(Place place); //todo CretePlaceResponse (int) => 201 (int creaed)
 
-        PlaceResponse Update(Place place, int id); //todo Response 200
+        PlaceResponse UpdatePlace(Place place, int id); //todo Response 200
 
-        Response Delete(int id); //Response 200
+        Response DeletePlace(int id); //Response 200 
     }
 }
