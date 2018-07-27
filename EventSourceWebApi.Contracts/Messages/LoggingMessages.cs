@@ -4,10 +4,6 @@ namespace EventSourceWebApi.Contracts.Messages
 {
     public class LoggingMessages
     {
-        public static string GettingAllEvents = "Getting all events...";
-
-        public static string CreatingEvent = "Creating new Event...";
-
         public static string GettingEventById(int id)
         {
             return $"Getting Event by Id: {id}.";
@@ -16,15 +12,8 @@ namespace EventSourceWebApi.Contracts.Messages
         public static string DataNotValid = "The data has not valid format.";
 
         public static string EventSuccessfullyCreated = "The Event has successfully creted.";
-        
-        public static string GetEventSuccessfully(int id)
-        {
-            return $"The Event with Id: {id} has successfully taken.";
-        }
 
         public static string IdsNotMatch = "Ids did not match.";
-
-        public static string GetEventsSuccessfully = "The Events has successfully taken.";
 
         public static string NoDataInDb = "There is no data in the database.";
 

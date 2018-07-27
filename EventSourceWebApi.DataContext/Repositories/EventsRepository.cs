@@ -1,5 +1,6 @@
 ﻿using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Interfaces;
+using EventSourceWebApi.Contracts.Responses;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -17,28 +18,41 @@ namespace EventSourceWebApi.DataContext.Repositories
             _dbContext = dbContext;
         }
 
-        public IEnumerable<Event> GetEvents()
+        public EventResponse GetEvents()
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {
-                return db.Events.ToList();
+                return new EventResponse
+                {
+                    Events = db.Events.ToList()
+                };
             }
         }
 
-        public Event GetEvent(int id)
+        public EventResponse GetEvent(int id)
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {
-                return db.Events.FirstOrDefault(e => e.Id == id);
+                return new EventResponse
+                {
+                    Event = db.Events.FirstOrDefault(e => e.Id == id)
+                };
             }
         }
 
-        public void CreateEvent(Event @event)
+        public EventResponse CreateEvent(Event @event)
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {
-                db.Events.Add(@event);
+                var response = new EventResponse
+                {
+                    Event = @event
+                };
+
+                db.Events.Add(response.Event);
                 db.SaveChanges();
+
+                return response;
             }
         }
 

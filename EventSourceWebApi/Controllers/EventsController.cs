@@ -29,13 +29,16 @@ namespace EventSourceWebApi.Controllers
         [HttpGet]
         public IActionResult GetEvents()
         {
-            _logger.Information(LoggingMessages.GettingAllEvents);
-            var events = _eventsService.GetEvents();
+            var response = _eventsService.GetEvents();
+
+            if (!response.Result)
+            {
+                return BadRequest(response.Message);
+            }
             
-            return Ok(events);
+            return Ok(response.Events);
         }
-
-
+        
         /// <summary>
         /// Returns an individual Event.
         /// </summary>
@@ -45,16 +48,14 @@ namespace EventSourceWebApi.Controllers
         public IActionResult GetEvent(int id)
         {
             _logger.Information(LoggingMessages.GettingEventById(id));
-            var @event = _eventsService.GetEvent(id);
+            var response = _eventsService.GetEvent(id);
 
-            if (@event == null)
+            if (!response.Result)
             {
-                _logger.Error(LoggingMessages.EventNotFound(id));
-                return NotFound(@event);
+                return NotFound(response.Event);
             }
-
-            _logger.Information(LoggingMessages.GetEventSuccessfully(id));
-            return Ok(@event);
+            
+            return Ok(response.Event);
         }
 
         /// <summary>
@@ -65,7 +66,7 @@ namespace EventSourceWebApi.Controllers
         [HttpPost]
         public IActionResult PostEvent([FromBody]Event @event)
         {
-            _logger.Information(LoggingMessages.CreatingEvent);
+            var response = _eventsService.CreateEvent(@event);
             if (!ModelState.IsValid)
             {
                 _logger.Error(LoggingMessages.DataNotValid);

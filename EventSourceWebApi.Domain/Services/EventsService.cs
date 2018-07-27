@@ -1,6 +1,7 @@
 ﻿using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.Contracts.Messages;
+using EventSourceWebApi.Contracts.Responses;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -20,48 +21,66 @@ namespace EventSourceWebApi.Domain.Services
             _logger = logger;
         }
 
-        public IEnumerable<Event> GetEvents()
+        public EventResponse GetEvents()
         {
+            var response = new EventResponse();
+
             try
             {
-                var events = _eventsRepository.GetEvents();
+                response = _eventsRepository.GetEvents();
 
-                if (events.Count() > 0)
-                    _logger.Information(LoggingMessages.GetEventsSuccessfully);
+                if (response.Events.Count() > 0)
+                    _logger.Information("The Events has successfully taken.");
                 else
-                    _logger.Information(LoggingMessages.NoDataInDb);
+                    _logger.Information("There is no data in the database.");
                 
-                return events;
+                return response;
             }
             catch (Exception ex)
             {
-                throw;
+                _logger.Error(ex.Message);
+                response.Result = false;
+                response.Message = ex.Message;
+                return response;
             }
         }
 
-        public Event GetEvent(int id)
+        public EventResponse GetEvent(int id)
         {
+            var response = new EventResponse();
+
             try
             {
-                return _eventsRepository.GetEvent(id);
-            }
-            catch (Exception)
-            {
+                response = _eventsRepository.GetEvent(id);
 
-                throw;
+                if (response.Event == null)
+                    _logger.Information(LoggingMessages.EventNotFound(id));
+                else
+                    _logger.Information($"The Event with Id: {id} has successfully taken.");
+
+                return response;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+                response.Result = false;
+                return response;
             }
         }
 
-        public void CreateEvent(Event @event)
+        public EventResponse CreateEvent(Event @event)
         {
+            var response = new EventResponse();
+
             try
             {
-                _eventsRepository.CreateEvent(@event);
+                response = _eventsRepository.CreateEvent(@event);
+                return response;
             }
             catch (Exception)
             {
-
-                throw;
+                return response;
             }
         }
 
