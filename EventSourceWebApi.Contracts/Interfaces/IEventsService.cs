@@ -10,8 +10,7 @@ namespace EventSourceWebApi.Contracts.Interfaces
         EventResponse GetEvents();
         EventResponse GetEvent(int id);
         EventResponse CreateEvent(Event @event);
-        void UpdateEvent(Event @event);
-        Event Find(int id);
-        void DeleteEvent(Event eventToDelete);
+        EventResponse UpdateEvent(int id, Event @event);
+        Response DeleteEvent(int id);
     }
 }

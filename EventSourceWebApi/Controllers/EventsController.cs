@@ -3,10 +3,6 @@ using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.Contracts.Messages;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EventSourceWebApi.Controllers
 {
@@ -47,7 +43,7 @@ namespace EventSourceWebApi.Controllers
         [HttpGet("{id}")]
         public IActionResult GetEvent(int id)
         {
-            _logger.Information(LoggingMessages.GettingEventById(id));
+            _logger.Information($"Getting Event with Id: {id}.");
             var response = _eventsService.GetEvent(id);
 
             if (!response.Result)
@@ -67,15 +63,13 @@ namespace EventSourceWebApi.Controllers
         public IActionResult PostEvent([FromBody]Event @event)
         {
             var response = _eventsService.CreateEvent(@event);
-            if (!ModelState.IsValid)
+
+            if (!response.Result)
             {
-                _logger.Error(LoggingMessages.DataNotValid);
-                return BadRequest(ModelState);
+                return BadRequest(response.Message);
             }
 
-            _eventsService.CreateEvent(@event);
-            _logger.Information(LoggingMessages.EventSuccessfullyCreated);
-            return CreatedAtRoute("events", new { id = @event.Id }, @event);
+            return CreatedAtAction("PostEvent", response.EventId);
         }
 
         /// <summary>
@@ -87,21 +81,14 @@ namespace EventSourceWebApi.Controllers
         [HttpPut("{id}")]
         public IActionResult PutEvent(int id, [FromBody]Event @event)
         {
-            _logger.Information(LoggingMessages.EditingEventById(id));
-            if (!ModelState.IsValid)
-            {
-                _logger.Error(LoggingMessages.DataNotValid);
-                return BadRequest(ModelState);
-            }
+            _logger.Information($"Editing Event with Id: {id}.");
+            var response = _eventsService.UpdateEvent(id, @event);
 
-            if (id != @event.Id)
+            if (!response.Result)
             {
-                _logger.Error(LoggingMessages.PassedIdNotMatchWithEventId(id, @event.Id));
-                return BadRequest(LoggingMessages.IdsNotMatch);
+                return BadRequest(response.Message);
             }
-
-            _eventsService.UpdateEvent(@event);
-            _logger.Information(LoggingMessages.EventSuccessfullyModified(id));
+            
             return Ok(@event);
         }
 
@@ -113,17 +100,16 @@ namespace EventSourceWebApi.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteEvent(int id)
         {
-            _logger.Information(LoggingMessages.LookingForEventToDelete(id));
-            var eventToDelete = _eventsService.Find(id);
+            _logger.Information($"Deleting Event with id: {id}");
+            var response = _eventsService.DeleteEvent(id);
 
-            if (eventToDelete == null)
+            if (!response.Result)
             {
                 _logger.Error(LoggingMessages.EventNotFound(id));
-                return NotFound(eventToDelete);
+                return NotFound(response.Errors);
             }
-
-            _eventsService.DeleteEvent(eventToDelete);
-            _logger.Information(LoggingMessages.EventSuccessfullyDeleted(id));
+            
+            _logger.Information($"The Event with Id: {id} has been successfully deleted.");
             return NoContent();
         }
     }
