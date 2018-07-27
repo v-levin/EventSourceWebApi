@@ -1,4 +1,5 @@
-﻿using EventSourceWebApi.Contracts.Responses;
+﻿using EventSourceWebApi.Contracts.Requests;
+using EventSourceWebApi.Contracts.Responses;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,11 +8,10 @@ namespace EventSourceWebApi.Contracts.Interfaces
 {
     public interface IEventsRepository
     {
-        EventResponse GetEvents();
+        EventResponse GetEvents(Request request);
         EventResponse GetEvent(int id);
         EventResponse CreateEvent(Event @event);
-        void UpdateEvent(Event @event);
-        Event Find(int id);
-        void DeleteEvent(Event eventToDelete);
+        EventResponse UpdateEvent(Event @event);
+        Response DeleteEvent(int id);
     }
 }
