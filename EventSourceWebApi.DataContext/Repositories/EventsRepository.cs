@@ -21,26 +21,22 @@ namespace EventSourceWebApi.DataContext.Repositories
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {
+                var response = new EventResponse();
+
                 if (!string.IsNullOrEmpty(request.Keyword))
                 {
-                    return new EventResponse
-                    {
-                        Events = db.Events
+                    response.Events = db.Events
                                    .Where(e => e.Name.ToLower().Contains(request.Keyword) ||
                                                e.City.ToLower().Contains(request.Keyword))
-                                   .Skip((request.PageIndex - 1) * request.PageSize)
-                                   .Take(request.PageSize)
-                                   .ToList()
-                    };
+                                   .ToList();
                 }
 
-                return new EventResponse
-                {
-                    Events = db.Events
-                               .Skip((request.PageIndex - 1) * request.PageSize)
-                               .Take(request.PageSize)
-                               .ToList()
-                };
+                response.Events = response.Events
+                                          .Skip((request.PageIndex - 1) * request.PageSize)
+                                          .Take(request.PageSize)
+                                          .ToList();
+
+                return response;
             }
         }
 

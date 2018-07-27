@@ -10,6 +10,6 @@ namespace EventSourceWebApi.Contracts.Responses
 
         public Event Event { get; set; }
 
-        public IEnumerable<Event> Events { get; set; }
+        public IList<Event> Events { get; set; }
     }
 }
