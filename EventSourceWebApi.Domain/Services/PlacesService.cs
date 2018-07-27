@@ -1,6 +1,8 @@
 ﻿using EventSourceWebApi.Contracts;
+using EventSourceWebApi.Contracts.Extensions;
 using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.Contracts.Responses;
+using EventSourceWebApi.Domain.Validators;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -11,29 +13,27 @@ namespace EventSourceWebApi.Domain.Services
     public class PlacesService : IPlacesService
     {
         private readonly IPlacesRepository _placeRepository;
-        private IPlaceValidator _placeValidator;
 
-        public PlacesService(IPlacesRepository placeRepository, IPlaceValidator placeValidator)
+        public PlacesService(IPlacesRepository placeRepository)
         {
             _placeRepository = placeRepository;
-            _placeValidator = placeValidator;
-
         }
 
-        public bool Delete(int id)
+        public Response Delete(int id)
         {
             var isDeleted = _placeRepository.Delete(id);
-            return isDeleted;
+            return new Response();
         }
 
-        public void Edit(Place place, int id)
+        public PlaceResponse Update(Place place, int id)
         {
             _placeRepository.Edit(place, id);
+            return new  PlaceResponse();
         }
 
-        public GetPlaceResponse Get(int id)
+        public PlaceResponse Get(int id)
         {
-            var _getPlaceResponse = new GetPlaceResponse();
+            var _getPlaceResponse = new PlaceResponse();
             try
             {
                 var _place = _placeRepository.Get(id);
@@ -47,6 +47,8 @@ namespace EventSourceWebApi.Domain.Services
             }
         }
 
+
+        //todo: pretty please put this as response
         public IEnumerable<Place> GetAll()
         {
             try
@@ -59,23 +61,24 @@ namespace EventSourceWebApi.Domain.Services
             }
         }
 
-        public ValdatePlaceResponse Save(Place place)
+        public PlaceResponse Create(Place place)
         {
-            var isValidPlace  = new ValdatePlaceResponse();
+            var response = new PlacesValidator().Validate(place).ToResponse();
+
+            if (!response.Result)
+                return response as PlaceResponse;
+
             try
             {
-                 isValidPlace = _placeValidator.ValidPlace(place);
-                if(!isValidPlace.Result)
-                {
-                    return isValidPlace;
-                }
-                _placeRepository.Save(place);
-                return isValidPlace;
+                _placeRepository.Save(place); //todo => Create
+                return new PlaceResponse(); //todo new reponse
             }
             catch (Exception ex)
             {
-                isValidPlace.Result = false;
-                return isValidPlace;
+                //logiranje response false
+                //isValidPlace.Result = false;
+                //return isValidPlace;
+                throw;
             }
         }
     }

@@ -43,7 +43,6 @@ namespace EventSourceWebApi
             services.AddTransient<IEventsRepository, EventsRepository>();
             services.AddTransient<IPlacesRepository, PlacesRepository>();
             services.AddTransient<IPlacesService, PlacesService>();
-            services.AddTransient<IPlaceValidator, PlacesValidator>();
 
         }
 

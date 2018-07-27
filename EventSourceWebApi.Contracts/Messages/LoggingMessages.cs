@@ -61,5 +61,18 @@ namespace EventSourceWebApi.Contracts.Messages
         {
             return $"Getting Place by Id: {id}";
         }
+
+        public static string CreatingPlace = "Creating new Place...";
+
+        public static string InvalidInputs(int errors)
+        {
+           return $"{errors} invalid inputs";
+        }
+
+        public static string PlaceSucessfullyCreated(string placeName)
+        {
+            return $"{placeName} is sucessfully created";
+        }
+
     }
 }

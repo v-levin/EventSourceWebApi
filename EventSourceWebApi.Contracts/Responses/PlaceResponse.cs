@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EventSourceWebApi.Contracts.Responses
 {
-    public class GetPlaceResponse
+    public class PlaceResponse : Response
     {
         public string Message { get; set; }
 

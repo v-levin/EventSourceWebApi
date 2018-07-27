@@ -56,24 +56,28 @@ namespace EventSourceWebApi.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Creates a new Place
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">The Place object</param>
         [HttpPost]
         public IActionResult Post([FromBody] Place place)
         {
-            _logger.Information("Creating place...");
-            var result = _placeServices.Save(place);
-            foreach (var s in result.Errors)
-            {
-                ModelState.AddModelError(place.Name,s);
-            }
-            if (!ModelState.IsValid)
-            {
-                _logger.Error(ModelState.ErrorCount + " Invalid input/s");
-                return BadRequest(ModelState);
-            }
-            _logger.Information(place.Name + " is succesffuly created");
+            _logger.Information(LoggingMessages.CreatingPlace);
+            var result = _placeServices.Create(place);
+
+                if (!result.Result)
+                {
+                    
+                    return BadRequest(result);
+                }
+            
+
+            //if (!ModelState.IsValid)
+            //{
+            //    _logger.Error(LoggingMessages.InvalidInputs(ModelState.ErrorCount));
+            //    return BadRequest(ModelState);
+            //}
+            _logger.Information(LoggingMessages.PlaceSucessfullyCreated(place.Name));
             return CreatedAtAction("Post", place);
         }
 
@@ -91,7 +95,7 @@ namespace EventSourceWebApi.Controllers
                 _logger.Error(ModelState.ErrorCount + " Invalid input/s");
                 return BadRequest(ModelState);
             }
-            _placeServices.Edit(place, id);
+            _placeServices.Update(place, id);
             _logger.Information(place.Name + " is succesffuly edited");
             return Ok(place);
         }
@@ -106,11 +110,11 @@ namespace EventSourceWebApi.Controllers
         {
             _logger.Information($"Deleting place with id: {id}");
             var isDeleted = _placeServices.Delete(id);
-            if (!isDeleted)
-            {
-                _logger.Error($"Place with id: {id} doesn't exist");
-                return BadRequest();
-            }
+            //if (!isDeleted)
+            //{
+            //    _logger.Error($"Place with id: {id} doesn't exist");
+            //    return BadRequest();
+            //}
             _logger.Information($"Place with id: {id} is succesffuly deleted");
             return Ok();
         }
