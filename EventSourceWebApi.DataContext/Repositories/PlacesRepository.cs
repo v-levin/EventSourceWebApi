@@ -34,32 +34,35 @@ namespace EventSourceWebApi.DataContext.Repositories
                     return placeResponse;
                 }
 
-                FilteredRequest(placeRequest, db, placeResponse);
+                var filteredPlaces = FilterPlaces(placeRequest, db, placeResponse);
+
+                placeResponse.Places = filteredPlaces.Places
+                     .Skip(placeRequest.Offset)
+                                     .Take(placeRequest.Limit)
+                                      .ToList();
 
                 return placeResponse;
-                    
-
             }
         }
 
-        private static PlaceResponse FilteredRequest(PlaceRequest placeRequest, EventSourceDbContext db, PlaceResponse placeResponse)
+        private static PlaceResponse FilterPlaces(PlaceRequest placeRequest, EventSourceDbContext db, PlaceResponse placeResponse)
         {
             if (!string.IsNullOrEmpty(placeRequest.Name))
             {
                 placeResponse.Places = db.Places
-                            .Where(p => p.Location.ToLower().Contains(placeRequest.Location))
+                            .Where(p => p.Name.ToLower().Contains(placeRequest.Name))
                             .ToList();
 
                 if (!string.IsNullOrEmpty(placeRequest.Location))
                 {
-                    placeResponse.Places = db.Places
-                  .Where(p => p.Name.ToLower().Contains(placeRequest.Name))
+                    placeResponse.Places = placeResponse.Places
+                  .Where(p => p.Location.ToLower().Contains(placeRequest.Location))
                   .ToList();
 
                 }
                 if (!string.IsNullOrEmpty(placeRequest.City))
                 {
-                    placeResponse.Places = db.Places
+                    placeResponse.Places = placeResponse.Places
                   .Where(p => p.City.ToLower().Contains(placeRequest.City))
                   .ToList();
                 }
@@ -74,7 +77,7 @@ namespace EventSourceWebApi.DataContext.Repositories
 
                 if (!string.IsNullOrEmpty(placeRequest.City))
                 {
-                    placeResponse.Places = db.Places
+                    placeResponse.Places = placeResponse.Places
                   .Where(p => p.City.ToLower().Contains(placeRequest.City))
                   .ToList();
                 }

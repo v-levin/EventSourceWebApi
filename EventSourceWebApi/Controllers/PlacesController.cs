@@ -37,7 +37,7 @@ namespace EventSourceWebApi.Controllers
             var placeResponse = _placeServices.GetAllPlaces(placeRequest);
             if (!placeResponse.Result)
             {
-                return BadRequest();
+                return BadRequest(placeResponse.Errors);
             }
             return Ok(placeResponse.Places);
         }

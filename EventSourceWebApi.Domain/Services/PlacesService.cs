@@ -24,6 +24,11 @@ namespace EventSourceWebApi.Domain.Services
         {
             try
             {
+                var response = new PagebaleValidator().Validate(placeRequest).ToResponse();
+                if (!response.Result)
+                {
+                    return new PlaceResponse { Errors = response.Errors, Result = false };
+                }
                 return _placeRepository.GetAllPlaces(placeRequest);
             }
             catch (Exception ex)
