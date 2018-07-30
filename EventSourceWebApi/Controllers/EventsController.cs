@@ -111,7 +111,7 @@ namespace EventSourceWebApi.Controllers
             }
             
             _logger.Information($"The Event with Id: {id} has been successfully deleted.");
-            return NoContent();
+            return Ok();
         }
     }
 }
