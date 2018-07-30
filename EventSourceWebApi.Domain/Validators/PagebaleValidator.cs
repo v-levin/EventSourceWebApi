@@ -7,7 +7,7 @@ namespace EventSourceWebApi.Domain.Validators
     {
         public PagebaleValidator()
         {
-            RuleFor(p => p.Limit).LessThan(p => p.MaxLimit);
+            RuleFor(p => p.Limit).LessThan(100);
         }
     }
 }
