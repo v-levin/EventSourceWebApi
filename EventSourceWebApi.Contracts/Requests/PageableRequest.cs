@@ -6,9 +6,11 @@ namespace EventSourceWebApi.Contracts.Requests
 {
     public class PageableRequest
     {
-        public int PageIndex { get; set; } = 1;
+        public const int MaxLimit = 100;
 
-        public int PageSize { get; set; } = 3;
+        public int Limit { get; set; } = 5;
+
+        public int Offset { get; set; } = 1;
 
     }
 }

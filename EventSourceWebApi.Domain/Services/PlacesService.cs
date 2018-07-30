@@ -20,7 +20,7 @@ namespace EventSourceWebApi.Domain.Services
             _logger = logger;
         }
 
-        public PlaceResponse GetAllPlaces(Request placeRequest)
+        public PlaceResponse GetAllPlaces(PlaceRequest placeRequest)
         {
             try
             {

@@ -31,10 +31,9 @@ namespace EventSourceWebApi.Controllers
         /// <returns>Collection of Places</returns>
         ///
         [HttpGet]
-        public IActionResult GetAllPlaces(string keyword, int limitSize)
+        public IActionResult GetAllPlaces(PlaceRequest placeRequest)
         {
             //ToDo: validate limit Size
-            var placeRequest = new Request() { Keyword = keyword, PageSize = limitSize };
             var placeResponse = _placeServices.GetAllPlaces(placeRequest);
             if (!placeResponse.Result)
             {

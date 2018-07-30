@@ -19,22 +19,25 @@ namespace EventSourceWebApi.DataContext.Repositories
             _contextOptions = contextOptions;
         }
 
-        public PlaceResponse GetAllPlaces(Request placeRequest)
+        public PlaceResponse GetAllPlaces(PlaceRequest placeRequest)
         {
             using (var db = new EventSourceDbContext(_contextOptions))
             {
 
-                var places = string.IsNullOrEmpty(placeRequest.Keyword) ? db.Places.ToList() : db.Places
-                    .Where(s => s.Name.Contains(placeRequest.Keyword.ToLower()) || s.City.Contains(placeRequest.Keyword.ToLower()) || s.Location.Contains(placeRequest.Keyword.ToLower())).ToList();
+                //var place
 
 
-                return new PlaceResponse()
+                //var places = string.IsNullOrEmpty(placeRequest.Keyword) ? db.Places.ToList() : db.Places
+                //    .Where(s => s.Name.Contains(placeRequest.Keyword.ToLower()) || s.City.Contains(placeRequest.Keyword.ToLower()) || s.Location.Contains(placeRequest.Keyword.ToLower()))
+                //    .Skip(placeRequest.Limit * placeRequest.Offset)
+                //    .Take(placeRequest.Limit)
+                //    .ToList();
+
+                return new PlaceResponse
                 {
                     Places = places
-                    .Skip(placeRequest.PageSize * placeRequest.PageIndex)
-                    .Take(placeRequest.PageSize)
-                                                           
                 };
+         
             }
         }
 

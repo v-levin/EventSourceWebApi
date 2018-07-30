@@ -8,7 +8,7 @@ namespace EventSourceWebApi.Contracts.Interfaces
 {
     public interface IPlacesService
     {
-        PlaceResponse GetAllPlaces(Request placeRequest); //todo GetAllPlacesResponse //search, paging?! limit. MAX LIMIT = 1000 (search, consider nwew method)
+        PlaceResponse GetAllPlaces(PlaceRequest placeRequest); //todo GetAllPlacesResponse //search, paging?! limit. MAX LIMIT = 1000 (search, consider nwew method)
 
         PlaceResponse GetPlace(int id); 
 
