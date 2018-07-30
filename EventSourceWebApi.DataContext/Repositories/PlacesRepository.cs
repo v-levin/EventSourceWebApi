@@ -35,7 +35,7 @@ namespace EventSourceWebApi.DataContext.Repositories
 
                 return new PlaceResponse
                 {
-                    Places = places
+                    //Places = places
                 };
          
             }

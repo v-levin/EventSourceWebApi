@@ -3,6 +3,7 @@ using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.Contracts.Requests;
 using EventSourceWebApi.Contracts.Responses;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,18 +24,40 @@ namespace EventSourceWebApi.DataContext.Repositories
             {
                 var response = new EventResponse();
 
-                if (!string.IsNullOrEmpty(request.Keyword))
+                if (!string.IsNullOrEmpty(request.Name))
                 {
-                    response.Events = db.Events
-                                   .Where(e => e.Name.ToLower().Contains(request.Keyword) ||
-                                               e.City.ToLower().Contains(request.Keyword))
-                                   .ToList();
+                    response.Events = db.Events.Where(e => e.Name.ToLower().Contains(request.Name.ToLower())).ToList();
                 }
 
-                response.Events = response.Events
-                                          .Skip((request.PageIndex - 1) * request.PageSize)
-                                          .Take(request.PageSize)
-                                          .ToList();
+                if (!string.IsNullOrEmpty(request.City))
+                {
+                    response.Events = db.Events.Where(e => e.City.ToLower().Contains(request.City.ToLower())).ToList();
+                }
+
+                if (!string.IsNullOrEmpty(request.Category))
+                {
+                    response.Events = db.Events.Where(e => e.Category.ToLower().Contains(request.Category.ToLower())).ToList();
+                }
+
+                if (!string.IsNullOrEmpty(request.Location))
+                {
+                    response.Events = db.Events.Where(e => e.Location.ToLower().Contains(request.Location.ToLower())).ToList();
+                }
+
+                if (response.Events.Count > 0)
+                {
+                    response.Events = response.Events
+                                              .Skip(request.Offset)
+                                              .Take((request.Limit > request.MaxLimit) ? request.MaxLimit : request.Limit)
+                                              .ToList();
+                }
+                else
+                {
+                    response.Events = db.Events
+                                        .Skip(request.Offset)
+                                        .Take((request.Limit > request.MaxLimit) ? request.MaxLimit : request.Limit)
+                                        .ToList();
+                }
 
                 return response;
             }
