@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EventSourceWebApi.Contracts.Requests
+﻿namespace EventSourceWebApi.Contracts.Requests
 {
     public class PageableRequest
     {
