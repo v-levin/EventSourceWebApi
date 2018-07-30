@@ -17,7 +17,7 @@ namespace EventSourceWebApi.DataContext.Repositories
             _dbContext = dbContext;
         }
 
-        public EventResponse GetEvents(Request request)
+        public EventResponse GetEvents(EventRequest request)
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {

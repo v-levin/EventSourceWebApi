@@ -23,7 +23,7 @@ namespace EventSourceWebApi.Domain.Services
             _logger = logger;
         }
 
-        public EventResponse GetEvents(Request request)
+        public EventResponse GetEvents(EventRequest request)
         {
             var response = new EventResponse();
 

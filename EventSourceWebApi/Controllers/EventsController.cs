@@ -24,9 +24,8 @@ namespace EventSourceWebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetEvents(string keyword)
+        public IActionResult GetEvents(EventRequest request)
         {
-            var request = new Request() { Keyword = keyword.ToLower() };
             var response = _eventsService.GetEvents(request);
 
             if (!response.Result)
