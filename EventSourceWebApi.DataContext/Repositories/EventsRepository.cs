@@ -128,7 +128,7 @@ namespace EventSourceWebApi.DataContext.Repositories
                         Result = false,
                         Errors = new List<ResponseError>()
                         {
-                            new ResponseError() { Error = $"The Event with Id: { id } was not found." }
+                            new ResponseError() { Error = $"The Event with Id: {id} was not found." }
                         }
                     };
                 }
