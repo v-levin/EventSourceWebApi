@@ -46,6 +46,7 @@ namespace EventSourceWebApi.Domain.Services
                 placeResponse = _placeRepository.GetPlace(id);
                 if (placeResponse.Place == null)
                 {
+                    _logger.Error($"The place with id:{id} doesn't exist.");
                     placeResponse.Result = false;
                     return placeResponse;
                 }

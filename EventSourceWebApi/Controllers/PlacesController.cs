@@ -33,12 +33,12 @@ namespace EventSourceWebApi.Controllers
         [HttpGet]
         public IActionResult GetAllPlaces(PlaceRequest placeRequest)
         {
-            //ToDo: validate limit Size
             var placeResponse = _placeServices.GetAllPlaces(placeRequest);
             if (!placeResponse.Result)
             {
                 return BadRequest(placeResponse.Errors);
             }
+            _logger.Information("The Places has been successfully taken.");
             return Ok(placeResponse.Places);
         }
 
@@ -54,9 +54,9 @@ namespace EventSourceWebApi.Controllers
             var placeResponse = _placeServices.GetPlace(id);
             if (!placeResponse.Result)
             {
-                _logger.Error($"The place with id:{id} doesn't exist");
                 return BadRequest();
             }
+            _logger.Error($"The place with id:{id} has been successfully taken.");
             return Ok(placeResponse.Place);
         }
 
@@ -95,7 +95,7 @@ namespace EventSourceWebApi.Controllers
             {
                 return BadRequest(placeResponse.Errors);
             }
-           
+
             _logger.Information($"Place with id: {placeResponse.PlaceId} is succesffuly edited");
             return Ok(placeResponse.PlaceId);
         }
@@ -109,11 +109,12 @@ namespace EventSourceWebApi.Controllers
         public IActionResult Delete(int id)
         {
             _logger.Information($"Deleting place with id: {id}");
-            var deletePlaceResponse  = _placeServices.DeletePlace(id);
-            if(!deletePlaceResponse.Result)
+            var deletePlaceResponse = _placeServices.DeletePlace(id);
+            if (!deletePlaceResponse.Result)
             {
                 return BadRequest();
             }
+            _logger.Information($"The Place with id: {id} has been successfully delited");
             return Ok();
         }
     }

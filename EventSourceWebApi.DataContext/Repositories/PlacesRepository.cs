@@ -34,63 +34,47 @@ namespace EventSourceWebApi.DataContext.Repositories
                     return placeResponse;
                 }
 
-                var filteredPlaces = FilterPlaces(placeRequest, db, placeResponse);
+                FilterPlaces(placeRequest, db, placeResponse);
 
-                placeResponse.Places = filteredPlaces.Places
+                placeResponse.Places = placeResponse.Places
                      .Skip(placeRequest.Offset)
                                      .Take(placeRequest.Limit)
                                       .ToList();
 
                 return placeResponse;
+
             }
         }
 
-        private static PlaceResponse FilterPlaces(PlaceRequest placeRequest, EventSourceDbContext db, PlaceResponse placeResponse)
+        private static void FilterPlaces(PlaceRequest placeRequest, EventSourceDbContext db, PlaceResponse placeResponse)
         {
             if (!string.IsNullOrEmpty(placeRequest.Name))
-            {
                 placeResponse.Places = db.Places
                             .Where(p => p.Name.ToLower().Contains(placeRequest.Name))
                             .ToList();
 
-                if (!string.IsNullOrEmpty(placeRequest.Location))
-                {
-                    placeResponse.Places = placeResponse.Places
-                  .Where(p => p.Location.ToLower().Contains(placeRequest.Location))
-                  .ToList();
-
-                }
-                if (!string.IsNullOrEmpty(placeRequest.City))
-                {
-                    placeResponse.Places = placeResponse.Places
-                  .Where(p => p.City.ToLower().Contains(placeRequest.City))
-                  .ToList();
-                }
-                return placeResponse;
-            }
-
             if (!string.IsNullOrEmpty(placeRequest.Location))
             {
-                placeResponse.Places = db.Places
+                if (placeResponse.Places.Count > 0)
+                    placeResponse.Places = placeResponse.Places
+                           .Where(p => p.Location.ToLower().Contains(placeRequest.Location))
+                           .ToList();
+                else
+                    placeResponse.Places = db.Places
                             .Where(p => p.Location.ToLower().Contains(placeRequest.Location))
                             .ToList();
-
-                if (!string.IsNullOrEmpty(placeRequest.City))
-                {
-                    placeResponse.Places = placeResponse.Places
-                  .Where(p => p.City.ToLower().Contains(placeRequest.City))
-                  .ToList();
-                }
-
-                return placeResponse;
             }
-
-            placeResponse.Places = db.Places
-                        .Where(p => p.City.ToLower().Contains(placeRequest.City))
-                        .ToList();
-
-            return placeResponse;
-
+            if (!string.IsNullOrEmpty(placeRequest.City))
+            {
+                if (placeResponse.Places.Count > 0)
+                    placeResponse.Places = placeResponse.Places
+                           .Where(p => p.City.ToLower().Contains(placeRequest.City))
+                           .ToList();
+                else
+                    placeResponse.Places = db.Places
+                           .Where(p => p.City.ToLower().Contains(placeRequest.City))
+                           .ToList();
+            }
         }
 
         public PlaceResponse GetPlace(int id)

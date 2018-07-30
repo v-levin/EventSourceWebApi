@@ -1,16 +1,14 @@
-﻿using EventSourceWebApi.Contracts;
-using EventSourceWebApi.Contracts.Interfaces;
+﻿using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.DataContext;
 using EventSourceWebApi.DataContext.Repositories;
 using EventSourceWebApi.Domain.Services;
-using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Serilog;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace EventSourceWebApi
 {
@@ -37,12 +35,17 @@ namespace EventSourceWebApi
            opt.UseNpgsql(Configuration.GetConnectionString("EventSourceDbConnection")));
 
             services.AddMvc();
-            
+
             services.AddSingleton(Log.Logger);
             services.AddTransient<IEventsService, EventsService>();
             services.AddTransient<IEventsRepository, EventsRepository>();
             services.AddTransient<IPlacesRepository, PlacesRepository>();
             services.AddTransient<IPlacesService, PlacesService>();
+
+            services.AddSwaggerGen(c =>
+           {
+               c.SwaggerDoc("v1", new Info { Title = "EventSource API", Version = "v1" });
+           });
 
         }
 
@@ -55,6 +58,12 @@ namespace EventSourceWebApi
             }
 
             app.UseMvc();
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "EventSource API V1");
+            });
         }
     }
 }
