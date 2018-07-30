@@ -10,7 +10,7 @@ namespace EventSourceWebApi.Contracts.Requests
 
         public int Limit { get; set; } = 5;
 
-        public int Offset { get; set; } = 1;
+        public int Offset { get; set; } = 0;
 
     }
 }
