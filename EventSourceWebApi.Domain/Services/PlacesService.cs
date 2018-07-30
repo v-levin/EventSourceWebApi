@@ -4,23 +4,23 @@ using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.Contracts.Requests;
 using EventSourceWebApi.Contracts.Responses;
 using EventSourceWebApi.Domain.Validators;
-using FluentValidation;
+using Serilog;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EventSourceWebApi.Domain.Services
 {
     public class PlacesService : IPlacesService
     {
         private readonly IPlacesRepository _placeRepository;
+        private readonly ILogger _logger;
 
-        public PlacesService(IPlacesRepository placeRepository)
+        public PlacesService(IPlacesRepository placeRepository, ILogger logger)
         {
             _placeRepository = placeRepository;
+            _logger = logger;
         }
 
-        public PlaceResponse GetAllPlaces(Request placeRequest)
+        public PlaceResponse GetAllPlaces(PlaceRequest placeRequest)
         {
             try
             {
@@ -28,58 +28,86 @@ namespace EventSourceWebApi.Domain.Services
             }
             catch (Exception ex)
             {
-                return new PlaceResponse { Message = ex.Message};
+                _logger.Error(ex.Message);
+                return new PlaceResponse { Result = false };
             }
         }
 
         public PlaceResponse GetPlace(int id)
         {
-            var  getPlaceResponse = new PlaceResponse();
+            var placeResponse = new PlaceResponse();
             try
             {
-                var _place = _placeRepository.GetPlace(id);
-                getPlaceResponse.Place = _place.Place;
-                return getPlaceResponse;
+                placeResponse = _placeRepository.GetPlace(id);
+                if (placeResponse.Place == null)
+                {
+                    placeResponse.Result = false;
+                    return placeResponse;
+                }
+                return placeResponse;
             }
             catch (Exception ex)
             {
-                getPlaceResponse.Message = ex.Message;
-                return getPlaceResponse;
+                _logger.Error(ex.Message);
+                return new PlaceResponse() { Result = false };
             }
         }
 
-        //todo: pretty please put this as response
         public PlaceResponse CreatePlace(Place place)
         {
-            var response = new PlacesValidator().Validate(place).ToResponse();
-
-            if (!response.Result)
-                return response as PlaceResponse;
-
             try
             {
-                _placeRepository.CreatePlace(place); //todo => Create
-                return new PlaceResponse(); //todo new reponse
+                var response = new PlacesValidator().Validate(place).ToResponse();
+
+                if (!response.Result)
+                {
+                    return new PlaceResponse { Errors = response.Errors, Result = false };
+                }
+                return new PlaceResponse() { PlaceId = _placeRepository.CreatePlace(place).PlaceId };
             }
             catch (Exception ex)
             {
-                //logiranje response false
-                //isValidPlace.Result = false;
-                //return isValidPlace;
-                throw;
+                _logger.Error(ex.Message);
+                return new PlaceResponse() { Result = false };
             }
         }
 
         public PlaceResponse UpdatePlace(Place place, int id)
         {
-            _placeRepository.UpdatePlace(place, id);
-            return new PlaceResponse();
+            try
+            {
+                var response = new PlacesValidator().Validate(place).ToResponse();
+                if (!response.Result)
+                {
+                    return new PlaceResponse { Errors = response.Errors, Result = false };
+                }
+                return new PlaceResponse() { PlaceId = _placeRepository.UpdatePlace(place, id).PlaceId };
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+                return new PlaceResponse() { Result = false };
+            }
         }
 
         public Response DeletePlace(int id)
         {
-            var isDeleted = _placeRepository.DeletePlace(id);
-            return new Response();
+            var response = new Response();
+            try
+            {
+                var deletePlaceResponse = _placeRepository.DeletePlace(id);
+                if (!deletePlaceResponse.Result)
+                {
+                    _logger.Error($"Unable to delete place with id: {id}");
+                    response.Result = false;
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+                return new PlaceResponse() { Result = false };
+            }
         }
     }
 }

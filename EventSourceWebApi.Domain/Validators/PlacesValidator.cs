@@ -7,8 +7,7 @@ namespace EventSourceWebApi.Domain.Validators
     {
         public PlacesValidator()
         {
-            RuleFor(p => p.Name).NotEmpty();
-            RuleFor(p => p.Name).MaximumLength(50);
+            RuleFor(p => p.Name).NotEmpty().MaximumLength(50);
             RuleFor(p => p.Capacity).NotEmpty();
             RuleFor(p => p.Description).NotEmpty();
             RuleFor(p => p.Location).NotEmpty();

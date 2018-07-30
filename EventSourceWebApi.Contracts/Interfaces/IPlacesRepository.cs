@@ -8,7 +8,7 @@ namespace EventSourceWebApi.Contracts.Interfaces
 {
     public interface IPlacesRepository
     {
-        PlaceResponse GetAllPlaces(Request placeRequest);
+        PlaceResponse GetAllPlaces(PlaceRequest placeRequest);
 
         PlaceResponse GetPlace(int id);
 
