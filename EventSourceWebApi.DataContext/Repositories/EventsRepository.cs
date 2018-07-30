@@ -31,7 +31,7 @@ namespace EventSourceWebApi.DataContext.Repositories
                 {
                     response.Events = db.Events
                                         .Skip(request.Offset)
-                                        .Take((request.Limit > request.MaxLimit) ? request.MaxLimit : request.Limit)
+                                        .Take(request.Limit)
                                         .ToList();
 
                     return response;
@@ -41,7 +41,7 @@ namespace EventSourceWebApi.DataContext.Repositories
 
                 response.Events = response.Events
                                           .Skip(request.Offset)
-                                          .Take((request.Limit > request.MaxLimit) ? request.MaxLimit : request.Limit)
+                                          .Take(request.Limit)
                                           .ToList();
 
                 return response;

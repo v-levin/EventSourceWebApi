@@ -1,4 +1,5 @@
 ﻿using EventSourceWebApi.Contracts;
+using EventSourceWebApi.Contracts.Constants;
 using EventSourceWebApi.Contracts.Extensions;
 using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.Contracts.Messages;
@@ -29,6 +30,14 @@ namespace EventSourceWebApi.Domain.Services
 
             try
             {
+                if (request.Limit > GlobalConstants.MaxLimit)
+                {
+                    _logger.Information($"The limit request was more than maximum limit of {GlobalConstants.MaxLimit}.");
+                    response.Result = false;
+                    response.Message = $"Limit value cannot be more than {GlobalConstants.MaxLimit}.";
+                    return response;
+                }
+
                 response = _eventsRepository.GetEvents(request);
 
                 if (response.Events.Count() > 0)
