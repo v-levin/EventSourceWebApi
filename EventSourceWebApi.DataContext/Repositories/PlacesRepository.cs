@@ -3,10 +3,7 @@ using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.Contracts.Requests;
 using EventSourceWebApi.Contracts.Responses;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace EventSourceWebApi.DataContext.Repositories
 {
@@ -24,21 +21,73 @@ namespace EventSourceWebApi.DataContext.Repositories
             using (var db = new EventSourceDbContext(_contextOptions))
             {
 
-                //var place
+                var placeResponse = new PlaceResponse();
 
-
-                //var places = string.IsNullOrEmpty(placeRequest.Keyword) ? db.Places.ToList() : db.Places
-                //    .Where(s => s.Name.Contains(placeRequest.Keyword.ToLower()) || s.City.Contains(placeRequest.Keyword.ToLower()) || s.Location.Contains(placeRequest.Keyword.ToLower()))
-                //    .Skip(placeRequest.Limit * placeRequest.Offset)
-                //    .Take(placeRequest.Limit)
-                //    .ToList();
-
-                return new PlaceResponse
+                if (string.IsNullOrEmpty(placeRequest.Name) && string.IsNullOrEmpty(placeRequest.City) && string.IsNullOrEmpty(placeRequest.Location))
                 {
-                    //Places = places
-                };
-         
+
+                    placeResponse.Places = db.Places
+                         .Skip(placeRequest.Offset)
+                                    .Take(placeRequest.Limit)
+                                     .ToList();
+
+                    return placeResponse;
+                }
+
+                FilteredRequest(placeRequest, db, placeResponse);
+
+                return placeResponse;
+                    
+
             }
+        }
+
+        private static PlaceResponse FilteredRequest(PlaceRequest placeRequest, EventSourceDbContext db, PlaceResponse placeResponse)
+        {
+            if (!string.IsNullOrEmpty(placeRequest.Name))
+            {
+                placeResponse.Places = db.Places
+                            .Where(p => p.Location.ToLower().Contains(placeRequest.Location))
+                            .ToList();
+
+                if (!string.IsNullOrEmpty(placeRequest.Location))
+                {
+                    placeResponse.Places = db.Places
+                  .Where(p => p.Name.ToLower().Contains(placeRequest.Name))
+                  .ToList();
+
+                }
+                if (!string.IsNullOrEmpty(placeRequest.City))
+                {
+                    placeResponse.Places = db.Places
+                  .Where(p => p.City.ToLower().Contains(placeRequest.City))
+                  .ToList();
+                }
+                return placeResponse;
+            }
+
+            if (!string.IsNullOrEmpty(placeRequest.Location))
+            {
+                placeResponse.Places = db.Places
+                            .Where(p => p.Location.ToLower().Contains(placeRequest.Location))
+                            .ToList();
+
+                if (!string.IsNullOrEmpty(placeRequest.City))
+                {
+                    placeResponse.Places = db.Places
+                  .Where(p => p.City.ToLower().Contains(placeRequest.City))
+                  .ToList();
+                }
+
+                return placeResponse;
+            }
+
+            placeResponse.Places = db.Places
+                        .Where(p => p.City.ToLower().Contains(placeRequest.City))
+                        .ToList();
+
+            return placeResponse;
+
         }
 
         public PlaceResponse GetPlace(int id)
