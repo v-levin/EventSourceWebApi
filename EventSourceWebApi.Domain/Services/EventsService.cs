@@ -36,7 +36,7 @@ namespace EventSourceWebApi.Domain.Services
 
                 response = _eventsRepository.GetEvents(request);
 
-                if (response.Events.Count() > 0)
+                if (response.Events.Count > 0)
                     _logger.Information("The Events has been successfully taken.");
                 else
                     _logger.Information("There is no records in the database.");
