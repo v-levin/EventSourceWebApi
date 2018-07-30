@@ -3,6 +3,7 @@ using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.Contracts.Requests;
 using EventSourceWebApi.Contracts.Responses;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,21 +24,63 @@ namespace EventSourceWebApi.DataContext.Repositories
             {
                 var response = new EventResponse();
 
-                if (!string.IsNullOrEmpty(request.Keyword))
+                if (string.IsNullOrEmpty(request.Name) &&
+                    string.IsNullOrEmpty(request.City) &&
+                    string.IsNullOrEmpty(request.Category) &&
+                    string.IsNullOrEmpty(request.Location))
                 {
                     response.Events = db.Events
-                                   .Where(e => e.Name.ToLower().Contains(request.Keyword) ||
-                                               e.City.ToLower().Contains(request.Keyword))
-                                   .ToList();
+                                        .Skip(request.Offset)
+                                        .Take((request.Limit > request.MaxLimit) ? request.MaxLimit : request.Limit)
+                                        .ToList();
+
+                    return response;
                 }
 
-                //response.Events = response.Events
-                //                          .Skip((request.PageIndex - 1) * request.PageSize)
-                //                          .Take(request.PageSize)
-                //                          .ToList();
+                FilterEvents(request, db, response);
+
+                response.Events = response.Events
+                                          .Skip(request.Offset)
+                                          .Take((request.Limit > request.MaxLimit) ? request.MaxLimit : request.Limit)
+                                          .ToList();
 
                 return response;
             }
+        }
+
+        private void FilterEvents(EventRequest request, EventSourceDbContext db, EventResponse response)
+        {
+            if (!string.IsNullOrEmpty(request.Name))
+                response.Events = db.Events.Where(e => e.Name.ToLower().Contains(request.Name.ToLower())).ToList();
+
+            if (!string.IsNullOrEmpty(request.City))
+            {
+                if (HasEvents(response.Events))
+                    response.Events = response.Events.Where(e => e.City.ToLower().Contains(request.City.ToLower())).ToList();
+                else
+                    response.Events = db.Events.Where(e => e.City.ToLower().Contains(request.City.ToLower())).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(request.Category))
+            {
+                if (HasEvents(response.Events))
+                    response.Events = response.Events.Where(e => e.Category.ToLower().Contains(request.Category.ToLower())).ToList();
+                else
+                    response.Events = db.Events.Where(e => e.Category.ToLower().Contains(request.Category.ToLower())).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(request.Location))
+            {
+                if (HasEvents(response.Events))
+                    response.Events = response.Events.Where(e => e.Location.ToLower().Contains(request.Location.ToLower())).ToList();
+                else
+                    response.Events = db.Events.Where(e => e.Location.ToLower().Contains(request.Location.ToLower())).ToList();
+            }
+        }
+
+        private bool HasEvents(IList<Event> events)
+        {
+            return (events != null) ? true : false;
         }
 
         public EventResponse GetEvent(int id)
@@ -87,7 +130,7 @@ namespace EventSourceWebApi.DataContext.Repositories
                         Errors = new List<ResponseError>()
                         {
                             new ResponseError() { Error = $"The Event with Id: { id } was not found." }
-                        } 
+                        }
                     };
                 }
 
