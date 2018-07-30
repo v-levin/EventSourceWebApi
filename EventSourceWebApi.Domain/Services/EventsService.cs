@@ -1,5 +1,4 @@
 ﻿using EventSourceWebApi.Contracts;
-using EventSourceWebApi.Contracts.Constants;
 using EventSourceWebApi.Contracts.Extensions;
 using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.Contracts.Messages;
@@ -30,12 +29,11 @@ namespace EventSourceWebApi.Domain.Services
 
             try
             {
-                if (request.Limit > GlobalConstants.MaxLimit)
+                var validator = new PagebaleValidator().Validate(request).ToResponse();
+
+                if (!validator.Result)
                 {
-                    _logger.Information($"The limit request was more than maximum limit of {GlobalConstants.MaxLimit}.");
-                    response.Result = false;
-                    response.Message = $"Limit value cannot be more than {GlobalConstants.MaxLimit}.";
-                    return response;
+                    return new EventResponse { Result = false, Errors = validator.Errors };
                 }
 
                 response = _eventsRepository.GetEvents(request);
