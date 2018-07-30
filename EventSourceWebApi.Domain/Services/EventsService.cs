@@ -1,5 +1,4 @@
 ﻿using EventSourceWebApi.Contracts;
-using EventSourceWebApi.Contracts.Constants;
 using EventSourceWebApi.Contracts.Extensions;
 using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.Contracts.Messages;
@@ -30,20 +29,17 @@ namespace EventSourceWebApi.Domain.Services
 
             try
             {
-                if (request.Limit > GlobalConstants.MaxLimit)
-                {
-                    _logger.Information($"The limit request was more than maximum limit of {GlobalConstants.MaxLimit}.");
-                    response.Result = false;
-                    response.Message = $"Limit value cannot be more than {GlobalConstants.MaxLimit}.";
-                    return response;
-                }
+                var validator = new PagebaleValidator().Validate(request).ToResponse();
+
+                if (!validator.Result)
+                    return new EventResponse { Result = false, Errors = validator.Errors };
 
                 response = _eventsRepository.GetEvents(request);
 
                 if (response.Events.Count() > 0)
                     _logger.Information("The Events has been successfully taken.");
                 else
-                    _logger.Information("There is no data in the database.");
+                    _logger.Information("There is no records in the database.");
                 
                 return response;
             }
@@ -51,7 +47,6 @@ namespace EventSourceWebApi.Domain.Services
             {
                 _logger.Error(ex.Message);
                 response.Result = false;
-                response.Message = ex.Message;
                 return response;
             }
         }
@@ -84,10 +79,11 @@ namespace EventSourceWebApi.Domain.Services
         {
             if (@event == null)
             {
+                _logger.Error("Record with null value entered.");
                 return new EventResponse()
                 {
                     Result = false,
-                    Message = "Value cannot be null."
+                    Message = "Data value cannot be null."
                 };
             }
 
@@ -108,17 +104,16 @@ namespace EventSourceWebApi.Domain.Services
             {
                 _logger.Error(ex.Message);
                 eventResponse.Result = false;
-                eventResponse.Message = ex.Message;
                 return eventResponse;
             }
         }
 
         public EventResponse UpdateEvent(int id, Event @event)
         {
-            var response = new EventsValidator().Validate(@event).ToResponse();
+            var validator = new EventsValidator().Validate(@event).ToResponse();
 
-            if (!response.Result)
-                return ErrorResponse(response);
+            if (!validator.Result)
+                return ErrorResponse(validator);
 
             var eventResponse = new EventResponse();
 
@@ -142,7 +137,6 @@ namespace EventSourceWebApi.Domain.Services
             {
                 _logger.Error(ex.Message);
                 eventResponse.Result = false;
-                eventResponse.Message = ex.Message;
                 return eventResponse;
             }
         }

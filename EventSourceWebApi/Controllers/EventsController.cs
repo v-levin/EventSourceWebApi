@@ -30,7 +30,7 @@ namespace EventSourceWebApi.Controllers
 
             if (!response.Result)
             {
-                return BadRequest(response.Message);
+                return BadRequest(response.Errors);
             }
             
             return Ok(response.Events);
@@ -111,7 +111,7 @@ namespace EventSourceWebApi.Controllers
             }
             
             _logger.Information($"The Event with Id: {id} has been successfully deleted.");
-            return NoContent();
+            return Ok();
         }
     }
 }
