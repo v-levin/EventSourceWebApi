@@ -50,30 +50,32 @@ namespace EventSourceWebApi.DataContext.Repositories
         {
             if (!string.IsNullOrEmpty(placeRequest.Name))
                 placeResponse.Places = db.Places
-                            .Where(p => p.Name.ToLower().Contains(placeRequest.Name))
+                            .Where(p => p.Name.Contains(placeRequest.Name.ToLower()))
                             .ToList();
-
+            var list2 = placeResponse.Places; 
             if (!string.IsNullOrEmpty(placeRequest.Location))
             {
-                if (placeResponse.Places.Count > 0)
+                if (placeResponse.Places != null)
                     placeResponse.Places = placeResponse.Places
-                           .Where(p => p.Location.ToLower().Contains(placeRequest.Location))
+                           .Where(p => p.Location.Contains(placeRequest.Location.ToLower()))
                            .ToList();
                 else
                     placeResponse.Places = db.Places
-                            .Where(p => p.Location.ToLower().Contains(placeRequest.Location))
+                            .Where(p => p.Location.Contains(placeRequest.Location.ToLower()))
                             .ToList();
             }
+            var list1 = placeResponse.Places;
             if (!string.IsNullOrEmpty(placeRequest.City))
             {
-                if (placeResponse.Places.Count > 0)
+                if (placeResponse.Places != null)
                     placeResponse.Places = placeResponse.Places
-                           .Where(p => p.City.ToLower().Contains(placeRequest.City))
+                           .Where(p => p.City.Contains(placeRequest.City.ToLower()))
                            .ToList();
                 else
                     placeResponse.Places = db.Places
-                           .Where(p => p.City.ToLower().Contains(placeRequest.City))
+                           .Where(p => p.City.Contains(placeRequest.City.ToLower()))
                            .ToList();
+                var list = placeResponse.Places;
             }
         }
 
@@ -97,10 +99,10 @@ namespace EventSourceWebApi.DataContext.Repositories
                 {
                     DateRegistered = place.DateRegistered,
                     Capacity = place.Capacity,
-                    Location = place.Location,
-                    Name = place.Name,
+                    Location = place.Location.ToLower(),
+                    Name = place.Name.ToLower(),
                     Description = place.Description,
-                    City = place.City
+                    City = place.City.ToLower()
                 };
                 db.Places.Add(newPlace);
                 db.SaveChanges();
