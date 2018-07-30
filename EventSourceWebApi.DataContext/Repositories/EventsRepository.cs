@@ -31,10 +31,10 @@ namespace EventSourceWebApi.DataContext.Repositories
                                    .ToList();
                 }
 
-                response.Events = response.Events
-                                          .Skip((request.PageIndex - 1) * request.PageSize)
-                                          .Take(request.PageSize)
-                                          .ToList();
+                //response.Events = response.Events
+                //                          .Skip((request.PageIndex - 1) * request.PageSize)
+                //                          .Take(request.PageSize)
+                //                          .ToList();
 
                 return response;
             }
