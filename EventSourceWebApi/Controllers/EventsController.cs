@@ -30,7 +30,7 @@ namespace EventSourceWebApi.Controllers
 
             if (!response.Result)
             {
-                return BadRequest(response.Message);
+                return BadRequest(response.Errors);
             }
             
             return Ok(response.Events);
