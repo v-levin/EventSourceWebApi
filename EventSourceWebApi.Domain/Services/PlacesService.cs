@@ -20,12 +20,13 @@ namespace EventSourceWebApi.Domain.Services
             _logger = logger;
         }
 
-        public PlacesResponse GetAllPlaces(PlaceSearchRequest request) 
+        public PlacesResponse GetAllPlaces(PlaceSearchRequest request)
         {
-            var validator = new PlaceSearchValidator().Validate(request).ToResponse(); 
+            var validator = new PlaceSearchValidator().Validate(request).ToResponse();
 
             if (!validator.Result)
             {
+                _logger.Information($"Invalid request {request}");
                 return new PlacesResponse { Errors = validator.Errors, Result = false };
             }
 
@@ -39,20 +40,21 @@ namespace EventSourceWebApi.Domain.Services
                 return new PlacesResponse { Result = false };
             }
         }
-         
+
         public PlaceResponse GetPlace(IdRequest request)
         {
             var placeResponse = new PlaceResponse();
-            try 
+            var validator = new IdRequestValidator().Validate(request).ToResponse();
+
+            if (!validator.Result)
             {
-                placeResponse = _placeRepository.GetPlace(request);
-                if (placeResponse.Place == null)
-                {
-                    _logger.Error($"The place with id:{request.Id} doesn't exist.");
-                    placeResponse.Result = false;
-                    return placeResponse;
-                }
-                return placeResponse;
+                _logger.Information($"The request for the id: {request.Id} is invalid");
+                return new PlaceResponse() { Result = false, Errors = validator.Errors };
+            }
+            try
+            {
+                return _placeRepository.GetPlace(request);
+
             }
             catch (Exception ex)
             {
@@ -61,12 +63,13 @@ namespace EventSourceWebApi.Domain.Services
             }
         }
 
-        public PlaceResponse CreatePlace(PostRequest<Place> request) 
+        public PlaceResponse CreatePlace(PostRequest<Place> request)
         {
             var response = new PlacesValidator().Validate(request.Payload).ToResponse();
 
             if (!response.Result)
             {
+                _logger.Information($"Invalid request {request}");
                 return new PlaceResponse { Errors = response.Errors, Result = false };
             }
             try
@@ -80,16 +83,18 @@ namespace EventSourceWebApi.Domain.Services
             }
         }
 
-        public PlaceResponse UpdatePlace(PutRequest<Place> request) 
+        public PlaceResponse UpdatePlace(PutRequest<Place> request)
         {
+            var validator = new UpdatePlaceValidator().Validate(request).ToResponse(); 
+            
+            if (!validator.Result)
+            {
+                _logger.Information($"Invalid request {request}");
+                return new PlaceResponse { Errors = validator.Errors, Result = false };
+            }
             try
             {
-                var response = new PlacesValidator().Validate(request.Payload).ToResponse();
-                if (!response.Result)
-                {
-                    return new PlaceResponse { Errors = response.Errors, Result = false };
-                }
-                return new PlaceResponse() { Place  = _placeRepository.UpdatePlace(request).Place};
+                return _placeRepository.UpdatePlace(request);
             }
             catch (Exception ex)
             {
@@ -98,23 +103,25 @@ namespace EventSourceWebApi.Domain.Services
             }
         }
 
-        public Response DeletePlace(IdRequest request) 
+        public Response DeletePlace(IdRequest request)
         {
             var response = new Response();
+            var validator = new IdRequestValidator().Validate(request).ToResponse();
+
+            if (!validator.Result)
+            {
+                _logger.Information($"The request for the id: {request.Id} is invalid");
+                return new Response() { Result = false, Errors = validator.Errors };
+            }
             try
             {
-                var deletePlaceResponse = _placeRepository.DeletePlace(request);
-                if (!deletePlaceResponse.Result)
-                {
-                    _logger.Error($"Unable to delete place with id: {request.Id}");
-                    response.Result = false;
-                }
-                return response;
+                return _placeRepository.DeletePlace(request);
+               
             }
             catch (Exception ex)
             {
                 _logger.Error(ex.Message);
-                return new PlaceResponse() { Result = false };
+                return new Response() { Result = false };
             }
         }
     }

@@ -7,6 +7,6 @@ namespace EventSourceWebApi.Contracts.Responses
     public class PlaceResponse : Response
     {
         public Place Place { get; set; }
-
+ 
     }
 }
