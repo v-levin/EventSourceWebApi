@@ -19,17 +19,18 @@ namespace EventSourceWebApi.DataContext.Repositories
         public PlacesResponse GetAllPlaces(PlaceSearchRequest placeRequest)
         {
             var placesResponse = new PlacesResponse();
-           
+
             using (var db = new EventSourceDbContext(_contextOptions))
             {
                 IQueryable<Place> getPlacesQuery = db.Places;
+
                 if (!string.IsNullOrEmpty(placeRequest.Name))
                     getPlacesQuery = db.Places.Where(p => p.Name.StartsWith(placeRequest.Name.ToLower()));
-                
+
                 if (!string.IsNullOrEmpty(placeRequest.Location))
                     getPlacesQuery = db.Places.Where(p => p.Location.Contains(placeRequest.Location.ToLower()));
-             
-                if(!string.IsNullOrEmpty(placeRequest.City))
+
+                if (!string.IsNullOrEmpty(placeRequest.City))
                     getPlacesQuery = db.Places.Where(p => p.City.Contains(placeRequest.City.ToLower()));
 
                 var places = getPlacesQuery
@@ -50,7 +51,7 @@ namespace EventSourceWebApi.DataContext.Repositories
                 var place = db.Places.Find(request.Id);
                 if (place != null)
                 {
-                    return new PlaceResponse() { Place = place, Result = true };
+                    return new PlaceResponse() { Place = place };
                 }
                 return new PlaceResponse() { Place = place, Result = false };
             }
@@ -79,6 +80,7 @@ namespace EventSourceWebApi.DataContext.Repositories
         {
             using (var db = new EventSourceDbContext(_contextOptions))
             {
+                var response = new PlaceResponse();
                 var _place = db.Places.Find(request.Id);
 
                 if (_place != null)
@@ -92,24 +94,29 @@ namespace EventSourceWebApi.DataContext.Repositories
 
                     db.Places.Attach(request.Payload);
                     db.SaveChanges();
+                    response.Place = _place;
+                    return response;
                 }
-                return new PlaceResponse() { Place = _place };
+                response.Result = false;
+                return response;
             }
         }
 
         public Response DeletePlace(IdRequest request)
         {
+            var response = new Response();
             using (var db = new EventSourceDbContext(_contextOptions))
             {
                 var _place = db.Places.Find(request.Id);
 
                 if (_place == null)
                 {
-                    return new Response() { Result = false };
+                    response.Result = false;
+                    return response;
                 }
                 db.Places.Remove(_place);
                 db.SaveChanges();
-                return new Response() { Result = true };
+                return response;
             }
         }
     }

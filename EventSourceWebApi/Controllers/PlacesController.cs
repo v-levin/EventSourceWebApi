@@ -59,7 +59,7 @@ namespace EventSourceWebApi.Controllers
             var response = _placeServices.GetPlace(request);
             if (!response.Result)
             {
-                if(response.Errors.Count == 0)
+                if (response.Errors.Count == 0)
                 {
                     _logger.Information($"The Place with Id: {id} was not found");
                     return NotFound();
@@ -82,7 +82,7 @@ namespace EventSourceWebApi.Controllers
 
             if (!response.Result)
                 return BadRequest(response.Errors);
- 
+
             _logger.Information(LoggingMessages.PlaceSucessfullyCreated(response.Place.Id));
             return CreatedAtAction("Post", response.Place.Id);
         }
@@ -100,8 +100,15 @@ namespace EventSourceWebApi.Controllers
             var placeResponse = _placeServices.UpdatePlace(request);
 
             if (!placeResponse.Result)
+            {
+                if (placeResponse.Errors.Count == 0)
+                {
+                    _logger.Information($"The Place with Id: {id} was not found");
+                    return NotFound();
+                }
                 return BadRequest(placeResponse.Errors);
-   
+            }
+
             _logger.Information($"Place with id: {placeResponse.Place.Id} is succesffuly edited");
             return Ok(placeResponse.Place.Id);
         }
@@ -119,7 +126,7 @@ namespace EventSourceWebApi.Controllers
             var response = _placeServices.DeletePlace(request);
             if (!response.Result)
             {
-                if(response.Errors.Count == 0)
+                if (response.Errors.Count == 0)
                 {
                     _logger.Information($"The Place with Id: {id} was not found");
                     return NotFound();
