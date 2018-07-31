@@ -6,12 +6,7 @@ namespace EventSourceWebApi.Contracts.Responses
 {
     public class PlaceResponse : Response
     {
-        public string Message { get; set; }
-
         public Place Place { get; set; }
 
-        public IList<Place> Places {get; set;}
-
-        public int PlaceId { get; set; }
     }
 }

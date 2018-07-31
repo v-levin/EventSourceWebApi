@@ -71,8 +71,8 @@ namespace EventSourceWebApi.Controllers
                 return BadRequest(response.Errors);
             }
 
-            _logger.Information(LoggingMessages.PlaceSucessfullyCreated(response.PlaceId));
-            return CreatedAtAction("Post", response.PlaceId);
+            _logger.Information(LoggingMessages.PlaceSucessfullyCreated(response.Place.Id));
+            return CreatedAtAction("Post", response.Place.Id);
         }
 
         /// <summary>
@@ -92,8 +92,8 @@ namespace EventSourceWebApi.Controllers
                 return BadRequest(placeResponse.Errors);
             }
 
-            _logger.Information($"Place with id: {placeResponse.PlaceId} is succesffuly edited");
-            return Ok(placeResponse.PlaceId);
+            _logger.Information($"Place with id: {placeResponse.Place.Id} is succesffuly edited");
+            return Ok(placeResponse.Place.Id);
         }
 
         /// <summary>
