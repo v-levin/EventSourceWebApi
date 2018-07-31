@@ -8,7 +8,6 @@ using EventSourceWebApi.Domain.Validators;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace EventSourceWebApi.Domain.Services
 {
@@ -67,7 +66,10 @@ namespace EventSourceWebApi.Domain.Services
             }
 
             if (response.Event == null)
+            {
                 _logger.Information(LoggingMessages.EventNotFound(idRequest.Id));
+                response.Result = false;
+            }
 
             return response;
         }
@@ -92,31 +94,19 @@ namespace EventSourceWebApi.Domain.Services
                 return eventResponse;
             }
 
-            _logger.Information("The Event has been successfully creted.");
+            _logger.Information("The Event has been successfully created.");
             return eventResponse;
         }
 
         public EventResponse UpdateEvent(PutRequest<Event> putRequest)
         {
-            var validator = new EventsValidator().Validate(putRequest.Payload).ToResponse();
+            var validator = new UpdateEventValidator().Validate(putRequest).ToResponse();
 
             if (!validator.Result)
                 return ErrorResponse(validator);
 
             var eventResponse = new EventResponse();
-
-            if (putRequest.Id != putRequest.Payload.Id)
-            {
-                _logger.Error(LoggingMessages.PassedIdNotMatchWithEventId(putRequest.Id, eventResponse.Event.Id));
-                eventResponse.Result = false;
-                eventResponse.Errors = new List<ResponseError>()
-                {
-                    new ResponseError() { Error = LoggingMessages.PassedIdNotMatchWithEventId(putRequest.Id, eventResponse.Event.Id) }
-                };
-
-                return eventResponse;
-            }
-
+                        
             try
             {
                 eventResponse = _eventsRepository.UpdateEvent(putRequest);
@@ -162,7 +152,11 @@ namespace EventSourceWebApi.Domain.Services
                 return response;
             }
 
-            _logger.Information($"The Event with Id: {idRequest.Id} has been successfully deleted.");
+            if (response.Result)
+                _logger.Information($"The Event with Id: {idRequest.Id} has been successfully deleted.");
+            else
+                _logger.Information(LoggingMessages.EventNotFound(idRequest.Id));
+
             return response;
         }
     }

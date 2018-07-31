@@ -10,8 +10,8 @@ namespace EventSourceWebApi.Domain.Validators
             RuleFor(e => e.Name).NotEmpty();
             RuleFor(e => e.Name).MaximumLength(50);
             RuleFor(e => e.DateRegistered).NotEmpty();
-            RuleFor(e => e.Seats).NotEmpty();
-            RuleFor(e => e.Description).NotEmpty();
+            RuleFor(e => e.Seats).NotEmpty().GreaterThan(0);
+            RuleFor(e => e.Description).NotEmpty().MaximumLength(150);
             RuleFor(e => e.City).NotEmpty();
             RuleFor(e => e.Category).NotEmpty();
             RuleFor(e => e.Location).NotEmpty();
