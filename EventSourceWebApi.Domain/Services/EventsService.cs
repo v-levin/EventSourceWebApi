@@ -50,6 +50,9 @@ namespace EventSourceWebApi.Domain.Services
         {
             var validator = new IdRequestValidator().Validate(idRequest).ToResponse();
 
+            if (!validator.Result)
+                return new EventResponse { Result = false, Errors = validator.Errors };
+
             var response = new EventResponse();
 
             try
@@ -141,6 +144,9 @@ namespace EventSourceWebApi.Domain.Services
         public Response DeleteEvent(IdRequest idRequest)
         {
             var validator = new IdRequestValidator().Validate(idRequest).ToResponse();
+
+            if (!validator.Result)
+                return new EventResponse { Result = false, Errors = validator.Errors };
 
             var response = new Response();
 

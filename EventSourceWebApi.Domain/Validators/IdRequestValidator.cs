@@ -1,8 +1,5 @@
 ﻿using EventSourceWebApi.Contracts.Requests;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EventSourceWebApi.Domain.Validators
 {
@@ -10,7 +7,7 @@ namespace EventSourceWebApi.Domain.Validators
     {
         public IdRequestValidator()
         {
-            RuleFor(e => e.Id).NotEmpty().GreaterThan(0);
+            RuleFor(e => e.Id).NotEmpty().WithMessage("Id must be a number.").GreaterThan(0);
         }
     }
 }
