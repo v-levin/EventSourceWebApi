@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EventSourceWebApi.Contracts;
+﻿using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.Contracts.Messages;
 using EventSourceWebApi.Contracts.Requests;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Serilog;
 
 namespace EventSourceWebApi.Controllers
@@ -31,17 +25,16 @@ namespace EventSourceWebApi.Controllers
         /// <returns>Collection of Places</returns>
         ///
         [HttpGet]
-        public IActionResult GetAllPlaces(PlaceRequest placeRequest)
+        public IActionResult GetAllPlaces(string name, string location, string city)
         {
-
-
-            var placeResponse = _placeServices.GetAllPlaces(placeRequest);
-            if (!placeResponse.Result)
+            var placeSearchRequest = new PlaceSearchRequest() { Name = name, Location = location, City = city };
+            var response = _placeServices.GetAllPlaces(placeSearchRequest);
+            if (!response.Result)
             {
-                return BadRequest(placeResponse.Errors);
+                return BadRequest(response.Errors);
             }
             _logger.Information("The Places has been successfully taken.");
-            return Ok(placeResponse.Places);
+            return Ok(response.Places);
         }
 
         /// <summary>
@@ -52,14 +45,15 @@ namespace EventSourceWebApi.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
+            var idRequest = new IdRequest { Id = id };
             _logger.Information(LoggingMessages.GettingPlaceById(id));
-            var placeResponse = _placeServices.GetPlace(id);
-            if (!placeResponse.Result)
+            var response = _placeServices.GetPlace(idRequest.Id);
+            if (!response.Result)
             {
                 return BadRequest();
             }
             _logger.Error($"The place with id:{id} has been successfully taken.");
-            return Ok(placeResponse.Place);
+            return Ok(response.Place);
         }
 
         /// <summary>
@@ -69,16 +63,16 @@ namespace EventSourceWebApi.Controllers
         [HttpPost]
         public IActionResult Post([FromBody]Place place)
         {
-            _logger.Information(LoggingMessages.CreatingPlace);
-            var placeResponse = _placeServices.CreatePlace(place);
+            var request = new PostRequest<Place> { Payload = place };
+            var response = _placeServices.CreatePlace(request);
 
-            if (!placeResponse.Result)
+            if (!response.Result)
             {
-                return BadRequest(placeResponse.Errors);
+                return BadRequest(response.Errors);
             }
 
-            _logger.Information(LoggingMessages.PlaceSucessfullyCreated(placeResponse.PlaceId));
-            return CreatedAtAction("Post", placeResponse.PlaceId);
+            _logger.Information(LoggingMessages.PlaceSucessfullyCreated(response.PlaceId));
+            return CreatedAtAction("Post", response.PlaceId);
         }
 
         /// <summary>
