@@ -155,7 +155,7 @@ namespace EventSourceWebApi.Domain.Services
             if (response.Result)
                 _logger.Information($"The Event with Id: {idRequest.Id} has been successfully deleted.");
             else
-                _logger.Information($"The Event with Id: {idRequest.Id} was not found.");
+                _logger.Information(LoggingMessages.EventNotFound(idRequest.Id));
 
             return response;
         }

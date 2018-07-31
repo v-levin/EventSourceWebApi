@@ -1,6 +1,5 @@
 ﻿using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Interfaces;
-using EventSourceWebApi.Contracts.Messages;
 using EventSourceWebApi.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
