@@ -20,7 +20,6 @@ namespace EventSourceWebApi.DataContext.Repositories
         {
             using (var db = new EventSourceDbContext(_contextOptions))
             {
-
                 var placeResponse = new PlaceResponse();
 
                 if (string.IsNullOrEmpty(placeRequest.Name) && string.IsNullOrEmpty(placeRequest.City) && string.IsNullOrEmpty(placeRequest.Location))
@@ -79,30 +78,31 @@ namespace EventSourceWebApi.DataContext.Repositories
             }
         }
 
-        public PlaceResponse GetPlace(int id)
+        public PlaceResponse GetPlace(IdRequest request)
         {
             using (var db = new EventSourceDbContext(_contextOptions))
             {
                 return new PlaceResponse
                 {
-                    Place = db.Places.Where(p => p.Id == id)
+                    Place = db.Places.Where(p => p.Id == request.Id)
                     .FirstOrDefault()
                 };
             }
 
         }
-        public PlaceResponse CreatePlace(Place place)
+
+        public PlaceResponse CreatePlace(PostRequest<Place> request)
         {
             using (var db = new EventSourceDbContext(_contextOptions))
             {
                 var newPlace = new Place()
                 {
-                    DateRegistered = place.DateRegistered,
-                    Capacity = place.Capacity,
-                    Location = place.Location.ToLower(),
-                    Name = place.Name.ToLower(),
-                    Description = place.Description,
-                    City = place.City.ToLower()
+                    DateRegistered = request.Payload.DateRegistered,
+                    Capacity = request.Payload.Capacity,
+                    Location = request.Payload.Location.ToLower(),
+                    Name = request.Payload.Name.ToLower(),
+                    Description = request.Payload.Description,
+                    City = request.Payload.City.ToLower()
                 };
                 db.Places.Add(newPlace);
                 db.SaveChanges();
@@ -110,33 +110,33 @@ namespace EventSourceWebApi.DataContext.Repositories
             }
         }
 
-        public PlaceResponse UpdatePlace(Place place, int id)
+        public PlaceResponse UpdatePlace(PutRequest<Place> request)
         {
             using (var db = new EventSourceDbContext(_contextOptions))
             {
-                var _place = db.Places.Find(id);
+                var _place = db.Places.Find(request.Id);
 
                 if (_place != null)
                 {
-                    _place.DateRegistered = place.DateRegistered;
-                    _place.Description = place.Description;
-                    _place.City = place.City.ToLower();
-                    _place.Capacity = place.Capacity;
-                    _place.Name = place.Name.ToLower();
-                    _place.Location = place.Location.ToLower();
+                    _place.DateRegistered = request.Payload.DateRegistered;
+                    _place.Description = request.Payload.Description;
+                    _place.City = request.Payload.City.ToLower();
+                    _place.Capacity = request.Payload.Capacity;
+                    _place.Name = request.Payload.Name.ToLower();
+                    _place.Location = request.Payload.Location.ToLower();
 
-                    db.Places.Attach(place);
+                    db.Places.Attach(request.Payload);
                     db.SaveChanges();
                 }
                 return new PlaceResponse() { PlaceId = _place.Id };
             }
         }
 
-        public Response DeletePlace(int id)
+        public Response DeletePlace(IdRequest request)
         {
             using (var db = new EventSourceDbContext(_contextOptions))
             {
-                var _place = db.Places.Find(id);
+                var _place = db.Places.Find(request.Id);
 
                 if (_place == null)
                 {

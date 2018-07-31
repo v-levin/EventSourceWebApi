@@ -12,9 +12,9 @@ namespace EventSourceWebApi.Contracts.Interfaces
 
         PlaceResponse GetPlace(IdRequest id); 
 
-        PlaceResponse CreatePlace(PostRequest<Place> place); 
+        PlaceResponse CreatePlace(PostRequest<Place> Place);  
 
-        PlaceResponse UpdatePlace(Place place, int id); 
+        PlaceResponse UpdatePlace(PutRequest<Place> Place); 
 
         Response DeletePlace(IdRequest id); 
     }
