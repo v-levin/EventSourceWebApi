@@ -32,7 +32,7 @@ namespace EventSourceWebApi.Controllers
                 City = city,
                 Category = category,
                 Location = location
-            });
+            };
 
             var response = _eventsService.GetEvents(searchRequest);
 
