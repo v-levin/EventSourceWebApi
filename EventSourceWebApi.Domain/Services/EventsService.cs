@@ -48,6 +48,8 @@ namespace EventSourceWebApi.Domain.Services
 
         public EventResponse GetEvent(IdRequest idRequest)
         {
+            var validator = new IdRequestValidator().Validate(idRequest).ToResponse();
+
             var response = new EventResponse();
 
             try
@@ -138,6 +140,8 @@ namespace EventSourceWebApi.Domain.Services
 
         public Response DeleteEvent(IdRequest idRequest)
         {
+            var validator = new IdRequestValidator().Validate(idRequest).ToResponse();
+
             var response = new Response();
 
             try
