@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace EventSourceWebApi.Contracts.Responses
+namespace EventSourceWebApi.Contracts.Requests
 {
     public class IdRequest
     {

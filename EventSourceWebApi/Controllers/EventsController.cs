@@ -52,8 +52,9 @@ namespace EventSourceWebApi.Controllers
         [HttpGet("{id}")]
         public IActionResult GetEvent(int id)
         {
-            _logger.Information($"Getting Event with Id: {id}.");
-            var response = _eventsService.GetEvent(id);
+            var idRequest = new IdRequest() { Id = id };
+            _logger.Information($"Getting Event with Id: {idRequest.Id}.");
+            var response = _eventsService.GetEvent(idRequest);
 
             if (!response.Result)
             {

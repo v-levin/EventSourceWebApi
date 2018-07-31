@@ -79,16 +79,16 @@ namespace EventSourceWebApi.DataContext.Repositories
 
         private bool HasEvents(IList<Event> events)
         {
-            return (events != null) ? true : false;
+            return events != null;
         }
 
-        public EventResponse GetEvent(int id)
+        public EventResponse GetEvent(IdRequest idRequest)
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {
                 return new EventResponse
                 {
-                    Event = db.Events.FirstOrDefault(e => e.Id == id)
+                    Event = db.Events.FirstOrDefault(e => e.Id == idRequest.Id)
                 };
             }
         }
