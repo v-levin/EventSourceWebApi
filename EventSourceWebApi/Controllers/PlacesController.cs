@@ -81,10 +81,8 @@ namespace EventSourceWebApi.Controllers
             var response = _placeServices.CreatePlace(request);
 
             if (!response.Result)
-            {
                 return BadRequest(response.Errors);
-            }
-
+ 
             _logger.Information(LoggingMessages.PlaceSucessfullyCreated(response.Place.Id));
             return CreatedAtAction("Post", response.Place.Id);
         }
@@ -102,10 +100,8 @@ namespace EventSourceWebApi.Controllers
             var placeResponse = _placeServices.UpdatePlace(request);
 
             if (!placeResponse.Result)
-            {
                 return BadRequest(placeResponse.Errors);
-            }
-
+   
             _logger.Information($"Place with id: {placeResponse.Place.Id} is succesffuly edited");
             return Ok(placeResponse.Place.Id);
         }

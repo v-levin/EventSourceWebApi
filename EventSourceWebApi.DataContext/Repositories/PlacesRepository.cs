@@ -18,63 +18,28 @@ namespace EventSourceWebApi.DataContext.Repositories
 
         public PlacesResponse GetAllPlaces(PlaceSearchRequest placeRequest)
         {
+            var placesResponse = new PlacesResponse();
+           
             using (var db = new EventSourceDbContext(_contextOptions))
             {
-                var placesResponse = new PlacesResponse();
+                IQueryable<Place> getPlacesQuery = db.Places;
+                if (!string.IsNullOrEmpty(placeRequest.Name))
+                    getPlacesQuery = db.Places.Where(p => p.Name.StartsWith(placeRequest.Name.ToLower()));
+                
+                if (!string.IsNullOrEmpty(placeRequest.Location))
+                    getPlacesQuery = db.Places.Where(p => p.Location.Contains(placeRequest.Location.ToLower()));
+             
+                if(!string.IsNullOrEmpty(placeRequest.City))
+                    getPlacesQuery = db.Places.Where(p => p.City.Contains(placeRequest.City.ToLower()));
 
-                if (string.IsNullOrEmpty(placeRequest.Name) && string.IsNullOrEmpty(placeRequest.City) && string.IsNullOrEmpty(placeRequest.Location))
-                {
+                var places = getPlacesQuery
+                    .Skip(placeRequest.Offset)
+                    .Take(placeRequest.Limit)
+                    .OrderBy(p => p.Name)
+                    .ToList();
 
-                    placesResponse.Places = db.Places
-                         .Skip(placeRequest.Offset)
-                                    .Take(placeRequest.Limit)
-                                     .ToList();
+                return new PlacesResponse() { Places = places };
 
-                    return placesResponse;
-                }
-
-                FilterPlaces(placeRequest, db, placesResponse);
-
-                placesResponse.Places = placesResponse.Places
-                     .Skip(placeRequest.Offset)
-                                     .Take(placeRequest.Limit)
-                                      .ToList();
-
-                return placesResponse;
-
-            }
-        }
-
-        private static void FilterPlaces(PlaceSearchRequest placeRequest, EventSourceDbContext db, PlacesResponse placeResponse)
-        {
-            if (!string.IsNullOrEmpty(placeRequest.Name))
-                placeResponse.Places = db.Places
-                            .Where(p => p.Name.Contains(placeRequest.Name.ToLower()))
-                            .ToList();
-            var list2 = placeResponse.Places;
-            if (!string.IsNullOrEmpty(placeRequest.Location))
-            {
-                if (placeResponse.Places != null)
-                    placeResponse.Places = placeResponse.Places
-                           .Where(p => p.Location.Contains(placeRequest.Location.ToLower()))
-                           .ToList();
-                else
-                    placeResponse.Places = db.Places
-                            .Where(p => p.Location.Contains(placeRequest.Location.ToLower()))
-                            .ToList();
-            }
-            var list1 = placeResponse.Places;
-            if (!string.IsNullOrEmpty(placeRequest.City))
-            {
-                if (placeResponse.Places != null)
-                    placeResponse.Places = placeResponse.Places
-                           .Where(p => p.City.Contains(placeRequest.City.ToLower()))
-                           .ToList();
-                else
-                    placeResponse.Places = db.Places
-                           .Where(p => p.City.Contains(placeRequest.City.ToLower()))
-                           .ToList();
-                var list = placeResponse.Places;
             }
         }
 
