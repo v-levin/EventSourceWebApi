@@ -36,7 +36,7 @@ namespace EventSourceWebApi.Controllers
 
             _logger.Information(searchRequest.ToString());
             var response = _eventsService.GetEvents(searchRequest);
-            
+
             if (!response.Result)
                 return BadRequest(response.Errors);
 
@@ -45,7 +45,7 @@ namespace EventSourceWebApi.Controllers
 
             return Ok(response.Events);
         }
-        
+
         /// <summary>
         /// Returns an individual Event.
         /// </summary>
@@ -59,10 +59,12 @@ namespace EventSourceWebApi.Controllers
             var response = _eventsService.GetEvent(idRequest);
 
             if (!response.Result)
-                return BadRequest(response.Errors);
+            {
+                if (response.Errors.Count == 0)
+                    return NotFound($"The Event with Id: {idRequest.Id} was not found.");
 
-            if (response.Event == null)
-                return NotFound($"The Event with Id: {idRequest.Id} was not found.");
+                return BadRequest(response.Errors);
+            }
 
             return Ok(response.Event);
         }
@@ -98,10 +100,8 @@ namespace EventSourceWebApi.Controllers
             var response = _eventsService.UpdateEvent(putRequest);
 
             if (!response.Result)
-            {
                 return BadRequest(response.Errors);
-            }
-            
+
             return Ok(response.Event);
         }
 
@@ -119,10 +119,12 @@ namespace EventSourceWebApi.Controllers
 
             if (!response.Result)
             {
-                _logger.Error(LoggingMessages.EventNotFound(idRequest.Id));
-                return NotFound(response.Errors);
+                if (response.Errors.Count == 0)
+                    return NotFound($"The Event with Id: {idRequest.Id} was not found.");
+
+                return BadRequest(response.Errors);
             }
-            
+
             return Ok();
         }
     }
