@@ -23,25 +23,18 @@ namespace EventSourceWebApi.Domain.Services
             _logger = logger;
         }
 
-        public EventResponse GetEvents(EventSearchRequest searchRequest)
+        public EventsResponse GetEvents(EventSearchRequest searchRequest)
         {
-            var response = new EventResponse();
+            var validator = new PagebaleValidator().Validate(searchRequest).ToResponse();
+
+            if (!validator.Result)
+                return new EventsResponse { Result = false, Errors = validator.Errors };
+
+            var response = new EventsResponse();
 
             try
             {
-                var validator = new PagebaleValidator().Validate(searchRequest).ToResponse();
-
-                if (!validator.Result)
-                    return new EventResponse { Result = false, Errors = validator.Errors };
-
                 response = _eventsRepository.GetEvents(searchRequest);
-
-                if (response.Events.Count > 0)
-                    _logger.Information("The Events has been successfully taken.");
-                else
-                    _logger.Information("There is no records in the database.");
-                
-                return response;
             }
             catch (Exception ex)
             {
@@ -49,6 +42,8 @@ namespace EventSourceWebApi.Domain.Services
                 response.Result = false;
                 return response;
             }
+
+            return response;
         }
 
         public EventResponse GetEvent(IdRequest idRequest)
@@ -58,14 +53,6 @@ namespace EventSourceWebApi.Domain.Services
             try
             {
                 response = _eventsRepository.GetEvent(idRequest);
-
-                if (response.Event == null)
-                    _logger.Information(LoggingMessages.EventNotFound(idRequest.Id));
-                else
-                    _logger.Information($"The Event with Id: {idRequest} has been successfully taken.");
-
-                return response;
-
             }
             catch (Exception ex)
             {
@@ -73,32 +60,25 @@ namespace EventSourceWebApi.Domain.Services
                 response.Result = false;
                 return response;
             }
+
+            if (response.Event == null)
+                _logger.Information(LoggingMessages.EventNotFound(idRequest.Id));
+
+            return response;
         }
 
         public EventResponse CreateEvent(PostRequest<Event> postRequest)
         {
-            if (postRequest.Payload == null)
-            {
-                _logger.Error("Record with null value entered.");
-                return new EventResponse()
-                {
-                    Result = false,
-                    Message = "Data value cannot be null."
-                };
-            }
+            var validator = new EventsValidator().Validate(postRequest.Payload).ToResponse();
 
-            var response = new EventsValidator().Validate(postRequest.Payload).ToResponse();
-
-            if (!response.Result)
-                return ErrorResponse(response);
+            if (!validator.Result)
+                return ErrorResponse(validator);
 
             var eventResponse = new EventResponse();
 
             try
             {
                 eventResponse = _eventsRepository.CreateEvent(postRequest);
-                _logger.Information("The Event has been successfully creted.");
-                return eventResponse;
             }
             catch (Exception ex)
             {
@@ -106,6 +86,9 @@ namespace EventSourceWebApi.Domain.Services
                 eventResponse.Result = false;
                 return eventResponse;
             }
+
+            _logger.Information("The Event has been successfully creted.");
+            return eventResponse;
         }
 
         public EventResponse UpdateEvent(PutRequest<Event> putRequest)
@@ -117,21 +100,21 @@ namespace EventSourceWebApi.Domain.Services
 
             var eventResponse = new EventResponse();
 
+            if (putRequest.Id != putRequest.Payload.Id)
+            {
+                _logger.Error(LoggingMessages.PassedIdNotMatchWithEventId(putRequest.Id, eventResponse.Event.Id));
+                eventResponse.Result = false;
+                eventResponse.Errors = new List<ResponseError>()
+                {
+                    new ResponseError() { Error = LoggingMessages.PassedIdNotMatchWithEventId(putRequest.Id, eventResponse.Event.Id) }
+                };
+
+                return eventResponse;
+            }
+
             try
             {
-                if (putRequest.Id == putRequest.Payload.Id)
-                {
-                    eventResponse = _eventsRepository.UpdateEvent(putRequest);
-                    _logger.Information($"The Event with Id: {eventResponse.EventId} has been successfully updated.");
-                }
-                else
-                {
-                    _logger.Error(LoggingMessages.PassedIdNotMatchWithEventId(putRequest.Id, eventResponse.EventId));
-                    eventResponse.Result = false;
-                    eventResponse.Message = LoggingMessages.PassedIdNotMatchWithEventId(putRequest.Id, eventResponse.EventId);
-                }
-                
-                return eventResponse;
+                eventResponse = _eventsRepository.UpdateEvent(putRequest);
             }
             catch (Exception ex)
             {
@@ -139,6 +122,9 @@ namespace EventSourceWebApi.Domain.Services
                 eventResponse.Result = false;
                 return eventResponse;
             }
+
+            _logger.Information($"The Event with Id: {eventResponse.Event.Id} has been successfully updated.");
+            return eventResponse;
         }
 
         private static EventResponse ErrorResponse(Response response)
@@ -146,7 +132,7 @@ namespace EventSourceWebApi.Domain.Services
             return new EventResponse()
             {
                 Result = false,
-                Message = string.Join(Environment.NewLine, response.Errors.Select(e => e.Error))
+                Errors = response.Errors
             };
         }
 
@@ -156,7 +142,7 @@ namespace EventSourceWebApi.Domain.Services
 
             try
             {
-                return _eventsRepository.DeleteEvent(idRequest);
+                response = _eventsRepository.DeleteEvent(idRequest);
             }
             catch (Exception ex)
             {
@@ -165,6 +151,9 @@ namespace EventSourceWebApi.Domain.Services
                 response.Errors = new List<ResponseError>() { new ResponseError() { Error = ex.Message } };
                 return response;
             }
+
+            _logger.Information($"The Event with Id: {idRequest.Id} has been successfully deleted.");
+            return response;
         }
     }
 }

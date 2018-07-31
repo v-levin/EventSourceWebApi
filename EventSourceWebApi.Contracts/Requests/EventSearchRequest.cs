@@ -9,5 +9,10 @@
         public string Category { get; set; }
 
         public string Location { get; set; }
+
+        public override string ToString()
+        {
+            return $"Getting all Events with Name: {Name}, City: {City}, Category: {Category}, Location: {Location}";
+        }
     }
 }

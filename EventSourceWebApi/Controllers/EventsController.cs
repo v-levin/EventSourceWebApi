@@ -34,6 +34,7 @@ namespace EventSourceWebApi.Controllers
                 Location = location
             };
 
+            _logger.Information(searchRequest.ToString());
             var response = _eventsService.GetEvents(searchRequest);
 
             if (!response.Result)
@@ -77,10 +78,10 @@ namespace EventSourceWebApi.Controllers
 
             if (!response.Result)
             {
-                return BadRequest(response.Message);
+                return BadRequest(response.Errors);
             }
 
-            return CreatedAtAction("PostEvent", response.EventId);
+            return CreatedAtAction("PostEvent", response.Event.Id);
         }
 
         /// <summary>
@@ -98,10 +99,10 @@ namespace EventSourceWebApi.Controllers
 
             if (!response.Result)
             {
-                return BadRequest(response.Message);
+                return BadRequest(response.Errors);
             }
             
-            return Ok(@event);
+            return Ok(response.Event);
         }
 
         /// <summary>
@@ -122,7 +123,6 @@ namespace EventSourceWebApi.Controllers
                 return NotFound(response.Errors);
             }
             
-            _logger.Information($"The Event with Id: {idRequest.Id} has been successfully deleted.");
             return Ok();
         }
     }
