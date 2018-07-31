@@ -16,7 +16,7 @@ namespace EventSourceWebApi.DataContext.Repositories
             _contextOptions = contextOptions;
         }
 
-        public PlaceResponse GetAllPlaces(PlaceRequest placeRequest)
+        public PlaceResponse GetAllPlaces(PlaceSearchRequest placeRequest)
         {
             using (var db = new EventSourceDbContext(_contextOptions))
             {
@@ -46,7 +46,7 @@ namespace EventSourceWebApi.DataContext.Repositories
             }
         }
 
-        private static void FilterPlaces(PlaceRequest placeRequest, EventSourceDbContext db, PlaceResponse placeResponse)
+        private static void FilterPlaces(PlaceSearchRequest placeRequest, EventSourceDbContext db, PlaceResponse placeResponse)
         {
             if (!string.IsNullOrEmpty(placeRequest.Name))
                 placeResponse.Places = db.Places

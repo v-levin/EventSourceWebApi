@@ -20,15 +20,18 @@ namespace EventSourceWebApi.Domain.Services
             _logger = logger;
         }
 
-        public PlaceResponse GetAllPlaces(PlaceRequest placeRequest)
+        public PlaceResponse GetAllPlaces(PlaceSearchRequest placeRequest)
         {
+            var response = new PagebaleValidator().Validate(placeRequest).ToResponse();
+
+            if (!response.Result)
+            {
+                return new PlaceResponse { Errors = response.Errors, Result = false };
+            }
+
             try
             {
-                var response = new PagebaleValidator().Validate(placeRequest).ToResponse();
-                if (!response.Result)
-                {
-                    return new PlaceResponse { Errors = response.Errors, Result = false };
-                }
+
                 return _placeRepository.GetAllPlaces(placeRequest);
             }
             catch (Exception ex)
@@ -59,17 +62,17 @@ namespace EventSourceWebApi.Domain.Services
             }
         }
 
-        public PlaceResponse CreatePlace(Place place)
+        public PlaceResponse CreatePlace(PostRequest<Place> request) 
         {
             try
             {
-                var response = new PlacesValidator().Validate(place).ToResponse();
+                var response = new PlacesValidator().Validate(request.Payload).ToResponse();
 
                 if (!response.Result)
                 {
                     return new PlaceResponse { Errors = response.Errors, Result = false };
                 }
-                return new PlaceResponse() { PlaceId = _placeRepository.CreatePlace(place).PlaceId };
+                return new PlaceResponse() { PlaceId = _placeRepository.CreatePlace(request.Payload).PlaceId };
             }
             catch (Exception ex)
             {

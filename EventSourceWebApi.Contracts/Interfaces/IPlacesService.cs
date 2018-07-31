@@ -8,11 +8,11 @@ namespace EventSourceWebApi.Contracts.Interfaces
 {
     public interface IPlacesService
     {
-        PlaceResponse GetAllPlaces(PlaceRequest placeRequest); //todo GetAllPlacesResponse //search, paging?! limit. MAX LIMIT = 1000 (search, consider nwew method)
+        PlaceResponse GetAllPlaces(PlaceSearchRequest placeRequest); //todo GetAllPlacesResponse //search, paging?! limit. MAX LIMIT = 1000 (search, consider nwew method)
 
         PlaceResponse GetPlace(int id); 
 
-        PlaceResponse CreatePlace(Place place); 
+        PlaceResponse CreatePlace(PostRequest<Place> place); 
 
         PlaceResponse UpdatePlace(Place place, int id); 
 
