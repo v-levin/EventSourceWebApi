@@ -120,10 +120,10 @@ namespace EventSourceWebApi.DataContext.Repositories
                 {
                     _place.DateRegistered = place.DateRegistered;
                     _place.Description = place.Description;
-                    _place.City = place.City;
+                    _place.City = place.City.ToLower();
                     _place.Capacity = place.Capacity;
-                    _place.Name = place.Name;
-                    _place.Location = place.Location;
+                    _place.Name = place.Name.ToLower();
+                    _place.Location = place.Location.ToLower();
 
                     db.Places.Attach(place);
                     db.SaveChanges();
