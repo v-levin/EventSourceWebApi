@@ -33,6 +33,8 @@ namespace EventSourceWebApi.Controllers
         [HttpGet]
         public IActionResult GetAllPlaces(PlaceRequest placeRequest)
         {
+
+
             var placeResponse = _placeServices.GetAllPlaces(placeRequest);
             if (!placeResponse.Result)
             {
@@ -65,7 +67,7 @@ namespace EventSourceWebApi.Controllers
         /// </summary>
         /// <param name="value">The Place object</param>
         [HttpPost]
-        public IActionResult Post([FromBody] Place place)
+        public IActionResult Post([FromBody]Place place)
         {
             _logger.Information(LoggingMessages.CreatingPlace);
             var placeResponse = _placeServices.CreatePlace(place);
