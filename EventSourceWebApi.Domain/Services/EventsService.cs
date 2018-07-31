@@ -25,7 +25,7 @@ namespace EventSourceWebApi.Domain.Services
 
         public EventsResponse GetEvents(EventSearchRequest searchRequest)
         {
-            var validator = new PagebaleValidator().Validate(searchRequest).ToResponse();
+            var validator = new EventSearchVallidator().Validate(searchRequest).ToResponse();
 
             if (!validator.Result)
                 return new EventsResponse { Result = false, Errors = validator.Errors };
