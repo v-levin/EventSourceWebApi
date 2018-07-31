@@ -13,5 +13,15 @@ namespace EventSourceWebApi.Contracts.Responses
         public bool Result { get; set; }
 
         public List<ResponseError> Errors { get; set; }
+
+        public override string ToString()
+        {
+            var text = "";
+            foreach (var error in Errors)
+            {
+                text += error;
+            }
+                return text;
+        }
     }
 }

@@ -38,6 +38,7 @@ namespace EventSourceWebApi.Controllers
 
             if (response.Places.Count == 0)
             {
+                _logger.Information($"Records with {request} don't found");
                 return NotFound(request);
             }
 
@@ -58,8 +59,11 @@ namespace EventSourceWebApi.Controllers
             var response = _placeServices.GetPlace(request);
             if (!response.Result)
             {
-                return NotFound(response.Place);
-                //return BadRequest();
+                if(response.Errors.Count == 0)
+                {
+                    return NotFound();
+                }
+                return BadRequest(response.Errors);
             }
             _logger.Error($"The place with id:{id} has been successfully taken.");
             return Ok(response.Place);
@@ -118,7 +122,11 @@ namespace EventSourceWebApi.Controllers
             var response = _placeServices.DeletePlace(request);
             if (!response.Result)
             {
-                return BadRequest();
+                if(response.Errors.Count == 0)
+                {
+                    return NotFound();
+                }
+                return BadRequest(response.Errors);
             }
             _logger.Information($"The Place with id: {id} has been successfully delited");
             return Ok();

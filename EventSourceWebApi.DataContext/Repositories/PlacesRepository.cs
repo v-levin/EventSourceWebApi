@@ -20,7 +20,7 @@ namespace EventSourceWebApi.DataContext.Repositories
         {
             using (var db = new EventSourceDbContext(_contextOptions))
             {
-                var placesResponse = new PlacesResponse(); 
+                var placesResponse = new PlacesResponse();
 
                 if (string.IsNullOrEmpty(placeRequest.Name) && string.IsNullOrEmpty(placeRequest.City) && string.IsNullOrEmpty(placeRequest.Location))
                 {
@@ -33,7 +33,7 @@ namespace EventSourceWebApi.DataContext.Repositories
                     return placesResponse;
                 }
 
-                FilterPlaces(placeRequest, db, placesResponse); 
+                FilterPlaces(placeRequest, db, placesResponse);
 
                 placesResponse.Places = placesResponse.Places
                      .Skip(placeRequest.Offset)
@@ -51,7 +51,7 @@ namespace EventSourceWebApi.DataContext.Repositories
                 placeResponse.Places = db.Places
                             .Where(p => p.Name.Contains(placeRequest.Name.ToLower()))
                             .ToList();
-            var list2 = placeResponse.Places; 
+            var list2 = placeResponse.Places;
             if (!string.IsNullOrEmpty(placeRequest.Location))
             {
                 if (placeResponse.Places != null)
@@ -82,13 +82,16 @@ namespace EventSourceWebApi.DataContext.Repositories
         {
             using (var db = new EventSourceDbContext(_contextOptions))
             {
-                return new PlaceResponse
+                var place = db.Places.Find(request.Id);
+               
+                if (place != null)
                 {
-                    Place = db.Places.Where(p => p.Id == request.Id)
-                    .FirstOrDefault()
-                };
-            }
 
+                    return new PlaceResponse() { Place = place, Result = true };
+                }
+
+                return new PlaceResponse() { Place = place, Result = false };
+            }
         }
 
         public PlaceResponse CreatePlace(PostRequest<Place> request)
@@ -106,7 +109,7 @@ namespace EventSourceWebApi.DataContext.Repositories
                 };
                 db.Places.Add(newPlace);
                 db.SaveChanges();
-                return new PlaceResponse() { Place = newPlace };
+                return new PlaceResponse() { Place = newPlace, };
             }
         }
 
