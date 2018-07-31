@@ -20,9 +20,9 @@ namespace EventSourceWebApi.Domain.Services
             _logger = logger;
         }
 
-        public PlaceResponse GetAllPlaces(PlaceSearchRequest placeRequest)
+        public PlaceResponse GetAllPlaces(PlaceSearchRequest request) 
         {
-            var response = new PagebaleValidator().Validate(placeRequest).ToResponse();
+            var response = new PagebaleValidator().Validate(request).ToResponse();
 
             if (!response.Result)
             {
@@ -32,7 +32,7 @@ namespace EventSourceWebApi.Domain.Services
             try
             {
 
-                return _placeRepository.GetAllPlaces(placeRequest);
+                return _placeRepository.GetAllPlaces(request);
             }
             catch (Exception ex)
             {
@@ -41,15 +41,15 @@ namespace EventSourceWebApi.Domain.Services
             }
         }
 
-        public PlaceResponse GetPlace(int id)
+        public PlaceResponse GetPlace(IdRequest request)
         {
             var placeResponse = new PlaceResponse();
-            try
+            try 
             {
-                placeResponse = _placeRepository.GetPlace(id);
+                placeResponse = _placeRepository.GetPlace(request);
                 if (placeResponse.Place == null)
                 {
-                    _logger.Error($"The place with id:{id} doesn't exist.");
+                    _logger.Error($"The place with id:{request.Id} doesn't exist.");
                     placeResponse.Result = false;
                     return placeResponse;
                 }
@@ -72,7 +72,7 @@ namespace EventSourceWebApi.Domain.Services
                 {
                     return new PlaceResponse { Errors = response.Errors, Result = false };
                 }
-                return new PlaceResponse() { PlaceId = _placeRepository.CreatePlace(request.Payload).PlaceId };
+                return new PlaceResponse() { PlaceId = _placeRepository.CreatePlace(request).PlaceId };
             }
             catch (Exception ex)
             {
@@ -81,16 +81,16 @@ namespace EventSourceWebApi.Domain.Services
             }
         }
 
-        public PlaceResponse UpdatePlace(Place place, int id)
+        public PlaceResponse UpdatePlace(PutRequest<Place> request) 
         {
             try
             {
-                var response = new PlacesValidator().Validate(place).ToResponse();
+                var response = new PlacesValidator().Validate(request.Payload).ToResponse();
                 if (!response.Result)
                 {
                     return new PlaceResponse { Errors = response.Errors, Result = false };
                 }
-                return new PlaceResponse() { PlaceId = _placeRepository.UpdatePlace(place, id).PlaceId };
+                return new PlaceResponse() { PlaceId = _placeRepository.UpdatePlace(request).PlaceId };
             }
             catch (Exception ex)
             {
@@ -99,15 +99,15 @@ namespace EventSourceWebApi.Domain.Services
             }
         }
 
-        public Response DeletePlace(int id)
+        public Response DeletePlace(IdRequest request) 
         {
             var response = new Response();
             try
             {
-                var deletePlaceResponse = _placeRepository.DeletePlace(id);
+                var deletePlaceResponse = _placeRepository.DeletePlace(request);
                 if (!deletePlaceResponse.Result)
                 {
-                    _logger.Error($"Unable to delete place with id: {id}");
+                    _logger.Error($"Unable to delete place with id: {request.Id}");
                     response.Result = false;
                 }
                 return response;

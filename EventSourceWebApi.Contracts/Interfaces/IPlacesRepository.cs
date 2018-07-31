@@ -10,12 +10,12 @@ namespace EventSourceWebApi.Contracts.Interfaces
     {
         PlaceResponse GetAllPlaces(PlaceSearchRequest placeRequest);
 
-        PlaceResponse GetPlace(int id);
+        PlaceResponse GetPlace(IdRequest id);
 
-        PlaceResponse CreatePlace(Place place);
+        PlaceResponse CreatePlace(PostRequest<Place> Place);
 
-        PlaceResponse UpdatePlace(Place place, int id);
+        PlaceResponse UpdatePlace(PutRequest<Place> Place);
 
-        Response DeletePlace(int id);
+        Response DeletePlace(IdRequest id);
     }
 }

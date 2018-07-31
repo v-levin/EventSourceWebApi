@@ -27,7 +27,7 @@ namespace EventSourceWebApi.Controllers
         [HttpGet]
         public IActionResult GetAllPlaces(string name, string location, string city)
         {
-            var request = new PlaceSearchRequest() { Name = name, Location = location, City = city }; 
+            var request = new PlaceSearchRequest() { Name = name, Location = location, City = city };
             var response = _placeServices.GetAllPlaces(request);
             if (!response.Result)
             {
@@ -84,8 +84,8 @@ namespace EventSourceWebApi.Controllers
         public IActionResult Put(int id, [FromBody] Place place)
         {
             _logger.Information($"Editing place with id: {id}");
-
-            var placeResponse = _placeServices.UpdatePlace(place, id);
+            var request = new PutRequest<Place> { Payload = place };
+            var placeResponse = _placeServices.UpdatePlace(request);
 
             if (!placeResponse.Result)
             {
@@ -105,8 +105,9 @@ namespace EventSourceWebApi.Controllers
         public IActionResult Delete(int id)
         {
             _logger.Information($"Deleting place with id: {id}");
-            var deletePlaceResponse = _placeServices.DeletePlace(id);
-            if (!deletePlaceResponse.Result)
+            var request = new IdRequest() { Id = id };
+            var response = _placeServices.DeletePlace(request); 
+            if (!response.Result)
             {
                 return BadRequest();
             }
