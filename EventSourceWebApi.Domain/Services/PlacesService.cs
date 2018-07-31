@@ -22,11 +22,11 @@ namespace EventSourceWebApi.Domain.Services
 
         public PlacesResponse GetAllPlaces(PlaceSearchRequest request) 
         {
-            var response = new PagebaleValidator().Validate(request).ToResponse();
+            var validator = new PlaceSearchValidator().Validate(request).ToResponse(); 
 
-            if (!response.Result)
+            if (!validator.Result)
             {
-                return new PlacesResponse { Errors = response.Errors, Result = false };
+                return new PlacesResponse { Errors = validator.Errors, Result = false };
             }
 
             try
@@ -63,14 +63,14 @@ namespace EventSourceWebApi.Domain.Services
 
         public PlaceResponse CreatePlace(PostRequest<Place> request) 
         {
+            var response = new PlacesValidator().Validate(request.Payload).ToResponse();
+
+            if (!response.Result)
+            {
+                return new PlaceResponse { Errors = response.Errors, Result = false };
+            }
             try
             {
-                var response = new PlacesValidator().Validate(request.Payload).ToResponse();
-
-                if (!response.Result)
-                {
-                    return new PlaceResponse { Errors = response.Errors, Result = false };
-                }
                 return _placeRepository.CreatePlace(request);
             }
             catch (Exception ex)

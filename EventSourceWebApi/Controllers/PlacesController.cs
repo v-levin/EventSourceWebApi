@@ -28,11 +28,19 @@ namespace EventSourceWebApi.Controllers
         public IActionResult GetAllPlaces(string name, string location, string city)
         {
             var request = new PlaceSearchRequest() { Name = name, Location = location, City = city };
+            _logger.Information(request.ToString());
             var response = _placeServices.GetAllPlaces(request);
+
             if (!response.Result)
             {
                 return BadRequest(response.Errors);
             }
+
+            if (response.Places.Count == 0)
+            {
+                return NotFound(request);
+            }
+
             _logger.Information("The Places has been successfully taken.");
             return Ok(response.Places);
         }
@@ -50,7 +58,8 @@ namespace EventSourceWebApi.Controllers
             var response = _placeServices.GetPlace(request);
             if (!response.Result)
             {
-                return BadRequest();
+                return NotFound(response.Place);
+                //return BadRequest();
             }
             _logger.Error($"The place with id:{id} has been successfully taken.");
             return Ok(response.Place);
@@ -106,7 +115,7 @@ namespace EventSourceWebApi.Controllers
         {
             _logger.Information($"Deleting place with id: {id}");
             var request = new IdRequest() { Id = id };
-            var response = _placeServices.DeletePlace(request); 
+            var response = _placeServices.DeletePlace(request);
             if (!response.Result)
             {
                 return BadRequest();
