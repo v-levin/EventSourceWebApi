@@ -17,11 +17,11 @@ namespace EventSourceWebApi.DataContext.Repositories
             _dbContext = dbContext;
         }
 
-        public EventResponse GetEvents(EventSearchRequest searchRequest)
+        public EventsResponse GetEvents(EventSearchRequest searchRequest)
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {
-                var response = new EventResponse();
+                var response = new EventsResponse();
 
                 if (string.IsNullOrEmpty(searchRequest.Name) &&
                     string.IsNullOrEmpty(searchRequest.City) &&
@@ -47,10 +47,10 @@ namespace EventSourceWebApi.DataContext.Repositories
             }
         }
 
-        private void FilterEvents(EventSearchRequest searchRequest, EventSourceDbContext db, EventResponse response)
+        private void FilterEvents(EventSearchRequest searchRequest, EventSourceDbContext db, EventsResponse response)
         {
             if (!string.IsNullOrEmpty(searchRequest.Name))
-                response.Events = db.Events.Where(e => e.Name.ToLower().Contains(searchRequest.Name.ToLower())).ToList();
+                response.Events = db.Events.Where(e => e.Name.ToLower().StartsWith(searchRequest.Name.ToLower())).ToList();
 
             if (!string.IsNullOrEmpty(searchRequest.City))
             {
@@ -100,7 +100,7 @@ namespace EventSourceWebApi.DataContext.Repositories
                 db.Events.Add(postRequest.Payload);
                 db.SaveChanges();
 
-                return new EventResponse() { EventId = postRequest.Payload.Id };
+                return new EventResponse() { Event = postRequest.Payload };
             }
         }
 
@@ -111,7 +111,7 @@ namespace EventSourceWebApi.DataContext.Repositories
                 db.Entry(putRequest.Payload).State = EntityState.Modified;
                 db.SaveChanges();
 
-                return new EventResponse() { EventId = putRequest.Payload.Id, Event = putRequest.Payload };
+                return new EventResponse() { Event = putRequest.Payload };
             }
         }
 
