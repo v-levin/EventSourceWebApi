@@ -61,11 +61,12 @@ namespace EventSourceWebApi.Controllers
             {
                 if(response.Errors.Count == 0)
                 {
+                    _logger.Information($"The Place with Id: {id} was not found");
                     return NotFound();
                 }
                 return BadRequest(response.Errors);
             }
-            _logger.Error($"The place with id:{id} has been successfully taken.");
+            _logger.Information($"The place with id:{id} has been successfully taken.");
             return Ok(response.Place);
         }
 
@@ -124,6 +125,7 @@ namespace EventSourceWebApi.Controllers
             {
                 if(response.Errors.Count == 0)
                 {
+                    _logger.Information($"The Place with Id: {id} was not found");
                     return NotFound();
                 }
                 return BadRequest(response.Errors);

@@ -26,7 +26,7 @@ namespace EventSourceWebApi.Domain.Services
 
             if (!validator.Result)
             {
-                _logger.Information($"Invalid request {request}");
+                _logger.Error($"Invalid request {request}");
                 return new PlacesResponse { Errors = validator.Errors, Result = false };
             }
 
@@ -48,13 +48,12 @@ namespace EventSourceWebApi.Domain.Services
 
             if (!validator.Result)
             {
-                _logger.Information($"The request for the id: {request.Id} is invalid");
+                _logger.Error($"Invalid request for the id: {request.Id }");
                 return new PlaceResponse() { Result = false, Errors = validator.Errors };
             }
             try
             {
                 return _placeRepository.GetPlace(request);
-
             }
             catch (Exception ex)
             {
@@ -69,7 +68,7 @@ namespace EventSourceWebApi.Domain.Services
 
             if (!response.Result)
             {
-                _logger.Information($"Invalid request {request}");
+                _logger.Error($"Invalid request {request}");
                 return new PlaceResponse { Errors = response.Errors, Result = false };
             }
             try
@@ -89,7 +88,7 @@ namespace EventSourceWebApi.Domain.Services
             
             if (!validator.Result)
             {
-                _logger.Information($"Invalid request {request}");
+                _logger.Error($"Invalid request {request}");
                 return new PlaceResponse { Errors = validator.Errors, Result = false };
             }
             try
@@ -110,7 +109,7 @@ namespace EventSourceWebApi.Domain.Services
 
             if (!validator.Result)
             {
-                _logger.Information($"The request for the id: {request.Id} is invalid");
+                _logger.Error($"Invalid request for the id: {request.Id }");
                 return new Response() { Result = false, Errors = validator.Errors };
             }
             try
