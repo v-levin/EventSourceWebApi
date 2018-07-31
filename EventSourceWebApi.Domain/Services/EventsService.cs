@@ -23,18 +23,18 @@ namespace EventSourceWebApi.Domain.Services
             _logger = logger;
         }
 
-        public EventResponse GetEvents(EventRequest request)
+        public EventResponse GetEvents(EventSearchRequest searchRequest)
         {
             var response = new EventResponse();
 
             try
             {
-                var validator = new PagebaleValidator().Validate(request).ToResponse();
+                var validator = new PagebaleValidator().Validate(searchRequest).ToResponse();
 
                 if (!validator.Result)
                     return new EventResponse { Result = false, Errors = validator.Errors };
 
-                response = _eventsRepository.GetEvents(request);
+                response = _eventsRepository.GetEvents(searchRequest);
 
                 if (response.Events.Count > 0)
                     _logger.Information("The Events has been successfully taken.");
