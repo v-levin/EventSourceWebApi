@@ -51,18 +51,18 @@ namespace EventSourceWebApi.Domain.Services
             }
         }
 
-        public EventResponse GetEvent(int id)
+        public EventResponse GetEvent(IdRequest idRequest)
         {
             var response = new EventResponse();
 
             try
             {
-                response = _eventsRepository.GetEvent(id);
+                response = _eventsRepository.GetEvent(idRequest);
 
                 if (response.Event == null)
-                    _logger.Information(LoggingMessages.EventNotFound(id));
+                    _logger.Information(LoggingMessages.EventNotFound(idRequest.Id));
                 else
-                    _logger.Information($"The Event with Id: {id} has been successfully taken.");
+                    _logger.Information($"The Event with Id: {idRequest} has been successfully taken.");
 
                 return response;
 
