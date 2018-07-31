@@ -27,8 +27,8 @@ namespace EventSourceWebApi.Controllers
         [HttpGet]
         public IActionResult GetAllPlaces(string name, string location, string city)
         {
-            var placeSearchRequest = new PlaceSearchRequest() { Name = name, Location = location, City = city };
-            var response = _placeServices.GetAllPlaces(placeSearchRequest);
+            var request = new PlaceSearchRequest() { Name = name, Location = location, City = city }; 
+            var response = _placeServices.GetAllPlaces(request);
             if (!response.Result)
             {
                 return BadRequest(response.Errors);
@@ -45,9 +45,9 @@ namespace EventSourceWebApi.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var idRequest = new IdRequest { Id = id };
+            var request = new IdRequest { Id = id };
             _logger.Information(LoggingMessages.GettingPlaceById(id));
-            var response = _placeServices.GetPlace(idRequest.Id);
+            var response = _placeServices.GetPlace(request);
             if (!response.Result)
             {
                 return BadRequest();
