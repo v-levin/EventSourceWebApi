@@ -7,7 +7,7 @@ namespace EventSourceWebApi.Contracts.Interfaces
     {
         EventResponse GetEvents(EventSearchRequest request);
         EventResponse GetEvent(IdRequest id);
-        EventResponse CreateEvent(Event @event);
+        EventResponse CreateEvent(PostRequest<Event> postRequest);
         EventResponse UpdateEvent(Event @event);
         Response DeleteEvent(int id);
     }

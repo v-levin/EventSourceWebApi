@@ -75,9 +75,9 @@ namespace EventSourceWebApi.Domain.Services
             }
         }
 
-        public EventResponse CreateEvent(Event @event)
+        public EventResponse CreateEvent(PostRequest<Event> postRequest)
         {
-            if (@event == null)
+            if (postRequest.Payload == null)
             {
                 _logger.Error("Record with null value entered.");
                 return new EventResponse()
@@ -87,7 +87,7 @@ namespace EventSourceWebApi.Domain.Services
                 };
             }
 
-            var response = new EventsValidator().Validate(@event).ToResponse();
+            var response = new EventsValidator().Validate(postRequest.Payload).ToResponse();
 
             if (!response.Result)
                 return ErrorResponse(response);
@@ -96,7 +96,7 @@ namespace EventSourceWebApi.Domain.Services
 
             try
             {
-                eventResponse = _eventsRepository.CreateEvent(@event);
+                eventResponse = _eventsRepository.CreateEvent(postRequest);
                 _logger.Information("The Event has been successfully creted.");
                 return eventResponse;
             }

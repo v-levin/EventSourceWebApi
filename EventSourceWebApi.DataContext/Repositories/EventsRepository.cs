@@ -93,14 +93,14 @@ namespace EventSourceWebApi.DataContext.Repositories
             }
         }
 
-        public EventResponse CreateEvent(Event @event)
+        public EventResponse CreateEvent(PostRequest<Event> postRequest)
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {
-                db.Events.Add(@event);
+                db.Events.Add(postRequest.Payload);
                 db.SaveChanges();
 
-                return new EventResponse() { EventId = @event.Id };
+                return new EventResponse() { EventId = postRequest.Payload.Id };
             }
         }
 

@@ -72,7 +72,8 @@ namespace EventSourceWebApi.Controllers
         [HttpPost]
         public IActionResult PostEvent([FromBody]Event @event)
         {
-            var response = _eventsService.CreateEvent(@event);
+            var postRequest = new PostRequest<Event>() { Payload = @event };
+            var response = _eventsService.CreateEvent(postRequest);
 
             if (!response.Result)
             {
