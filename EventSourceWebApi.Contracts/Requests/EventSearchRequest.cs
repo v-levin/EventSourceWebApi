@@ -1,6 +1,6 @@
 ﻿namespace EventSourceWebApi.Contracts.Requests
 {
-    public class EventRequest : PageableRequest
+    public class EventSearchRequest : PageableRequest
     {
         public string Name { get; set; }
 
