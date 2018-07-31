@@ -108,9 +108,9 @@ namespace EventSourceWebApi.Domain.Services
             }
         }
 
-        public EventResponse UpdateEvent(int id, Event @event)
+        public EventResponse UpdateEvent(PutRequest<Event> putRequest)
         {
-            var validator = new EventsValidator().Validate(@event).ToResponse();
+            var validator = new EventsValidator().Validate(putRequest.Payload).ToResponse();
 
             if (!validator.Result)
                 return ErrorResponse(validator);
@@ -119,16 +119,16 @@ namespace EventSourceWebApi.Domain.Services
 
             try
             {
-                if (id == @event.Id)
+                if (putRequest.Id == putRequest.Payload.Id)
                 {
-                    eventResponse = _eventsRepository.UpdateEvent(@event);
+                    eventResponse = _eventsRepository.UpdateEvent(putRequest);
                     _logger.Information($"The Event with Id: {eventResponse.EventId} has been successfully updated.");
                 }
                 else
                 {
-                    _logger.Error(LoggingMessages.PassedIdNotMatchWithEventId(id, eventResponse.EventId));
+                    _logger.Error(LoggingMessages.PassedIdNotMatchWithEventId(putRequest.Id, eventResponse.EventId));
                     eventResponse.Result = false;
-                    eventResponse.Message = LoggingMessages.PassedIdNotMatchWithEventId(id, eventResponse.EventId);
+                    eventResponse.Message = LoggingMessages.PassedIdNotMatchWithEventId(putRequest.Id, eventResponse.EventId);
                 }
                 
                 return eventResponse;
@@ -150,13 +150,13 @@ namespace EventSourceWebApi.Domain.Services
             };
         }
 
-        public Response DeleteEvent(int id)
+        public Response DeleteEvent(IdRequest idRequest)
         {
             var response = new Response();
 
             try
             {
-                return _eventsRepository.DeleteEvent(id);
+                return _eventsRepository.DeleteEvent(idRequest);
             }
             catch (Exception ex)
             {

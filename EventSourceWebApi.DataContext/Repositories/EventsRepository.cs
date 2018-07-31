@@ -104,22 +104,22 @@ namespace EventSourceWebApi.DataContext.Repositories
             }
         }
 
-        public EventResponse UpdateEvent(Event @event)
+        public EventResponse UpdateEvent(PutRequest<Event> putRequest)
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {
-                db.Entry(@event).State = EntityState.Modified;
+                db.Entry(putRequest.Payload).State = EntityState.Modified;
                 db.SaveChanges();
 
-                return new EventResponse() { EventId = @event.Id, Event = @event };
+                return new EventResponse() { EventId = putRequest.Payload.Id, Event = putRequest.Payload };
             }
         }
 
-        public Response DeleteEvent(int id)
+        public Response DeleteEvent(IdRequest idRequest)
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {
-                var @event = db.Events.Find(id);
+                var @event = db.Events.Find(idRequest.Id);
 
                 if (@event == null)
                 {
@@ -128,7 +128,7 @@ namespace EventSourceWebApi.DataContext.Repositories
                         Result = false,
                         Errors = new List<ResponseError>()
                         {
-                            new ResponseError() { Error = $"The Event with Id: {id} was not found." }
+                            new ResponseError() { Error = $"The Event with Id: {idRequest.Id} was not found." }
                         }
                     };
                 }

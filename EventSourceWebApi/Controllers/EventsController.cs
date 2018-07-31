@@ -92,8 +92,9 @@ namespace EventSourceWebApi.Controllers
         [HttpPut("{id}")]
         public IActionResult PutEvent(int id, [FromBody]Event @event)
         {
-            _logger.Information($"Editing Event with Id: {id}.");
-            var response = _eventsService.UpdateEvent(id, @event);
+            var putRequest = new PutRequest<Event>() { Id = id, Payload = @event };
+            _logger.Information($"Editing Event with Id: {putRequest.Id}.");
+            var response = _eventsService.UpdateEvent(putRequest);
 
             if (!response.Result)
             {
@@ -111,16 +112,17 @@ namespace EventSourceWebApi.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteEvent(int id)
         {
-            _logger.Information($"Deleting Event with id: {id}");
-            var response = _eventsService.DeleteEvent(id);
+            var idRequest = new IdRequest() { Id = id };
+            _logger.Information($"Deleting Event with id: {idRequest.Id}");
+            var response = _eventsService.DeleteEvent(idRequest);
 
             if (!response.Result)
             {
-                _logger.Error(LoggingMessages.EventNotFound(id));
+                _logger.Error(LoggingMessages.EventNotFound(idRequest.Id));
                 return NotFound(response.Errors);
             }
             
-            _logger.Information($"The Event with Id: {id} has been successfully deleted.");
+            _logger.Information($"The Event with Id: {idRequest.Id} has been successfully deleted.");
             return Ok();
         }
     }
