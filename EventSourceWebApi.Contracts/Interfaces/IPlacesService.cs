@@ -10,12 +10,12 @@ namespace EventSourceWebApi.Contracts.Interfaces
     {
         PlaceResponse GetAllPlaces(PlaceSearchRequest placeRequest); //todo GetAllPlacesResponse //search, paging?! limit. MAX LIMIT = 1000 (search, consider nwew method)
 
-        PlaceResponse GetPlace(int id); 
+        PlaceResponse GetPlace(IdRequest id); 
 
         PlaceResponse CreatePlace(PostRequest<Place> place); 
 
         PlaceResponse UpdatePlace(Place place, int id); 
 
-        Response DeletePlace(int id); 
+        Response DeletePlace(IdRequest id); 
     }
 }
