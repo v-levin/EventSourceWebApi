@@ -83,13 +83,10 @@ namespace EventSourceWebApi.DataContext.Repositories
             using (var db = new EventSourceDbContext(_contextOptions))
             {
                 var place = db.Places.Find(request.Id);
-               
                 if (place != null)
                 {
-
                     return new PlaceResponse() { Place = place, Result = true };
                 }
-
                 return new PlaceResponse() { Place = place, Result = false };
             }
         }
