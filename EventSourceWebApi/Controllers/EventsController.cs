@@ -37,10 +37,11 @@ namespace EventSourceWebApi.Controllers
             _logger.Information(searchRequest.ToString());
             var response = _eventsService.GetEvents(searchRequest);
 
+            if (response.Events.Count == 0)
+                return NotFound(searchRequest);
+
             if (!response.Result)
-            {
                 return BadRequest(response.Errors);
-            }
             
             return Ok(response.Events);
         }
