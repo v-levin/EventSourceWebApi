@@ -25,9 +25,9 @@ namespace EventSourceWebApi.Controllers
         /// <returns>Collection of Places</returns>
         ///
         [HttpGet]
-        public IActionResult GetAllPlaces(string name, string location, string city)
+        public IActionResult GetAllPlaces(string name, string location, string city, int limit, int offset)
         {
-            var request = new PlaceSearchRequest() { Name = name, Location = location, City = city };
+            var request = new PlaceSearchRequest() { Name = name, Location = location, City = city, Limit = limit, Offset = offset };
             _logger.Information(request.ToString());
             var response = _placeServices.GetAllPlaces(request);
 

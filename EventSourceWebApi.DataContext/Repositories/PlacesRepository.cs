@@ -23,22 +23,21 @@ namespace EventSourceWebApi.DataContext.Repositories
         public PlacesResponse GetAllPlaces(PlaceSearchRequest placeRequest)
         {
 
-            Expression<Func<Place, bool>> checkName = p => p.Name.StartsWith(placeRequest.Name);
-            Expression<Func<Place, bool>> checkLocation = p => p.Location.Contains(placeRequest.Location);
-            Expression<Func<Place, bool>> checkCity = p => p.City.Contains(placeRequest.City);
+            Expression<Func<string, string, bool>> startsWith = (p, e) => p.ToLower().StartsWith(e.ToLower());
+            Expression<Func<string, string, bool>> contains = (p, e) => p.ToLower().Contains(e.ToLower());
 
             using (var db = new EventSourceDbContext(_contextOptions))
             {
                 IQueryable<Place> placeQuery = db.Places;
-                placeQuery = !string.IsNullOrEmpty(placeRequest.Name) ? placeQuery.Where(checkName) :
-                             !string.IsNullOrEmpty(placeRequest.City) ? placeQuery.Where(checkCity) :
-                             !string.IsNullOrEmpty(placeRequest.Location) ? placeQuery.Where(checkLocation) : placeQuery;
+                placeQuery = !string.IsNullOrEmpty(placeRequest.Name) ? placeQuery.Where(p => startsWith.Compile()(p.Name, placeRequest.Name)) :
+                             !string.IsNullOrEmpty(placeRequest.City) ? placeQuery.Where(p => contains.Compile()(p.City, placeRequest.City)) :
+                             !string.IsNullOrEmpty(placeRequest.Location) ? placeQuery.Where(p => contains.Compile()(p.Location, placeRequest.Location)) : placeQuery;
 
 
                 var places = placeQuery
+                    .OrderBy(p => p.Name)
                     .Skip(placeRequest.Offset)
                     .Take(placeRequest.Limit)
-                    .OrderBy(p => p.Name)
                     .ToList();
 
                 return new PlacesResponse { Places = places, TotalPlaces = places.Count() };

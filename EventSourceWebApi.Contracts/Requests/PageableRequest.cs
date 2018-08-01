@@ -2,9 +2,9 @@
 {
     public class PageableRequest
     {
-        public int Limit { get; set; } = 5;
+        public int Limit { get; set; } = 10;
 
-        public int Offset { get; set; } = 0;
+        public int Offset { get; set; } 
 
     }
 }
