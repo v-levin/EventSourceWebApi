@@ -21,13 +21,13 @@ namespace EventSourceWebApi.DataContext.Repositories
 
         public EventsResponse GetEvents(EventSearchRequest searchRequest)
         {
+            Expression<Func<string, string, bool>> startsWithExpression = (e, r) => e.ToLower().StartsWith(r.ToLower());
+            Expression<Func<string, string, bool>> containsExpression = (e, r) => e.ToLower().Contains(r.ToLower());
+            Func<string, string, bool> startsWith = startsWithExpression.Compile();
+            Func<string, string, bool> contains = containsExpression.Compile();
+
             using (var db = new EventSourceDbContext(_dbContext))
             {
-                Expression<Func<string, string, bool>> startsWithExpression = (e, r) => e.ToLower().StartsWith(r.ToLower());
-                Expression<Func<string, string, bool>> containsExpression = (e, r) => e.ToLower().Contains(r.ToLower());
-                Func<string, string, bool> startsWith = startsWithExpression.Compile();
-                Func<string, string, bool> contains = containsExpression.Compile();
-
                 var events = db.Events.Select(e => e);
 
                 if (!string.IsNullOrEmpty(searchRequest.Name))
@@ -42,17 +42,15 @@ namespace EventSourceWebApi.DataContext.Repositories
                 if (!string.IsNullOrEmpty(searchRequest.Location))
                     events = events.Where(e => contains(e.Location, searchRequest.Location));
 
-
-                var response = new EventsResponse()
+                return new EventsResponse()
                 {
                     TotalCount = events.Count(),
                     Events = events
+                                .OrderBy(e => e.Name)
                                 .Skip(searchRequest.Offset)
                                 .Take(searchRequest.Limit)
                                 .ToList()
                 };
-
-                return response;
             }
         }
 

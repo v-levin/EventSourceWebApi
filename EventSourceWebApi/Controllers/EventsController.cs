@@ -23,14 +23,16 @@ namespace EventSourceWebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetEvents(string name, string city, string category, string location)
+        public IActionResult GetEvents(string name, string city, string category, string location, int limit, int offset)
         {
             var searchRequest = new EventSearchRequest()
             {
                 Name = name,
                 City = city,
                 Category = category,
-                Location = location
+                Location = location,
+                Limit = limit,
+                Offset = offset
             };
 
             _logger.Information(searchRequest.ToString());
