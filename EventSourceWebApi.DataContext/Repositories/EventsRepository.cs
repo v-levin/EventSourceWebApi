@@ -3,8 +3,10 @@ using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.Contracts.Requests;
 using EventSourceWebApi.Contracts.Responses;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace EventSourceWebApi.DataContext.Repositories
 {
@@ -21,26 +23,34 @@ namespace EventSourceWebApi.DataContext.Repositories
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {
-                var response = new EventsResponse();
+                Expression<Func<string, string, bool>> startsWithExpression = (e, r) => e.ToLower().StartsWith(r.ToLower());
+                Expression<Func<string, string, bool>> containsExpression = (e, r) => e.ToLower().Contains(r.ToLower());
+                Func<string, string, bool> startsWith = startsWithExpression.Compile();
+                Func<string, string, bool> contains = containsExpression.Compile();
 
                 var events = db.Events.Select(e => e);
 
                 if (!string.IsNullOrEmpty(searchRequest.Name))
-                    events = events.Where(e => e.Name.ToLower().StartsWith(searchRequest.Name.ToLower()));
+                    events = events.Where(e => startsWith(e.Name, searchRequest.Name));
 
                 if (!string.IsNullOrEmpty(searchRequest.City))
-                    events = events.Where(e => e.City.ToLower().Contains(searchRequest.City.ToLower()));
+                    events = events.Where(e => contains(e.City, searchRequest.City));
 
                 if (!string.IsNullOrEmpty(searchRequest.Category))
-                    events = events.Where(e => e.Category.ToLower().Contains(searchRequest.Category.ToLower()));
+                    events = events.Where(e => contains(e.Category, searchRequest.Category));
 
                 if (!string.IsNullOrEmpty(searchRequest.Location))
-                    events = events.Where(e => e.Location.ToLower().Contains(searchRequest.Location.ToLower()));
+                    events = events.Where(e => contains(e.Location, searchRequest.Location));
 
-                response.Events = events
-                                    .Skip(searchRequest.Offset)
-                                    .Take(searchRequest.Limit)
-                                    .ToList();
+
+                var response = new EventsResponse()
+                {
+                    TotalCount = events.Count(),
+                    Events = events
+                                .Skip(searchRequest.Offset)
+                                .Take(searchRequest.Limit)
+                                .ToList()
+                };
 
                 return response;
             }
