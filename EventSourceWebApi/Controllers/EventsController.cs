@@ -23,14 +23,16 @@ namespace EventSourceWebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetEvents(string name, string city, string category, string location)
+        public IActionResult GetEvents(string name, string city, string category, string location, int limit, int offset)
         {
             var searchRequest = new EventSearchRequest()
             {
                 Name = name,
                 City = city,
                 Category = category,
-                Location = location
+                Location = location,
+                Limit = limit,
+                Offset = offset
             };
 
             _logger.Information(searchRequest.ToString());
@@ -97,9 +99,14 @@ namespace EventSourceWebApi.Controllers
             var putRequest = new PutRequest<Event>() { Id = id, Payload = @event };
             _logger.Information($"Editing Event with Id: {putRequest.Id}.");
             var response = _eventsService.UpdateEvent(putRequest);
-
+            
             if (!response.Result)
+            {
+                if (response.Errors.Count == 0)
+                    return NotFound($"The Event with Id: {putRequest.Id} was not found.");
+
                 return BadRequest(response.Errors);
+            }
 
             return Ok(response.Event);
         }

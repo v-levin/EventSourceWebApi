@@ -118,7 +118,9 @@ namespace EventSourceWebApi.Domain.Services
                 return eventResponse;
             }
 
-            _logger.Information($"The Event with Id: {eventResponse.Event.Id} has been successfully updated.");
+            if (eventResponse.Result)
+                _logger.Information($"The Event with Id: {eventResponse.Event.Id} has been successfully updated.");
+
             return eventResponse;
         }
 

@@ -3,8 +3,10 @@ using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.Contracts.Requests;
 using EventSourceWebApi.Contracts.Responses;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace EventSourceWebApi.DataContext.Repositories
 {
@@ -19,67 +21,37 @@ namespace EventSourceWebApi.DataContext.Repositories
 
         public EventsResponse GetEvents(EventSearchRequest searchRequest)
         {
+            Expression<Func<string, string, bool>> startsWithExpression = (e, r) => e.ToLower().StartsWith(r.ToLower());
+            Expression<Func<string, string, bool>> containsExpression = (e, r) => e.ToLower().Contains(r.ToLower());
+            Func<string, string, bool> startsWith = startsWithExpression.Compile();
+            Func<string, string, bool> contains = containsExpression.Compile();
+
             using (var db = new EventSourceDbContext(_dbContext))
             {
-                var response = new EventsResponse();
+                var events = db.Events.Select(e => e);
 
-                if (string.IsNullOrEmpty(searchRequest.Name) &&
-                    string.IsNullOrEmpty(searchRequest.City) &&
-                    string.IsNullOrEmpty(searchRequest.Category) &&
-                    string.IsNullOrEmpty(searchRequest.Location))
+                if (!string.IsNullOrEmpty(searchRequest.Name))
+                    events = events.Where(e => startsWith(e.Name, searchRequest.Name));
+
+                if (!string.IsNullOrEmpty(searchRequest.City))
+                    events = events.Where(e => contains(e.City, searchRequest.City));
+
+                if (!string.IsNullOrEmpty(searchRequest.Category))
+                    events = events.Where(e => contains(e.Category, searchRequest.Category));
+
+                if (!string.IsNullOrEmpty(searchRequest.Location))
+                    events = events.Where(e => contains(e.Location, searchRequest.Location));
+
+                return new EventsResponse()
                 {
-                    response.Events = db.Events
-                                        .Skip(searchRequest.Offset)
-                                        .Take(searchRequest.Limit)
-                                        .ToList();
-
-                    return response;
-                }
-
-                FilterEvents(searchRequest, db, response);
-
-                response.Events = response.Events
-                                          .Skip(searchRequest.Offset)
-                                          .Take(searchRequest.Limit)
-                                          .ToList();
-
-                return response;
+                    TotalCount = events.Count(),
+                    Events = events
+                                .OrderBy(e => e.Name)
+                                .Skip(searchRequest.Offset)
+                                .Take(searchRequest.Limit)
+                                .ToList()
+                };
             }
-        }
-
-        private void FilterEvents(EventSearchRequest searchRequest, EventSourceDbContext db, EventsResponse response)
-        {
-            if (!string.IsNullOrEmpty(searchRequest.Name))
-                response.Events = db.Events.Where(e => e.Name.ToLower().StartsWith(searchRequest.Name.ToLower())).ToList();
-
-            if (!string.IsNullOrEmpty(searchRequest.City))
-            {
-                if (HasEvents(response.Events))
-                    response.Events = response.Events.Where(e => e.City.ToLower().Contains(searchRequest.City.ToLower())).ToList();
-                else
-                    response.Events = db.Events.Where(e => e.City.ToLower().Contains(searchRequest.City.ToLower())).ToList();
-            }
-
-            if (!string.IsNullOrEmpty(searchRequest.Category))
-            {
-                if (HasEvents(response.Events))
-                    response.Events = response.Events.Where(e => e.Category.ToLower().Contains(searchRequest.Category.ToLower())).ToList();
-                else
-                    response.Events = db.Events.Where(e => e.Category.ToLower().Contains(searchRequest.Category.ToLower())).ToList();
-            }
-
-            if (!string.IsNullOrEmpty(searchRequest.Location))
-            {
-                if (HasEvents(response.Events))
-                    response.Events = response.Events.Where(e => e.Location.ToLower().Contains(searchRequest.Location.ToLower())).ToList();
-                else
-                    response.Events = db.Events.Where(e => e.Location.ToLower().Contains(searchRequest.Location.ToLower())).ToList();
-            }
-        }
-
-        private bool HasEvents(IList<Event> events)
-        {
-            return events != null;
         }
 
         public EventResponse GetEvent(IdRequest idRequest)
@@ -108,6 +80,11 @@ namespace EventSourceWebApi.DataContext.Repositories
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {
+                var @event = db.Events.FirstOrDefault(e => e.Id == putRequest.Id);
+
+                if (@event == null)
+                    return new EventResponse() { Result = false };
+
                 db.Entry(putRequest.Payload).State = EntityState.Modified;
                 db.SaveChanges();
 
