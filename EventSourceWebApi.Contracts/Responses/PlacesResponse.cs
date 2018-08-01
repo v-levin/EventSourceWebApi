@@ -8,6 +8,6 @@ namespace EventSourceWebApi.Contracts.Responses
     {
         public IList<Place> Places { get; set; }
 
-
+        public int TotalPlaces { get; set; }
     }
 }

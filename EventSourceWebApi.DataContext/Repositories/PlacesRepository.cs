@@ -3,7 +3,9 @@ using EventSourceWebApi.Contracts.Interfaces;
 using EventSourceWebApi.Contracts.Requests;
 using EventSourceWebApi.Contracts.Responses;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace EventSourceWebApi.DataContext.Repositories
 {
@@ -16,32 +18,33 @@ namespace EventSourceWebApi.DataContext.Repositories
             _contextOptions = contextOptions;
         }
 
+
+
         public PlacesResponse GetAllPlaces(PlaceSearchRequest placeRequest)
         {
-            var placesResponse = new PlacesResponse();
+
+            Expression<Func<Place, bool>> checkName = p => p.Name.StartsWith(placeRequest.Name);
+            Expression<Func<Place, bool>> checkLocation = p => p.Location.Contains(placeRequest.Location);
+            Expression<Func<Place, bool>> checkCity = p => p.City.Contains(placeRequest.City);
 
             using (var db = new EventSourceDbContext(_contextOptions))
             {
-                IQueryable<Place> getPlacesQuery = db.Places;
+                IQueryable<Place> placeQuery = db.Places;
+                placeQuery = !string.IsNullOrEmpty(placeRequest.Name) ? placeQuery.Where(checkName) :
+                             !string.IsNullOrEmpty(placeRequest.City) ? placeQuery.Where(checkCity) :
+                             !string.IsNullOrEmpty(placeRequest.Location) ? placeQuery.Where(checkLocation) : placeQuery;
 
-                if (!string.IsNullOrEmpty(placeRequest.Name))
-                    getPlacesQuery = db.Places.Where(p => p.Name.StartsWith(placeRequest.Name.ToLower()));
 
-                if (!string.IsNullOrEmpty(placeRequest.Location))
-                    getPlacesQuery = db.Places.Where(p => p.Location.Contains(placeRequest.Location.ToLower()));
-
-                if (!string.IsNullOrEmpty(placeRequest.City))
-                    getPlacesQuery = db.Places.Where(p => p.City.Contains(placeRequest.City.ToLower()));
-
-                var places = getPlacesQuery
+                var places = placeQuery
                     .Skip(placeRequest.Offset)
                     .Take(placeRequest.Limit)
                     .OrderBy(p => p.Name)
                     .ToList();
 
-                return new PlacesResponse() { Places = places };
+                return new PlacesResponse { Places = places, TotalPlaces = places.Count() };
 
             }
+
         }
 
         public PlaceResponse GetPlace(IdRequest request)

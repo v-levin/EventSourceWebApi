@@ -11,7 +11,7 @@ namespace EventSourceWebApi.Domain.Validators
     {
         public PlaceSearchValidator()
         {
-            RuleFor(e => e.Name).MaximumLength(5);
+            RuleFor(e => e.Name).MaximumLength(20);
             RuleFor(e => e.Location).MaximumLength(20);
             RuleFor(e => e.City).MaximumLength(20);
             RuleFor(p => p.Limit).LessThan(100);
