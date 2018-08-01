@@ -97,9 +97,14 @@ namespace EventSourceWebApi.Controllers
             var putRequest = new PutRequest<Event>() { Id = id, Payload = @event };
             _logger.Information($"Editing Event with Id: {putRequest.Id}.");
             var response = _eventsService.UpdateEvent(putRequest);
-
+            
             if (!response.Result)
+            {
+                if (response.Errors.Count == 0)
+                    return NotFound($"The Event with Id: {putRequest.Id} was not found.");
+
                 return BadRequest(response.Errors);
+            }
 
             return Ok(response.Event);
         }

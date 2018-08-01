@@ -23,63 +23,27 @@ namespace EventSourceWebApi.DataContext.Repositories
             {
                 var response = new EventsResponse();
 
-                if (string.IsNullOrEmpty(searchRequest.Name) &&
-                    string.IsNullOrEmpty(searchRequest.City) &&
-                    string.IsNullOrEmpty(searchRequest.Category) &&
-                    string.IsNullOrEmpty(searchRequest.Location))
-                {
-                    response.Events = db.Events
-                                        .Skip(searchRequest.Offset)
-                                        .Take(searchRequest.Limit)
-                                        .ToList();
+                var events = db.Events.Select(e => e);
 
-                    return response;
-                }
+                if (!string.IsNullOrEmpty(searchRequest.Name))
+                    events = events.Where(e => e.Name.ToLower().StartsWith(searchRequest.Name.ToLower()));
 
-                FilterEvents(searchRequest, db, response);
+                if (!string.IsNullOrEmpty(searchRequest.City))
+                    events = events.Where(e => e.City.ToLower().Contains(searchRequest.City.ToLower()));
 
-                response.Events = response.Events
-                                          .Skip(searchRequest.Offset)
-                                          .Take(searchRequest.Limit)
-                                          .ToList();
+                if (!string.IsNullOrEmpty(searchRequest.Category))
+                    events = events.Where(e => e.Category.ToLower().Contains(searchRequest.Category.ToLower()));
+
+                if (!string.IsNullOrEmpty(searchRequest.Location))
+                    events = events.Where(e => e.Location.ToLower().Contains(searchRequest.Location.ToLower()));
+
+                response.Events = events
+                                    .Skip(searchRequest.Offset)
+                                    .Take(searchRequest.Limit)
+                                    .ToList();
 
                 return response;
             }
-        }
-
-        private void FilterEvents(EventSearchRequest searchRequest, EventSourceDbContext db, EventsResponse response)
-        {
-            if (!string.IsNullOrEmpty(searchRequest.Name))
-                response.Events = db.Events.Where(e => e.Name.ToLower().StartsWith(searchRequest.Name.ToLower())).ToList();
-
-            if (!string.IsNullOrEmpty(searchRequest.City))
-            {
-                if (HasEvents(response.Events))
-                    response.Events = response.Events.Where(e => e.City.ToLower().Contains(searchRequest.City.ToLower())).ToList();
-                else
-                    response.Events = db.Events.Where(e => e.City.ToLower().Contains(searchRequest.City.ToLower())).ToList();
-            }
-
-            if (!string.IsNullOrEmpty(searchRequest.Category))
-            {
-                if (HasEvents(response.Events))
-                    response.Events = response.Events.Where(e => e.Category.ToLower().Contains(searchRequest.Category.ToLower())).ToList();
-                else
-                    response.Events = db.Events.Where(e => e.Category.ToLower().Contains(searchRequest.Category.ToLower())).ToList();
-            }
-
-            if (!string.IsNullOrEmpty(searchRequest.Location))
-            {
-                if (HasEvents(response.Events))
-                    response.Events = response.Events.Where(e => e.Location.ToLower().Contains(searchRequest.Location.ToLower())).ToList();
-                else
-                    response.Events = db.Events.Where(e => e.Location.ToLower().Contains(searchRequest.Location.ToLower())).ToList();
-            }
-        }
-
-        private bool HasEvents(IList<Event> events)
-        {
-            return events != null;
         }
 
         public EventResponse GetEvent(IdRequest idRequest)
@@ -108,6 +72,11 @@ namespace EventSourceWebApi.DataContext.Repositories
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {
+                var @event = db.Events.FirstOrDefault(e => e.Id == putRequest.Id);
+
+                if (@event == null)
+                    return new EventResponse() { Result = false };
+
                 db.Entry(putRequest.Payload).State = EntityState.Modified;
                 db.SaveChanges();
 
