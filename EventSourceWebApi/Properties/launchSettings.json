@@ -19,7 +19,7 @@
     "EventSourceWebApi": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/values",
+      "launchUrl": "api/events",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

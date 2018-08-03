@@ -12,7 +12,13 @@ namespace EventSourceWebApi.Domain.Validators
         {
             _placesRepository = placesRepository;
 
-            RuleFor(e => e.Id).GreaterThan(0);
+            RuleFor(e => e.Id).Must(id => CheckIfPlaceExists(id)).WithMessage("Place Not Found").GreaterThan(0);
+        }
+
+        private bool CheckIfPlaceExists(int id)
+        {
+            var eventResponse = _placesRepository.GetPlace(new PlaceIdRequest { Id = id });
+            return eventResponse.Result && eventResponse.Place != null;
         }
     }
 }

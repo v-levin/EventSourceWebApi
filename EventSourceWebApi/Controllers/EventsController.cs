@@ -23,7 +23,7 @@ namespace EventSourceWebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetEvents(string name, string city, string category, string location, int limit, int offset)
+        public IActionResult GetEvents(string name, string city, string category, string location, int offset, int limit = 10)
         {
             var searchRequest = new EventSearchRequest()
             {
@@ -116,10 +116,14 @@ namespace EventSourceWebApi.Controllers
         {
             var idRequest = new EventIdRequest() { Id = id };
             _logger.Information($"Deleting Event with id: {idRequest.Id}");
+
             var response = _eventsService.DeleteEvent(idRequest);
 
             if (!response.Result)
                 return BadRequest(response.Errors);
+
+            if (response.Errors.Count > 0)
+                return NotFound(response.Errors);
 
             return Ok();
         }

@@ -85,10 +85,17 @@ namespace EventSourceWebApi.DataContext.Repositories
                 if (@event == null)
                     return new EventResponse() { Result = false };
 
-                db.Entry(putRequest.Payload).State = EntityState.Modified;
+                @event.Name = putRequest.Payload.Name;
+                @event.Description = putRequest.Payload.Description;
+                @event.City = putRequest.Payload.City;
+                @event.Category = putRequest.Payload.Category;
+                @event.DateRegistered = putRequest.Payload.DateRegistered;
+                @event.Location = putRequest.Payload.Location;
+                @event.Seats = putRequest.Payload.Seats;
+                
                 db.SaveChanges();
 
-                return new EventResponse() { Event = putRequest.Payload };
+                return new EventResponse() { Event = @event };
             }
         }
 
@@ -97,18 +104,6 @@ namespace EventSourceWebApi.DataContext.Repositories
             using (var db = new EventSourceDbContext(_dbContext))
             {
                 var @event = db.Events.Find(idRequest.Id);
-
-                if (@event == null)
-                {
-                    return new Response()
-                    {
-                        Result = false,
-                        Errors = new List<ResponseError>()
-                        {
-                            new ResponseError() { Error = $"The Event with Id: {idRequest.Id} was not found." }
-                        }
-                    };
-                }
 
                 db.Events.Remove(@event);
                 db.SaveChanges();

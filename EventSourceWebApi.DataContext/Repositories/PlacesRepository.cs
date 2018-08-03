@@ -92,7 +92,7 @@ namespace EventSourceWebApi.DataContext.Repositories
                     _place.Name = request.Payload.Name.ToLower();
                     _place.Location = request.Payload.Location.ToLower();
 
-                    db.Places.Attach(request.Payload);
+                    db.Places.Attach(_place);
                     db.SaveChanges();
                     response.Place = _place;
                     return response;
