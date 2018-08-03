@@ -18,8 +18,6 @@ namespace EventSourceWebApi.DataContext.Repositories
             _contextOptions = contextOptions;
         }
 
-
-
         public PlacesResponse GetAllPlaces(PlaceSearchRequest placeRequest)
         {
 
@@ -46,7 +44,7 @@ namespace EventSourceWebApi.DataContext.Repositories
 
         }
 
-        public PlaceResponse GetPlace(IdRequest request)
+        public PlaceResponse GetPlace(PlaceIdRequest request)
         {
             using (var db = new EventSourceDbContext(_contextOptions))
             {
@@ -104,7 +102,7 @@ namespace EventSourceWebApi.DataContext.Repositories
             }
         }
 
-        public Response DeletePlace(IdRequest request)
+        public Response DeletePlace(PlaceIdRequest request)
         {
             var response = new Response();
             using (var db = new EventSourceDbContext(_contextOptions))

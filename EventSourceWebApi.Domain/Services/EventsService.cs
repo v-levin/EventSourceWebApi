@@ -37,17 +37,18 @@ namespace EventSourceWebApi.Domain.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.Error("An exception occurred when getting events", ex);
                 response.Result = false;
+                response.Errors.Add(new ResponseError { Name = "GetEventsException", Error = "An exception occurred when getting events" });
                 return response;
             }
 
             return response;
         }
 
-        public EventResponse GetEvent(IdRequest idRequest)
+        public EventResponse GetEvent(EventIdRequest idRequest)
         {
-            var validator = new IdRequestValidator().Validate(idRequest).ToResponse();
+            var validator = new EventIdRequestValidator(_eventsRepository).Validate(idRequest).ToResponse();
 
             if (!validator.Result)
                 return new EventResponse { Result = false, Errors = validator.Errors };
@@ -63,12 +64,6 @@ namespace EventSourceWebApi.Domain.Services
                 _logger.Error(ex.Message);
                 response.Result = false;
                 return response;
-            }
-
-            if (response.Event == null)
-            {
-                _logger.Information(LoggingMessages.EventNotFound(idRequest.Id));
-                response.Result = false;
             }
 
             return response;
@@ -94,19 +89,18 @@ namespace EventSourceWebApi.Domain.Services
                 return eventResponse;
             }
 
-            _logger.Information("The Event has been successfully created.");
             return eventResponse;
         }
 
         public EventResponse UpdateEvent(PutRequest<Event> putRequest)
         {
-            var validator = new UpdateEventValidator().Validate(putRequest).ToResponse();
+            var validator = new UpdateEventValidator(_eventsRepository).Validate(putRequest).ToResponse();
 
             if (!validator.Result)
                 return ErrorResponse(validator);
 
             var eventResponse = new EventResponse();
-                        
+
             try
             {
                 eventResponse = _eventsRepository.UpdateEvent(putRequest);
@@ -133,9 +127,9 @@ namespace EventSourceWebApi.Domain.Services
             };
         }
 
-        public Response DeleteEvent(IdRequest idRequest)
+        public Response DeleteEvent(EventIdRequest idRequest)
         {
-            var validator = new IdRequestValidator().Validate(idRequest).ToResponse();
+            var validator = new EventIdRequestValidator(_eventsRepository).Validate(idRequest).ToResponse();
 
             if (!validator.Result)
                 return new EventResponse { Result = false, Errors = validator.Errors };
@@ -153,11 +147,6 @@ namespace EventSourceWebApi.Domain.Services
                 response.Errors = new List<ResponseError>() { new ResponseError() { Error = ex.Message } };
                 return response;
             }
-
-            if (response.Result)
-                _logger.Information($"The Event with Id: {idRequest.Id} has been successfully deleted.");
-            else
-                _logger.Information(LoggingMessages.EventNotFound(idRequest.Id));
 
             return response;
         }

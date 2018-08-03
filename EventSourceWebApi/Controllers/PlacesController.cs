@@ -54,7 +54,7 @@ namespace EventSourceWebApi.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var request = new IdRequest { Id = id };
+            var request = new PlaceIdRequest { Id = id };
             _logger.Information(LoggingMessages.GettingPlaceById(id));
             var response = _placeServices.GetPlace(request);
             if (!response.Result)
@@ -122,7 +122,7 @@ namespace EventSourceWebApi.Controllers
         public IActionResult Delete(int id)
         {
             _logger.Information($"Deleting place with id: {id}");
-            var request = new IdRequest() { Id = id };
+            var request = new PlaceIdRequest() { Id = id };
             var response = _placeServices.DeletePlace(request);
             if (!response.Result)
             {

@@ -54,7 +54,7 @@ namespace EventSourceWebApi.DataContext.Repositories
             }
         }
 
-        public EventResponse GetEvent(IdRequest idRequest)
+        public EventResponse GetEvent(EventIdRequest idRequest)
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {
@@ -92,7 +92,7 @@ namespace EventSourceWebApi.DataContext.Repositories
             }
         }
 
-        public Response DeleteEvent(IdRequest idRequest)
+        public Response DeleteEvent(EventIdRequest idRequest)
         {
             using (var db = new EventSourceDbContext(_dbContext))
             {

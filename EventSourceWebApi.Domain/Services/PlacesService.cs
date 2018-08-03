@@ -41,10 +41,10 @@ namespace EventSourceWebApi.Domain.Services
             }
         }
 
-        public PlaceResponse GetPlace(IdRequest request)
+        public PlaceResponse GetPlace(PlaceIdRequest request)
         {
             var placeResponse = new PlaceResponse();
-            var validator = new IdRequestValidator().Validate(request).ToResponse();
+            var validator = new PlaceIdRequestValidator(_placeRepository).Validate(request).ToResponse();
 
             if (!validator.Result)
             {
@@ -102,10 +102,10 @@ namespace EventSourceWebApi.Domain.Services
             }
         }
 
-        public Response DeletePlace(IdRequest request)
+        public Response DeletePlace(PlaceIdRequest request)
         {
             var response = new Response();
-            var validator = new IdRequestValidator().Validate(request).ToResponse();
+            var validator = new PlaceIdRequestValidator(_placeRepository).Validate(request).ToResponse();
 
             if (!validator.Result)
             {

@@ -6,9 +6,9 @@ namespace EventSourceWebApi.Contracts.Interfaces
     public interface IEventsRepository
     {
         EventsResponse GetEvents(EventSearchRequest request);
-        EventResponse GetEvent(IdRequest id);
+        EventResponse GetEvent(EventIdRequest id);
         EventResponse CreateEvent(PostRequest<Event> postRequest);
         EventResponse UpdateEvent(PutRequest<Event> putRequest);
-        Response DeleteEvent(IdRequest idRequest);
+        Response DeleteEvent(EventIdRequest idRequest);
     }
 }

@@ -1,8 +1,5 @@
 ﻿using EventSourceWebApi.Contracts.Requests;
 using EventSourceWebApi.Contracts.Responses;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EventSourceWebApi.Contracts.Interfaces
 {
@@ -10,12 +7,12 @@ namespace EventSourceWebApi.Contracts.Interfaces
     {
         PlacesResponse GetAllPlaces(PlaceSearchRequest placeRequest);
 
-        PlaceResponse GetPlace(IdRequest id);
+        PlaceResponse GetPlace(PlaceIdRequest id);
 
         PlaceResponse CreatePlace(PostRequest<Place> Place);
 
         PlaceResponse UpdatePlace(PutRequest<Place> Place);
 
-        Response DeletePlace(IdRequest id);
+        Response DeletePlace(PlaceIdRequest id);
     }
 }
