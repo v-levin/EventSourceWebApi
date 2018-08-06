@@ -18,8 +18,6 @@ namespace EventSourceWebApi.DataContext.Repositories
             _contextOptions = contextOptions;
         }
 
-
-
         public PlacesResponse GetAllPlaces(PlaceSearchRequest placeRequest)
         {
 
