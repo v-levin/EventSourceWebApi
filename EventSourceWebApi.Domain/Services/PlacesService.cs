@@ -1,11 +1,13 @@
 ﻿using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Extensions;
 using EventSourceWebApi.Contracts.Interfaces;
+using EventSourceWebApi.Contracts.Messages;
 using EventSourceWebApi.Contracts.Requests;
 using EventSourceWebApi.Contracts.Responses;
 using EventSourceWebApi.Domain.Validators;
 using Serilog;
 using System;
+using System.Collections.Generic;
 
 namespace EventSourceWebApi.Domain.Services
 {
@@ -25,102 +27,158 @@ namespace EventSourceWebApi.Domain.Services
             var validator = new PlaceSearchValidator().Validate(request).ToResponse();
 
             if (!validator.Result)
-            {
-                _logger.Error($"Invalid request {request}");
                 return new PlacesResponse { Errors = validator.Errors, Result = false };
-            }
+
+            var response = new PlacesResponse();
 
             try
             {
-                return _placeRepository.GetAllPlaces(request);
+                response = _placeRepository.GetAllPlaces(request);
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
-                return new PlacesResponse { Result = false };
+                _logger.Error(ExceptionMessages.GetPlacesException, ex);
+                response.Result = false;
+                response.Errors.Add(new ResponseError { Name = "GetEventsException", Error = ExceptionMessages.GetPlacesException });
+                return response;
             }
+
+            return response;
         }
 
-        public PlaceResponse GetPlace(IdRequest request)
+        public PlaceResponse GetPlace(PlaceIdRequest request)
         {
-            var placeResponse = new PlaceResponse();
-            var validator = new IdRequestValidator().Validate(request).ToResponse();
+            var response = new PlaceResponse();
+            var validator = new Response();
 
-            if (!validator.Result)
-            {
-                _logger.Error($"Invalid request for the id: {request.Id }");
-                return new PlaceResponse() { Result = false, Errors = validator.Errors };
-            }
             try
             {
-                return _placeRepository.GetPlace(request);
+                validator = new PlaceIdRequestValidator(_placeRepository).Validate(request).ToResponse();
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
-                return new PlaceResponse() { Result = false };
+                _logger.Error(ExceptionMessages.GetPlaceException, ex);
+                response.Result = false;
+                response.Errors.Add(new ResponseError { Name = "GetPlaceException", Error = ExceptionMessages.GetPlaceException });
+                return response;
             }
+
+            if (!validator.Result)
+                return new PlaceResponse() { Errors = validator.Errors };
+
+            try
+            {
+                response = _placeRepository.GetPlace(request);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ExceptionMessages.GetPlaceException, ex);
+                response.Result = false;
+                response.Errors.Add(new ResponseError { Name = "GetPlaceException", Error = ExceptionMessages.GetPlaceException });
+                return response;
+            }
+
+            return response;
         }
 
         public PlaceResponse CreatePlace(PostRequest<Place> request)
         {
-            var response = new PlacesValidator().Validate(request.Payload).ToResponse();
+            var response = new PlaceResponse();
 
-            if (!response.Result)
+            if (request.Payload != null)
             {
-                _logger.Error($"Invalid request {request}");
-                return new PlaceResponse { Errors = response.Errors, Result = false };
+                var validator = new PlacesValidator().Validate(request.Payload).ToResponse();
+
+                if (!validator.Result)
+                    return new PlaceResponse { Errors = validator.Errors, Result = false };
+
+                try
+                {
+                    return _placeRepository.CreatePlace(request);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ExceptionMessages.CreatePlaceException, ex);
+                    response.Result = false;
+                    response.Errors.Add(new ResponseError { Name = "CreatePlaceException", Error = ExceptionMessages.CreatePlaceException });
+                    return response;
+                }
             }
-            try
-            {
-                return _placeRepository.CreatePlace(request);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex.Message);
-                return new PlaceResponse() { Result = false };
-            }
+
+            _logger.Information(ExceptionMessages.NullObject);
+            response.Result = false;
+            response.Errors.Add(new ResponseError() { Name = "NullObject", Error = ExceptionMessages.NullObject });
+            return response;
         }
 
         public PlaceResponse UpdatePlace(PutRequest<Place> request)
         {
-            var validator = new UpdatePlaceValidator().Validate(request).ToResponse(); 
-            
-            if (!validator.Result)
-            {
-                _logger.Error($"Invalid request {request}");
-                return new PlaceResponse { Errors = validator.Errors, Result = false };
-            }
+            var validator = new Response();
+            var response = new PlaceResponse();
+
             try
             {
-                return _placeRepository.UpdatePlace(request);
+                validator = new UpdatePlaceValidator(_placeRepository).Validate(request).ToResponse();
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
-                return new PlaceResponse() { Result = false };
+                _logger.Error(ExceptionMessages.UpdatePlaceException, ex);
+                response.Result = false;
+                response.Errors.Add(new ResponseError { Name = "UpdatePlaceException", Error = ExceptionMessages.UpdatePlaceException });
+                return response;
             }
-        }
-
-        public Response DeletePlace(IdRequest request)
-        {
-            var response = new Response();
-            var validator = new IdRequestValidator().Validate(request).ToResponse();
 
             if (!validator.Result)
+                return new PlaceResponse { Errors = validator.Errors, Result = false };
+
+            try
             {
-                _logger.Error($"Invalid request for the id: {request.Id }");
-                return new Response() { Result = false, Errors = validator.Errors };
+                response = _placeRepository.UpdatePlace(request);
             }
+            catch (Exception ex)
+            {
+                _logger.Error(ExceptionMessages.UpdatePlaceException, ex);
+                response.Result = false;
+                response.Errors.Add(new ResponseError { Name = "UpdateEventException", Error = ExceptionMessages.UpdatePlaceException });
+                return response;
+            }
+
+            if (response.Result)
+                _logger.Information($"The Place with Id: {response.Place.Id} has been successfully updated.");
+
+            return response;
+        }
+
+        public Response DeletePlace(PlaceIdRequest request)
+        {
+            var validator = new Response();
+            var response = new Response();
+
+            try
+            {
+                validator = new PlaceIdRequestValidator(_placeRepository).Validate(request).ToResponse();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ExceptionMessages.DeleteEventException, ex);
+                response.Result = false;
+                response.Errors.Add(new ResponseError { Name = "DeletePlaceException", Error = ExceptionMessages.DeletePlaceException });
+                return response;
+            }
+
+            if (!validator.Result)
+                return new Response() { Errors = validator.Errors };
+
             try
             {
                 return _placeRepository.DeletePlace(request);
-               
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
-                return new Response() { Result = false };
+                _logger.Error(ExceptionMessages.DeletePlaceException, ex);
+                response.Result = false;
+                response.Errors.Add(new ResponseError { Name = "DeletePlaceException", Error = ExceptionMessages.DeletePlaceException });
+                return response;
             }
         }
     }

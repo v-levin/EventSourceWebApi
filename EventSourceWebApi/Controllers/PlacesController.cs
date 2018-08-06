@@ -25,24 +25,18 @@ namespace EventSourceWebApi.Controllers
         /// <returns>Collection of Places</returns>
         ///
         [HttpGet]
-        public IActionResult GetAllPlaces(string name, string location, string city, int limit, int offset)
+        public IActionResult GetAllPlaces(string name, string location, string city, int offset, int limit = 10)
         {
             var request = new PlaceSearchRequest() { Name = name, Location = location, City = city, Limit = limit, Offset = offset };
             _logger.Information(request.ToString());
             var response = _placeServices.GetAllPlaces(request);
 
             if (!response.Result)
-            {
                 return BadRequest(response.Errors);
-            }
 
             if (response.Places.Count == 0)
-            {
-                _logger.Information($"Records with {request} don't found");
                 return NotFound(request);
-            }
 
-            _logger.Information("The Places has been successfully taken.");
             return Ok(response.Places);
         }
 
@@ -54,19 +48,17 @@ namespace EventSourceWebApi.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var request = new IdRequest { Id = id };
+            var request = new PlaceIdRequest { Id = id };
             _logger.Information(LoggingMessages.GettingPlaceById(id));
+
             var response = _placeServices.GetPlace(request);
+
             if (!response.Result)
-            {
-                if (response.Errors.Count == 0)
-                {
-                    _logger.Information($"The Place with Id: {id} was not found");
-                    return NotFound();
-                }
                 return BadRequest(response.Errors);
-            }
-            _logger.Information($"The place with id:{id} has been successfully taken.");
+
+            if (response.Place == null)
+                return NotFound("Place Not Found.");
+
             return Ok(response.Place);
         }
 
@@ -82,8 +74,7 @@ namespace EventSourceWebApi.Controllers
 
             if (!response.Result)
                 return BadRequest(response.Errors);
-
-            _logger.Information(LoggingMessages.PlaceSucessfullyCreated(response.Place.Id));
+            
             return CreatedAtAction("Post", response.Place.Id);
         }
 
@@ -96,20 +87,12 @@ namespace EventSourceWebApi.Controllers
         public IActionResult Put(int id, [FromBody] Place place)
         {
             _logger.Information($"Editing place with id: {id}");
-            var request = new PutRequest<Place> { Payload = place };
+            var request = new PutRequest<Place> { Id = id, Payload = place };
             var placeResponse = _placeServices.UpdatePlace(request);
 
             if (!placeResponse.Result)
-            {
-                if (placeResponse.Errors.Count == 0)
-                {
-                    _logger.Information($"The Place with Id: {id} was not found");
-                    return NotFound();
-                }
                 return BadRequest(placeResponse.Errors);
-            }
-
-            _logger.Information($"Place with id: {placeResponse.Place.Id} is succesffuly edited");
+            
             return Ok(placeResponse.Place.Id);
         }
 
@@ -122,18 +105,16 @@ namespace EventSourceWebApi.Controllers
         public IActionResult Delete(int id)
         {
             _logger.Information($"Deleting place with id: {id}");
-            var request = new IdRequest() { Id = id };
+            var request = new PlaceIdRequest() { Id = id };
+
             var response = _placeServices.DeletePlace(request);
+
             if (!response.Result)
-            {
-                if (response.Errors.Count == 0)
-                {
-                    _logger.Information($"The Place with Id: {id} was not found");
-                    return NotFound();
-                }
                 return BadRequest(response.Errors);
-            }
-            _logger.Information($"The Place with id: {id} has been successfully delited");
+
+            if (response.Errors.Count > 0)
+                return NotFound(response.Errors);
+            
             return Ok();
         }
     }

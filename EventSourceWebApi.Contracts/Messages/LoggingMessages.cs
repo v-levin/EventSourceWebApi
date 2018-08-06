@@ -4,7 +4,6 @@ namespace EventSourceWebApi.Contracts.Messages
 {
     public class LoggingMessages
     {
-
         public static string EventNotFound(int id)
         {
             return $"The Event with Id: {id} was not found.";

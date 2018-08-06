@@ -23,7 +23,7 @@ namespace EventSourceWebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetEvents(string name, string city, string category, string location, int limit, int offset)
+        public IActionResult GetEvents(string name, string city, string category, string location, int offset, int limit = 10)
         {
             var searchRequest = new EventSearchRequest()
             {
@@ -55,17 +55,16 @@ namespace EventSourceWebApi.Controllers
         [HttpGet("{id}")]
         public IActionResult GetEvent(int id)
         {
-            var idRequest = new IdRequest() { Id = id };
+            var idRequest = new EventIdRequest() { Id = id };
             _logger.Information($"Getting Event with Id: {idRequest.Id}.");
+
             var response = _eventsService.GetEvent(idRequest);
 
             if (!response.Result)
-            {
-                if (response.Errors.Count == 0)
-                    return NotFound($"The Event with Id: {idRequest.Id} was not found.");
-
                 return BadRequest(response.Errors);
-            }
+
+            if (response.Event == null)
+                return NotFound("Event Not Found.");
 
             return Ok(response.Event);
         }
@@ -98,15 +97,11 @@ namespace EventSourceWebApi.Controllers
         {
             var putRequest = new PutRequest<Event>() { Id = id, Payload = @event };
             _logger.Information($"Editing Event with Id: {putRequest.Id}.");
+
             var response = _eventsService.UpdateEvent(putRequest);
             
             if (!response.Result)
-            {
-                if (response.Errors.Count == 0)
-                    return NotFound($"The Event with Id: {putRequest.Id} was not found.");
-
                 return BadRequest(response.Errors);
-            }
 
             return Ok(response.Event);
         }
@@ -119,17 +114,16 @@ namespace EventSourceWebApi.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteEvent(int id)
         {
-            var idRequest = new IdRequest() { Id = id };
+            var idRequest = new EventIdRequest() { Id = id };
             _logger.Information($"Deleting Event with id: {idRequest.Id}");
+
             var response = _eventsService.DeleteEvent(idRequest);
 
             if (!response.Result)
-            {
-                if (response.Errors.Count == 0)
-                    return NotFound($"The Event with Id: {idRequest.Id} was not found.");
-
                 return BadRequest(response.Errors);
-            }
+
+            if (response.Errors.Count > 0)
+                return NotFound(response.Errors);
 
             return Ok();
         }
