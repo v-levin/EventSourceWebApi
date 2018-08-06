@@ -1,4 +1,5 @@
-﻿using EventSourceWebApi.Contracts.Requests;
+﻿using EventSourceWebApi.Contracts;
+using EventSourceWebApi.Contracts.Requests;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
@@ -22,9 +23,8 @@ namespace EventSourceApiHttpClient
             eventSourceApiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             var placeClient = new PlacesClient(eventSourceApiClient);
-            placeClient.GetAllPlaces(new PlaceSearchRequest() { Name = "mkc", City = "skopje" });
-            placeClient.GetPlace(38);
-
+            var test = new Test(placeClient);
+            test.Run();
         }
     }
 }
