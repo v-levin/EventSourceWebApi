@@ -69,11 +69,17 @@ namespace EventSourceApiHttpClient
             return @event;
         }
 
-        public void PostEvent(Event @event)
+        public int? PostEvent(Event @event)
         {
             var jsonRequest = JsonConvert.SerializeObject(@event);
             var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
             var response = client.PostAsync(client.BaseAddress, content).Result;
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            // returns the Id of the newly created Event
+            return int.Parse(response.Content.ReadAsStringAsync().Result);
         }
     }
 }

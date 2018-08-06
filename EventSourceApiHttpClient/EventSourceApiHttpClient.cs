@@ -12,7 +12,7 @@ namespace EventSourceApiHttpClient
 
             //var events = client.GetEvents(new EventSearchRequest() { City = "skopje" });
             //var @event = client.GetEvent(new EventIdRequest() { Id = 16 });
-            //client.PostEvent(new Event() { Name = "Http Client", Seats = 400, Description = "Http Client Desc", City = "Skopje", Category = "Art", Location = "Central Park", DateRegistered = DateTime.Now });
+            //var id = client.PostEvent(new Event() { Name = "Http Client", Seats = 400, Description = "Http Client Desc", City = "Skopje", Category = "Art", Location = "Central Park", DateRegistered = DateTime.Now });
         }
     }
 }
