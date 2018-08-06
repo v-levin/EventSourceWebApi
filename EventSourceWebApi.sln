@@ -5,11 +5,13 @@ VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventSourceWebApi", "EventSourceWebApi\EventSourceWebApi.csproj", "{9F741BF0-0A5E-42FE-8122-DE94080CBE83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourceWebApi.Contracts", "EventSourceWebApi.Contracts\EventSourceWebApi.Contracts.csproj", "{FAA92B22-94B0-4ED0-A051-F4092D92611E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventSourceWebApi.Contracts", "EventSourceWebApi.Contracts\EventSourceWebApi.Contracts.csproj", "{FAA92B22-94B0-4ED0-A051-F4092D92611E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourceWebApi.DataContext", "EventSourceWebApi.DataContext\EventSourceWebApi.DataContext.csproj", "{17C14B97-8EF2-4ACA-8D4A-D7EB762FAF1A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventSourceWebApi.DataContext", "EventSourceWebApi.DataContext\EventSourceWebApi.DataContext.csproj", "{17C14B97-8EF2-4ACA-8D4A-D7EB762FAF1A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourceWebApi.Domain", "EventSourceWebApi.Domain\EventSourceWebApi.Domain.csproj", "{32124EFC-261C-4349-97BA-34286BC26A91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventSourceWebApi.Domain", "EventSourceWebApi.Domain\EventSourceWebApi.Domain.csproj", "{32124EFC-261C-4349-97BA-34286BC26A91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourceApiHttpClient", "EventSourceApiHttpClient\EventSourceApiHttpClient.csproj", "{BEEC18FC-AF61-4710-94ED-3A5CA9B53438}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{32124EFC-261C-4349-97BA-34286BC26A91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32124EFC-261C-4349-97BA-34286BC26A91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32124EFC-261C-4349-97BA-34286BC26A91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEEC18FC-AF61-4710-94ED-3A5CA9B53438}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEEC18FC-AF61-4710-94ED-3A5CA9B53438}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEEC18FC-AF61-4710-94ED-3A5CA9B53438}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEEC18FC-AF61-4710-94ED-3A5CA9B53438}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
