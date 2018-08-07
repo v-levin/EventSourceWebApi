@@ -9,11 +9,11 @@ namespace EventSourceApiHttpClient
         public static void Main()
         {
             var baseUrl = "http://localhost:49999/api/";
-            var acceptHeader = "application/json";
+            var mediaType = "application/json";
 
-            var eventClient = new EventsClient(baseUrl, acceptHeader); 
+            var eventClient = new EventsClient(baseUrl, mediaType); 
 
-            var placeClient = new PlacesClient(baseUrl, acceptHeader);
+            var placeClient = new PlacesClient(baseUrl, mediaType);
 
             var placeTest = new Test(placeClient);
             placeTest.Run();

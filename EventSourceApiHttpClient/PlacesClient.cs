@@ -16,18 +16,18 @@ namespace EventSourceApiHttpClient
     {
         private HttpClient client;
 
-        public PlacesClient(string baseUrl, string acceptHeader)
+        public PlacesClient(string baseUrl, string mediaType)
         {
-            client = InitHttpClient(baseUrl, acceptHeader);
+            client = InitHttpClient(baseUrl, mediaType);
         }
-        public HttpClient InitHttpClient(string baseUrl, string acceptHeader)
+        public HttpClient InitHttpClient(string baseUrl, string mediaType)
         {
             client = new HttpClient()
             {
                 BaseAddress = new Uri(baseUrl + "places"),
                 Timeout = new TimeSpan(0, 5, 0)
             };
-            client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse(acceptHeader));
+            client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse(mediaType));
 
             return client;
         }
