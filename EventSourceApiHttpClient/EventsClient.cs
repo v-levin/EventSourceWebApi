@@ -1,4 +1,5 @@
 ﻿using EventSourceWebApi.Contracts;
+using EventSourceWebApi.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
@@ -13,43 +14,72 @@ namespace EventSourceApiHttpClient
     public class EventsClient
     {
         private HttpClient client;
-        private const string url = "http://localhost:8080/api/events";
-        private const string acceptHeader = "application/json";
 
-        public EventsClient()
+        public EventsClient(string baseUrl, string acceptHeader)
         {
-            client = HttpClient();
+            client = InitHttpClient(baseUrl, acceptHeader);
         }
 
-        public HttpClient HttpClient()
+        public HttpClient InitHttpClient(string baseUrl, string acceptHeader)
         {
             client = new HttpClient()
             {
-                BaseAddress = new Uri(url),
-                Timeout = new TimeSpan(0, 0, 5)
+                BaseAddress = new Uri(baseUrl + "events"),
+                Timeout = new TimeSpan(0, 5, 0)
             };
             client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse(acceptHeader));
 
             return client;
         }
 
-        public IEnumerable<Event> GetEvents(string name, string city, string category, string location, int offset, int limit)
+        public IEnumerable<Event> GetEvents(EventSearchRequest request)
         {
-            return null;
-        }
+            var events = new List<Event>();
 
-        public Event GetEvent(int id)
-        {
-            Event @event = null;
-            var response = client.GetAsync($"{url}/{id}").Result;
+            var response = client.GetAsync(
+                    $"{client.BaseAddress}?" +
+                    $"name={request.Name}&" +
+                    $"city={request.City}&" +
+                    $"category={request.Category}&" +
+                    $"location={request.Location}&" +
+                    $"limit={request.Limit}&" +
+                    $"offset={request.Offset}")
+                .Result;
 
             if (response.IsSuccessStatusCode)
             {
-                var requestBody  = response.Content.ReadAsStringAsync().Result;
-                @event = JsonConvert.DeserializeObject<Event>(requestBody);
+                var result = response.Content.ReadAsStringAsync().Result;
+                events = JsonConvert.DeserializeObject<List<Event>>(result);
+            }
+
+            return events;
+        }
+
+        public Event GetEvent(EventIdRequest request)
+        {
+            Event @event = null;
+            var response = client.GetAsync($"{client.BaseAddress}/{request.Id}").Result;
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result  = response.Content.ReadAsStringAsync().Result;
+                @event = JsonConvert.DeserializeObject<Event>(result);
             }
 
             return @event;
+        }
+
+        public int? PostEvent(Event @event)
+        {
+            var jsonRequest = JsonConvert.SerializeObject(@event);
+            var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+            var response = client.PostAsync(client.BaseAddress, content).Result;
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            // returns the Id of the newly created Event
+            return int.Parse(response.Content.ReadAsStringAsync().Result);
         }
     }
 }
