@@ -71,8 +71,8 @@ namespace EventSourceApiHttpClient
 
         public int? PostEvent(Event @event)
         {
-            var jsonRequest = JsonConvert.SerializeObject(@event);
-            var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+            var jsonString = JsonConvert.SerializeObject(@event);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
             var response = client.PostAsync(client.BaseAddress, content).Result;
 
             if (!response.IsSuccessStatusCode)
@@ -80,6 +80,19 @@ namespace EventSourceApiHttpClient
 
             // returns the Id of the newly created Event
             return int.Parse(response.Content.ReadAsStringAsync().Result);
+        }
+
+        public Event PutEvent(int id, Event @event)
+        {
+            var jsonString = JsonConvert.SerializeObject(@event);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            var response = client.PutAsync($"{client.BaseAddress}/{id}", content).Result;
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            // returns an Event object
+            return JsonConvert.DeserializeObject<Event>(response.Content.ReadAsStringAsync().Result);
         }
     }
 }
