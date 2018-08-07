@@ -99,10 +99,7 @@ namespace EventSourceApiHttpClient
         {
             var response = client.DeleteAsync($"{client.BaseAddress}/{id}").Result;
 
-            if (!response.IsSuccessStatusCode)
-                return false;
-
-            return true;
+            return (response.IsSuccessStatusCode) ? true : false;
         }
     }
 }
