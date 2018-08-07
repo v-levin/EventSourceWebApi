@@ -8,7 +8,13 @@ namespace EventSourceApiHttpClient
     {
         public static void Main()
         {
-            var client = new EventsClient("http://localhost:49999/api/", "application/json");
+            var eventClient = new EventsClient("http://localhost:49999/api/", "application/json"); 
+
+            var placeClient = new PlacesClient("http://localhost:49999/api/", "application/json");
+
+            var placeTest = new Test(placeClient);
+            placeTest.Run();
+
 
             //var getEvents = client.GetEvents(new EventSearchRequest() { City = "skopje" });
             //var getEvent = client.GetEvent(new EventIdRequest() { Id = 16 });

@@ -14,67 +14,82 @@ namespace EventSourceApiHttpClient
 {
     public class PlacesClient
     {
-        private readonly HttpClient client;
-        private const string placesRootUrl = "places";
-        public PlacesClient(HttpClient _client)
+        private HttpClient client;
+
+        public PlacesClient(string baseUrl, string acceptHeader)
         {
-            client = _client;
+            client = InitHttpClient(baseUrl, acceptHeader);
         }
+        public HttpClient InitHttpClient(string baseUrl, string acceptHeader)
+        {
+            client = new HttpClient()
+            {
+                BaseAddress = new Uri(baseUrl + "places"),
+                Timeout = new TimeSpan(0, 5, 0)
+            };
+            client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse(acceptHeader));
+
+            return client;
+        }
+
         public IEnumerable<Place> GetAllPlaces(PlaceSearchRequest request)
         {
-            var response = client.GetAsync($"{client.BaseAddress}/{placesRootUrl}?name={request.Name}&city={request.City}&location={request.Location}&limit={request.Limit}&offset={request.Offset}").Result;
+            var response = client.GetAsync($"{client.BaseAddress}?name={request.Name}&city={request.City}&location={request.Location}&limit={request.Limit}&offset={request.Offset}").Result;
             var places = new List<Place>();
 
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                var responseDate = response.Content.ReadAsStringAsync().Result;
-                places = JsonConvert.DeserializeObject<List<Place>>(responseDate);
                 return places;
             }
+
+            var responseDate = response.Content.ReadAsStringAsync().Result;
+            places = JsonConvert.DeserializeObject<List<Place>>(responseDate);
             return places;
         }
 
         public Place GetPlace(int id)
         {
             Place place = null;
-            var response = client.GetAsync($"{client.BaseAddress}/{placesRootUrl}{id}").Result;
-            if (response.IsSuccessStatusCode)
+            var response = client.GetAsync($"{client.BaseAddress}{id}").Result;
+
+            if (!response.IsSuccessStatusCode)
             {
-                var responseDate = response.Content.ReadAsStringAsync().Result;
-                place = JsonConvert.DeserializeObject<Place>(responseDate);
                 return place;
             }
+
+            var responseDate = response.Content.ReadAsStringAsync().Result;
+            place = JsonConvert.DeserializeObject<Place>(responseDate);
             return place;
         }
         public int? CreatePlace(Place place)
         {
-            var response = client.PostAsync($"{client.BaseAddress}/{placesRootUrl}",
+            var response = client.PostAsync($"{client.BaseAddress}",
                                               new StringContent(JsonConvert.SerializeObject(place), Encoding.UTF8, "application/json")).Result;
 
-            if(response.IsSuccessStatusCode)
-            { 
-                var id = int.Parse(response.Content.ReadAsStringAsync().Result);
-                return id;
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
             }
 
-            return null;
+            var id = int.Parse(response.Content.ReadAsStringAsync().Result);
+            return id;
         }
 
-        public int? UpdatePlace(int id, Place place)
+        public Place UpdatePlace(int id, Place place)
         {
-            var response = client.PutAsync($"{client.BaseAddress}/{placesRootUrl}/{id}",
+            var response = client.PutAsync($"{client.BaseAddress}/{id}",
                                               new StringContent(JsonConvert.SerializeObject(place), Encoding.UTF8, "application/json")).Result;
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                return id;
+                return null;
             }
-
-            return null;
+            place = JsonConvert.DeserializeObject<Place>(response.Content.ReadAsStringAsync().Result);
+            return place;
         }
 
         public HttpStatusCode DeletePlace(int id)
         {
-            var response = client.DeleteAsync($"{client.BaseAddress}/{placesRootUrl}/{id}").Result;
+            var response = client.DeleteAsync($"{client.BaseAddress}/{id}").Result;
             var status = response.StatusCode;
             return response.StatusCode;
         }

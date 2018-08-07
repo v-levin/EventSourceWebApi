@@ -40,12 +40,12 @@ namespace EventSourceApiHttpClient
                 client.CreatePlace(place);
 
                 //Update the place
-                int id = 34;
+                int id = 57;
 
                 var newPlace = new Place()
                 {
                     Name = "Dion",
-                    City = "Skopje",
+                    //City = "Skopje",
                     Location = "Skopje",
                     Description = "place for eating and drinking",
                     Capacity = 56,

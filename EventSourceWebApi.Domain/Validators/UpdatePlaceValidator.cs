@@ -16,12 +16,8 @@ namespace EventSourceWebApi.Domain.Validators
             _placesRepository = placesRepository;
 
             RuleFor(p => p.Id).Must(id => CheckIfPlaceExists(id)).WithMessage("Place Not Found").NotEmpty().GreaterThan(0);
-            RuleFor(p => p.Payload.Name).NotEmpty().MaximumLength(50);
-            RuleFor(p => p.Payload.Capacity).NotEmpty().GreaterThan(0);
-            RuleFor(p => p.Payload.Description).NotEmpty().MaximumLength(150);
-            RuleFor(p => p.Payload.Location).NotEmpty();
-            RuleFor(p => p.Payload.DateRegistered).NotEmpty();
-            RuleFor(p => p.Payload.City).NotEmpty();
+            RuleFor(p => p.Payload.Name).MaximumLength(50);
+            RuleFor(p => p.Payload.Description).MaximumLength(150);
         }
         private bool CheckIfPlaceExists(int id)
         {
