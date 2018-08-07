@@ -94,5 +94,15 @@ namespace EventSourceApiHttpClient
             // returns an Event object
             return JsonConvert.DeserializeObject<Event>(response.Content.ReadAsStringAsync().Result);
         }
+
+        public bool DeleteEvent(int id)
+        {
+            var response = client.DeleteAsync($"{client.BaseAddress}/{id}").Result;
+
+            if (!response.IsSuccessStatusCode)
+                return false;
+
+            return true;
+        }
     }
 }
