@@ -14,14 +14,8 @@ namespace EventSourceWebApi.Domain.Validators
             _eventsRepository = eventsRepository;
 
             RuleFor(e => e.Id).Must(id => CheckIfEventExists(id)).WithMessage("Event Not Found").NotEmpty().GreaterThan(0);
-            RuleFor(e => e.Payload.Name).NotEmpty();
             RuleFor(e => e.Payload.Name).MaximumLength(50);
-            RuleFor(e => e.Payload.DateRegistered).NotEmpty();
-            RuleFor(e => e.Payload.Seats).NotEmpty().GreaterThan(0);
-            RuleFor(e => e.Payload.Description).NotEmpty().MaximumLength(150);
-            RuleFor(e => e.Payload.City).NotEmpty();
-            RuleFor(e => e.Payload.Category).NotEmpty();
-            RuleFor(e => e.Payload.Location).NotEmpty();
+            RuleFor(e => e.Payload.Description).MaximumLength(150);
         }
 
         private bool CheckIfEventExists(int id)

@@ -85,13 +85,12 @@ namespace EventSourceWebApi.DataContext.Repositories
                 if (@event == null)
                     return new EventResponse() { Result = false };
 
-                @event.Name = putRequest.Payload.Name;
-                @event.Description = putRequest.Payload.Description;
-                @event.City = putRequest.Payload.City;
-                @event.Category = putRequest.Payload.Category;
-                @event.DateRegistered = putRequest.Payload.DateRegistered;
-                @event.Location = putRequest.Payload.Location;
-                @event.Seats = putRequest.Payload.Seats;
+                @event.Name = (!string.IsNullOrEmpty(putRequest.Payload.Name)) ? putRequest.Payload.Name : @event.Name;
+                @event.Description = (!string.IsNullOrEmpty(putRequest.Payload.Description)) ? putRequest.Payload.Description : @event.Description;
+                @event.City = (!string.IsNullOrEmpty(putRequest.Payload.City)) ? putRequest.Payload.City : @event.City;
+                @event.Category = (!string.IsNullOrEmpty(putRequest.Payload.Category)) ? putRequest.Payload.Category : @event.Category;
+                @event.Location = (!string.IsNullOrEmpty(putRequest.Payload.Location)) ? putRequest.Payload.Location : @event.Location;
+                @event.Seats = (putRequest.Payload.Seats > 0) ? putRequest.Payload.Seats : @event.Seats;
                 
                 db.SaveChanges();
 
