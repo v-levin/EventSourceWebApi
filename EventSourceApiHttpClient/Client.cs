@@ -1,8 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
-
-namespace EventSourceApiHttpClient
+﻿namespace EventSourceApiHttpClient
 {
     public class Client 
     {
