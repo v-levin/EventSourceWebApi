@@ -18,6 +18,7 @@ namespace EventSourceApiHttpClient
             Timeout = new TimeSpan(0, 5, 0);
             DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse(mediaType));
         }
+
         
         public IEnumerable<Place> GetPlaces(PlaceSearchRequest request)
         {
@@ -53,6 +54,7 @@ namespace EventSourceApiHttpClient
             place = JsonConvert.DeserializeObject<Place>(responseDate);
             return place;
         }
+
         public int? PostPlace(Place place)
         {
             var response = PostAsync($"places",
@@ -85,6 +87,5 @@ namespace EventSourceApiHttpClient
             var status = response.StatusCode;
             return response.StatusCode;
         }
-
     }
 }
