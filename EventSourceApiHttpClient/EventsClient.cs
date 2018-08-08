@@ -57,9 +57,9 @@ namespace EventSourceApiHttpClient
             return @event;
         }
 
-        public int? PostEvent(Event @event)
+        public int? PostEvent(PostRequest<Event> request)
         {
-            var jsonString = JsonConvert.SerializeObject(@event);
+            var jsonString = JsonConvert.SerializeObject(request.Payload);
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
             var response = PostAsync("events", content).Result;
 
@@ -70,11 +70,11 @@ namespace EventSourceApiHttpClient
             return int.Parse(response.Content.ReadAsStringAsync().Result);
         }
 
-        public Event PutEvent(int id, Event @event)
+        public Event PutEvent(PutRequest<Event> request)
         {
-            var jsonString = JsonConvert.SerializeObject(@event);
+            var jsonString = JsonConvert.SerializeObject(request.Payload);
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-            var response = PutAsync($"events/{id}", content).Result;
+            var response = PutAsync($"events/{request.Id}", content).Result;
 
             if (!response.IsSuccessStatusCode)
                 return null;
@@ -83,9 +83,9 @@ namespace EventSourceApiHttpClient
             return JsonConvert.DeserializeObject<Event>(response.Content.ReadAsStringAsync().Result);
         }
 
-        public bool DeleteEvent(int id)
+        public bool DeleteEvent(EventIdRequest request)
         {
-            var response = DeleteAsync($"events/{id}").Result;
+            var response = DeleteAsync($"events/{request.Id}").Result;
 
             return response.IsSuccessStatusCode;
         }
