@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventSourceWebApi.DataConte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventSourceWebApi.Domain", "EventSourceWebApi.Domain\EventSourceWebApi.Domain.csproj", "{32124EFC-261C-4349-97BA-34286BC26A91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourceApiHttpClient", "EventSourceApiHttpClient\EventSourceApiHttpClient.csproj", "{BEEC18FC-AF61-4710-94ED-3A5CA9B53438}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourceApiHttpClient", "EventSourceApiHttpClient\EventSourceApiHttpClient.csproj", "{181730CB-3173-401C-A0B0-9E0A102B0E9A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{32124EFC-261C-4349-97BA-34286BC26A91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32124EFC-261C-4349-97BA-34286BC26A91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32124EFC-261C-4349-97BA-34286BC26A91}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BEEC18FC-AF61-4710-94ED-3A5CA9B53438}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BEEC18FC-AF61-4710-94ED-3A5CA9B53438}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BEEC18FC-AF61-4710-94ED-3A5CA9B53438}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BEEC18FC-AF61-4710-94ED-3A5CA9B53438}.Release|Any CPU.Build.0 = Release|Any CPU
+		{181730CB-3173-401C-A0B0-9E0A102B0E9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{181730CB-3173-401C-A0B0-9E0A102B0E9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{181730CB-3173-401C-A0B0-9E0A102B0E9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{181730CB-3173-401C-A0B0-9E0A102B0E9A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

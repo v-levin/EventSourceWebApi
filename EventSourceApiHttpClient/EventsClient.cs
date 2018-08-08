@@ -1,13 +1,11 @@
 ﻿using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Requests;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace EventSourceApiHttpClient
 {
@@ -62,7 +60,7 @@ namespace EventSourceApiHttpClient
 
             if (response.IsSuccessStatusCode)
             {
-                var result  = response.Content.ReadAsStringAsync().Result;
+                var result = response.Content.ReadAsStringAsync().Result;
                 @event = JsonConvert.DeserializeObject<Event>(result);
             }
 
