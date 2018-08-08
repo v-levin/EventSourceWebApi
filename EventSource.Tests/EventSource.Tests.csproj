@@ -5,4 +5,9 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EventSourceApiHttpClient\EventSourceApiHttpClient.csproj" />
+    <ProjectReference Include="..\EventSourceWebApi.Contracts\EventSourceWebApi.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>
