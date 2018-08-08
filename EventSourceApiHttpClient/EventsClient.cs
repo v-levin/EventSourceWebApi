@@ -9,33 +9,23 @@ using System.Text;
 
 namespace EventSourceApiHttpClient
 {
-    public class EventsClient
+    public class EventsClient : HttpClient
     {
-        private HttpClient client;
-
         public EventsClient(string baseUrl, string mediaType)
         {
-            client = InitHttpClient(baseUrl, mediaType);
+            BaseAddress = new Uri(baseUrl);
+            Timeout = new TimeSpan(0, 5, 0);
+            DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse(mediaType));
+            DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "Your Oauth token");
         }
 
-        public HttpClient InitHttpClient(string baseUrl, string mediaType)
-        {
-            client = new HttpClient()
-            {
-                BaseAddress = new Uri(baseUrl + "events"),
-                Timeout = new TimeSpan(0, 5, 0)
-            };
-            client.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse(mediaType));
-
-            return client;
-        }
 
         public IEnumerable<Event> GetEvents(EventSearchRequest request)
         {
             var events = new List<Event>();
 
-            var response = client.GetAsync(
-                    $"{client.BaseAddress}?" +
+            var response = GetAsync(
+                    $"events?" +
                     $"name={request.Name}&" +
                     $"city={request.City}&" +
                     $"category={request.Category}&" +
@@ -56,7 +46,7 @@ namespace EventSourceApiHttpClient
         public Event GetEvent(EventIdRequest request)
         {
             Event @event = null;
-            var response = client.GetAsync($"{client.BaseAddress}/{request.Id}").Result;
+            var response = GetAsync($"events/{request.Id}").Result;
 
             if (response.IsSuccessStatusCode)
             {
@@ -71,7 +61,7 @@ namespace EventSourceApiHttpClient
         {
             var jsonString = JsonConvert.SerializeObject(@event);
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-            var response = client.PostAsync(client.BaseAddress, content).Result;
+            var response = PostAsync("events", content).Result;
 
             if (!response.IsSuccessStatusCode)
                 return null;
@@ -84,7 +74,7 @@ namespace EventSourceApiHttpClient
         {
             var jsonString = JsonConvert.SerializeObject(@event);
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-            var response = client.PutAsync($"{client.BaseAddress}/{id}", content).Result;
+            var response = PutAsync($"events/{id}", content).Result;
 
             if (!response.IsSuccessStatusCode)
                 return null;
@@ -95,7 +85,7 @@ namespace EventSourceApiHttpClient
 
         public bool DeleteEvent(int id)
         {
-            var response = client.DeleteAsync($"{client.BaseAddress}/{id}").Result;
+            var response = DeleteAsync($"events/{id}").Result;
 
             return response.IsSuccessStatusCode;
         }
