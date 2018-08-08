@@ -44,7 +44,7 @@ namespace EventSourceApiHttpClient
         public Place GetPlace(int id)
         {
             Place place = null;
-            var response = GetAsync($"/places/{id}").Result;
+            var response = GetAsync($"places/{id}").Result;
 
             if (!response.IsSuccessStatusCode)
             {
