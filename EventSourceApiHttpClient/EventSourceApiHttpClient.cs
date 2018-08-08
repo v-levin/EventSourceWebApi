@@ -1,8 +1,4 @@
-﻿using EventSourceWebApi.Contracts;
-using EventSourceWebApi.Contracts.Requests;
-using System;
-
-namespace EventSourceApiHttpClient
+﻿namespace EventSourceApiHttpClient
 {
     public class EventSourceApiHttpClient
     {
@@ -10,6 +6,12 @@ namespace EventSourceApiHttpClient
         {
             var baseUrl = "http://localhost:49999/api/";
             var mediaType = "application/json";
+
+            //TODO
+            //var client = new BaseHttpclient(baseUrl, mediaType);
+
+            //client.EventsClient
+            //    client.placeCLient
 
             var eventClient = new EventsClient(baseUrl, mediaType); 
 

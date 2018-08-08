@@ -1,19 +1,16 @@
 ﻿using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Requests;
 using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace EventSourceApiHttpClient
 {
     public class Test
     {
-        private readonly PlacesClient client;
-        public Test(PlacesClient _client)
+        private readonly PlacesClient _client;
+        public Test(PlacesClient client)
         {
-            client = _client;
+            _client = client;
         }
 
         public void Run()
@@ -22,10 +19,15 @@ namespace EventSourceApiHttpClient
             try
             {
                 //Get all places
-                client.GetAllPlaces(new PlaceSearchRequest() { });
+                var places = _client.GetAllPlaces(new PlaceSearchRequest() { });
+
+                if (!places.Any())
+                    return;
+
+                var firstPlace = places.First();
 
                 //Get the place by id
-                client.GetPlace(38);
+                _client.GetPlace(firstPlace.Id); //38! no
 
                 //Create a new place
                 var place = new Place()
@@ -37,7 +39,7 @@ namespace EventSourceApiHttpClient
                     Capacity = 56,
                     DateRegistered = DateTime.Now
                 };
-                client.CreatePlace(place);
+                _client.CreatePlace(place);
 
                 //Update the place
                 int id = 57;
@@ -51,11 +53,12 @@ namespace EventSourceApiHttpClient
                     Capacity = 56,
                     DateRegistered = DateTime.Now
                 };
-                client.UpdatePlace(id, newPlace);
+
+                _client.UpdatePlace(id, newPlace);
 
                 //Delete the place
-                client.DeletePlace(26);
-                client.DeletePlace(58);
+                _client.DeletePlace(26);
+                _client.DeletePlace(58);
             }
 
             catch (Exception ex)
