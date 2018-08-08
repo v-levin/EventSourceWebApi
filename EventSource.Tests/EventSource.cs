@@ -11,7 +11,7 @@ namespace EventSource.Tests
             var baseUrl = "http://localhost:49999/api/";
             var mediaType = "application/json";
 
-            var client = new Client(baseUrl, mediaType);
+            var client = new BaseHttpclient(baseUrl, mediaType);
         }
     }
 }

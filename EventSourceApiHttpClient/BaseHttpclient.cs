@@ -1,12 +1,12 @@
 ﻿namespace EventSourceApiHttpClient
 {
-    public class Client 
+    public class BaseHttpclient
     {
         private PlacesClient _placesClient { get; set; }
 
         private EventsClient _eventsClient { get; set; }
 
-        public Client(string baseUrl, string mediaType)
+        public BaseHttpclient(string baseUrl, string mediaType)
         {
             _placesClient = new PlacesClient(baseUrl, mediaType);
             _eventsClient = new EventsClient(baseUrl, mediaType);
