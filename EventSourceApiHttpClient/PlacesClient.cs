@@ -34,7 +34,13 @@ namespace EventSourceApiHttpClient
 
         public IEnumerable<Place> GetAllPlaces(PlaceSearchRequest request)
         {
-            var response = client.GetAsync($"{client.BaseAddress}?name={request.Name}&city={request.City}&location={request.Location}&limit={request.Limit}&offset={request.Offset}").Result;
+            var response = client.GetAsync($"{client.BaseAddress}" +
+                                              $"?name={request.Name}" +
+                                              $"&city={request.City}" +
+                                              $"&location={request.Location}" +
+                                              $"&limit={request.Limit}" +
+                                              $"&offset={request.Offset}").Result;
+
             var places = new List<Place>();
 
             if (!response.IsSuccessStatusCode)
