@@ -14,7 +14,7 @@ namespace EventSourceApi.Functions
         private static BaseHttpClient client = new BaseHttpClient(baseUrl, mediaType);
 
         [FunctionName("EventsDurableFunction")]
-        public static async Task<Event> Run([OrchestrationTrigger] DurableOrchestrationContext context)
+        public static async Task Run([OrchestrationTrigger] DurableOrchestrationContext context)
         {
             var newEvent = new Event()
             {
@@ -33,9 +33,10 @@ namespace EventSourceApi.Functions
 
             var isDeleted = await context.CallActivityAsync<bool>("DeleteEvent", updatedEvent.Id);
 
-            return await context.CallActivityAsync<Event>("GetEvent", newEventId);
+            var anEvent = await context.CallActivityAsync<Event>("GetEvent", newEventId);
         }
 
+        [FunctionName("CreateEvent")]
         public static int? CreateEvent([ActivityTrigger] Event @event)
         {
             var request = new PostRequest<Event>() { Payload = @event };
@@ -43,6 +44,7 @@ namespace EventSourceApi.Functions
             return client.EventsClient.PostEvent(request);
         }
 
+        [FunctionName("UpdateEvent")]
         public static Event UpdateEvent([ActivityTrigger] int eventId)
         {
             var newEvent = new Event() { City = "Skopje" };
@@ -51,6 +53,7 @@ namespace EventSourceApi.Functions
             return client.EventsClient.PutEvent(request);
         }
 
+        [FunctionName("DeleteEvent")]
         public static bool DeleteEvent([ActivityTrigger] int eventId)
         {
             var request = new EventIdRequest() { Id = eventId };
@@ -58,6 +61,7 @@ namespace EventSourceApi.Functions
             return client.EventsClient.DeleteEvent(request);
         }
 
+        [FunctionName("GetEvent")]
         public static Event GetEvent([ActivityTrigger] int eventId)
         {
             var request = new EventIdRequest() { Id = eventId };

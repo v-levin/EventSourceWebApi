@@ -20,7 +20,6 @@ namespace EventSourceApi.Functions
             dynamic eventData = await req.Content.ReadAsAsync<object>();
             string instanceId = await starter.StartNewAsync(functionName, eventData);
 
-           
             var res = starter.CreateCheckStatusResponse(req, instanceId);
             res.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromSeconds(10));
             return res;
