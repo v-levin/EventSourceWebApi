@@ -19,7 +19,11 @@ namespace EventSourceApiHttpClient
             DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "Your Oauth token");
         }
 
-
+        /// <summary>
+        /// Returns the Event collection.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         public IEnumerable<Event> GetEvents(EventSearchRequest request)
         {
             var events = new List<Event>();
@@ -43,6 +47,11 @@ namespace EventSourceApiHttpClient
             return events;
         }
 
+        /// <summary>
+        /// Returns an individual Event.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         public Event GetEvent(EventIdRequest request)
         {
             Event @event = null;
@@ -57,6 +66,13 @@ namespace EventSourceApiHttpClient
             return @event;
         }
 
+        /// <summary>
+        /// Creates a new Event
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>
+        /// Returns the Id of the newly created Event
+        /// </returns>
         public int? PostEvent(PostRequest<Event> request)
         {
             var jsonString = JsonConvert.SerializeObject(request.Payload);
@@ -65,11 +81,17 @@ namespace EventSourceApiHttpClient
 
             if (!response.IsSuccessStatusCode)
                 return null;
-
-            // returns the Id of the newly created Event
+            
             return int.Parse(response.Content.ReadAsStringAsync().Result);
         }
 
+        /// <summary>
+        /// Updates an individual Event
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>
+        /// Returns an Event object
+        /// </returns>
         public Event PutEvent(PutRequest<Event> request)
         {
             var jsonString = JsonConvert.SerializeObject(request.Payload);
@@ -78,11 +100,17 @@ namespace EventSourceApiHttpClient
 
             if (!response.IsSuccessStatusCode)
                 return null;
-
-            // returns an Event object
+            
             return JsonConvert.DeserializeObject<Event>(response.Content.ReadAsStringAsync().Result);
         }
 
+        /// <summary>
+        /// Deletes an individual Event
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>
+        /// Returns true or false
+        /// </returns>
         public bool DeleteEvent(EventIdRequest request)
         {
             var response = DeleteAsync($"events/{request.Id}").Result;
