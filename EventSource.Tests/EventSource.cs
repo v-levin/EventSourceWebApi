@@ -1,8 +1,4 @@
-﻿using EventSource.Tests.IntegrationTests;
-using EventSourceApiHttpClient;
-using EventSourceWebApi.Contracts;
-using EventSourceWebApi.Contracts.Requests;
-using System;
+﻿using EventSourceApiHttpClient;
 
 namespace EventSource.Tests
 {
@@ -15,8 +11,8 @@ namespace EventSource.Tests
 
             var client = new BaseHttpClient(baseUrl, mediaType);
            
-            var placesTest = new PlacesTests(client);
-            placesTest.Run();
+            //var placesTest = new PlacesTests(client);
+            //placesTest.Run();
           
 
         }
