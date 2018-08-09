@@ -32,11 +32,11 @@ namespace EventSourceApi.Functions
             Place getPlace = await context.CallActivityAsync<Place>("GetPlace", deletePlace);
         }
 
-        public static BaseHttpclient IntiClient()
+        public static BaseHttpClient IntiClient()
         {
             var baseUrl = "http://localhost:49999/api/";
             var mediaType = "application/json";
-            return new BaseHttpclient(baseUrl, mediaType);
+            return new BaseHttpClient(baseUrl, mediaType);
         }
 
         [FunctionName("CreatePlace")]

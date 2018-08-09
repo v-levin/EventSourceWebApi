@@ -1,15 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using EventSourceApiHttpClient;
 using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Requests;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
 
 namespace EventSourceApi.Functions
 {
@@ -20,7 +14,7 @@ namespace EventSourceApi.Functions
         private static BaseHttpClient client = new BaseHttpClient(baseUrl, mediaType);
 
         [FunctionName("EventsDurableFunction")]
-        public static async Task<bool> Run([OrchestrationTrigger] DurableOrchestrationContext context)
+        public static async Task<Event> Run([OrchestrationTrigger] DurableOrchestrationContext context)
         {
             var newEvent = new Event()
             {
@@ -34,15 +28,12 @@ namespace EventSourceApi.Functions
             };
 
             var newEventId = await context.CallActivityAsync<int>("CreateEvent", newEvent);
-
-            var newlyCretedEvent = await context.CallActivityAsync<Event>("GetEvent", newEventId);
-
-            newEvent.City = "Skopje";
-            var updatedEvent = await context.CallActivityAsync<Event>("UpdateEvent", newEvent);
+            
+            var updatedEvent = await context.CallActivityAsync<Event>("UpdateEvent", newEventId);
 
             var isDeleted = await context.CallActivityAsync<bool>("DeleteEvent", updatedEvent.Id);
 
-            return isDeleted;
+            return await context.CallActivityAsync<Event>("GetEvent", newEventId);
         }
 
         public static int? CreateEvent([ActivityTrigger] Event @event)
@@ -52,16 +43,10 @@ namespace EventSourceApi.Functions
             return client.EventsClient.PostEvent(request);
         }
 
-        public static Event GetEvent([ActivityTrigger] int eventId)
+        public static Event UpdateEvent([ActivityTrigger] int eventId)
         {
-            var request = new EventIdRequest() { Id = eventId };
-
-            return client.EventsClient.GetEvent(request);
-        }
-
-        public static Event UpdateEvent([ActivityTrigger] Event @event)
-        {
-            var request = new PutRequest<Event>() { Id = @event.Id, Payload = @event };
+            var newEvent = new Event() { City = "Skopje" };
+            var request = new PutRequest<Event>() { Id = eventId, Payload = newEvent };
 
             return client.EventsClient.PutEvent(request);
         }
@@ -71,6 +56,13 @@ namespace EventSourceApi.Functions
             var request = new EventIdRequest() { Id = eventId };
 
             return client.EventsClient.DeleteEvent(request);
+        }
+
+        public static Event GetEvent([ActivityTrigger] int eventId)
+        {
+            var request = new EventIdRequest() { Id = eventId };
+
+            return client.EventsClient.GetEvent(request);
         }
     }
 }
