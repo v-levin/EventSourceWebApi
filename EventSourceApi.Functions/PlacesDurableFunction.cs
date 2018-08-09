@@ -30,7 +30,7 @@ namespace EventSourceApi.Functions
                 DateRegistered = DateTime.Now,
                 City = "Skopje"
             };
-
+  
             var placeId = await context.CallActivityAsync<int>("CreatePlace", place);
 
             var updatePlace = await context.CallActivityAsync<Place>("UpdatePlace", placeId);
