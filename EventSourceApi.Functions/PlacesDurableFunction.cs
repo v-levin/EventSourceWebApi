@@ -1,5 +1,6 @@
 using EventSourceApiHttpClient;
 using EventSourceWebApi.Contracts;
+using EventSourceWebApi.Contracts.Requests;
 using Microsoft.Azure.WebJobs;
 using System;
 using System.Net;
@@ -9,42 +10,39 @@ namespace EventSourceApi.Functions
 {
     public static class PlacesDurableFunction
     {
+        private const string baseUrl = "http://localhost:49999/api/";
+        private const string mediaType = "application/json";
+        private static BaseHttpClient client = new BaseHttpClient(baseUrl, mediaType);
+
         [FunctionName("PlacesDurableFunction")]
         public static async Task RunAsync(
             [OrchestrationTrigger] DurableOrchestrationContextBase context)
         {
             var place = new Place()
             {
-                Name = "place1",
-                Description = "Wdefrgb",
-                Capacity = 70,
-                Location = "Radovis",
+                Name = "Public room",
+                Description = "Place...",
+                Capacity = 35,
+                Location = "Skopje",
                 DateRegistered = DateTime.Now,
                 City = "Skopje"
             };
 
-            int createPlaceId = await context.CallActivityAsync<int>("CreatePlace", place);
+            var placeId = await context.CallActivityAsync<int>("CreatePlace", place);
 
-            Place updatePlace = await context.CallActivityAsync<Place>("UpdatePlace", createPlaceId);
+            var updatePlace = await context.CallActivityAsync<Place>("UpdatePlace", placeId);
 
-            HttpStatusCode deletePlace = await context.CallActivityAsync<HttpStatusCode>("DeletePlace", updatePlace.Id);
+            var isDeletePlace = await context.CallActivityAsync<HttpStatusCode>("DeletePlace", updatePlace.Id);
 
-            Place getPlace = await context.CallActivityAsync<Place>("GetPlace", deletePlace);
-        }
-
-        public static BaseHttpClient IntiClient()
-        {
-            var baseUrl = "http://localhost:49999/api/";
-            var mediaType = "application/json";
-            return new BaseHttpClient(baseUrl, mediaType);
+            var getPlace = await context.CallActivityAsync<Place>("GetPlace", placeId);
         }
 
         [FunctionName("CreatePlace")]
         public static int? CreatePlace([ActivityTrigger] Place place)
         {
-            var client = IntiClient();
-            var placeId = client.PlacesClient.PostPlace(place);
-            return placeId;
+            var request = new PostRequest<Place>() { Payload = place };
+
+            return client.PlacesClient.PostPlace(request);
         }
 
         [FunctionName("UpdatePlace")]
@@ -52,32 +50,28 @@ namespace EventSourceApi.Functions
         {
             var newPlace = new Place()
             {
-                Name = "place1",
-                Description = "Wdefrgb",
-                Capacity = 70,
-                Location = "Radovis",
-                DateRegistered = DateTime.Now,
                 City = "Radovis"
             };
-            var client = IntiClient();
-            var place = client.PlacesClient.PutPlace(placeId, newPlace);
-            return place;
+
+            var request = new PutRequest<Place>() { Id = placeId, Payload = newPlace };
+
+            return client.PlacesClient.PutPlace(request);
         }
 
         [FunctionName("DeletePlace")]
-        public static HttpStatusCode DeletePlace([ActivityTrigger] int placeId)
+        public static bool DeletePlace([ActivityTrigger] int placeId)
         {
-            var client = IntiClient();
-            var place = client.PlacesClient.DeletePlace(placeId);
-            return place;
+            var request = new PlaceIdRequest() { Id = placeId };
+
+            return client.PlacesClient.DeletePlace(request);
         }
 
         [FunctionName("GetPlace")]
         public static Place GetPlace([ActivityTrigger] int placeId)
         {
-            var client = IntiClient();
-            var place = client.PlacesClient.GetPlace(placeId);
-            return place;
+            var request = new PlaceIdRequest() { Id = placeId };
+
+            return client.PlacesClient.GetPlace(request);
         }
     }
 }

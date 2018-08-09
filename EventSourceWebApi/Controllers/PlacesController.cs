@@ -41,7 +41,7 @@ namespace EventSourceWebApi.Controllers
         }
 
         /// <summary>
-        /// Gets place by id 
+        /// Gets a place by id 
         /// </summary>
         /// <param name="id">Place.id</param>
         /// <returns>Returns an individual Place</returns>

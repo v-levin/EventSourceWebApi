@@ -12,7 +12,7 @@ namespace EventSourceApiHttpClient
 {
     public class PlacesClient : HttpClient
     {
-        public PlacesClient(string baseUrl, string mediaType) 
+        public PlacesClient(string baseUrl, string mediaType)
         {
             BaseAddress = new Uri(baseUrl);
             Timeout = new TimeSpan(0, 5, 0);
@@ -20,7 +20,11 @@ namespace EventSourceApiHttpClient
             DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "Your Oauth token");
         }
 
-        
+        /// <summary>
+        /// Gets all places 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         public IEnumerable<Place> GetPlaces(PlaceSearchRequest request)
         {
 
@@ -41,10 +45,16 @@ namespace EventSourceApiHttpClient
             return places;
         }
 
-        public Place GetPlace(int id)
+        /// <summary>
+        ///  Gets a place by Id
+        /// </summary>
+        /// <param name="request">Place Id</param>
+        /// <returns>Returns an individual Place</returns>
+        /// 
+        public Place GetPlace(PlaceIdRequest request)
         {
             Place place = null;
-            var response = GetAsync($"places/{id}").Result;
+            var response = GetAsync($"places/{request.Id}").Result;
 
             if (!response.IsSuccessStatusCode)
             {
@@ -56,37 +66,52 @@ namespace EventSourceApiHttpClient
             return place;
         }
 
-        public int? PostPlace(Place place)
+        /// <summary>
+        ///  Creates a new Place
+        /// </summary>
+        /// <param name="request"> The Place object </param>
+        /// <returns> Returns the Id of the newly created Place </returns>
+        /// 
+        public int? PostPlace(PostRequest<Place> request)
         {
             var response = PostAsync($"places",
-                                     new StringContent(JsonConvert.SerializeObject(place), Encoding.UTF8, "application/json")).Result;
+                                     new StringContent(JsonConvert.SerializeObject(request.Payload), Encoding.UTF8, "application/json")).Result;
 
             if (!response.IsSuccessStatusCode)
             {
                 return null;
             }
 
-            var id = int.Parse(response.Content.ReadAsStringAsync().Result);
-            return id;
+            return int.Parse(response.Content.ReadAsStringAsync().Result);
         }
 
-        public Place PutPlace(int id, Place place)
+        /// <summary>
+        /// Updates an individual Place
+        /// </summary>
+        /// <param name="request"> Place.Id and Place object </param>
+        /// <returns> Returns an updated Place object </returns>
+        public Place PutPlace(PutRequest<Place> request)
         {
-            var response = PutAsync($"places/{id}",
-                                              new StringContent(JsonConvert.SerializeObject(place), Encoding.UTF8, "application/json")).Result;
+            var response = PutAsync($"places/{request.Id}",
+                                              new StringContent(JsonConvert.SerializeObject(request.Payload), Encoding.UTF8, "application/json")).Result;
             if (!response.IsSuccessStatusCode)
             {
                 return null;
             }
-            place = JsonConvert.DeserializeObject<Place>(response.Content.ReadAsStringAsync().Result);
-            return place;
+
+            return JsonConvert.DeserializeObject<Place>(response.Content.ReadAsStringAsync().Result);
         }
 
-        public HttpStatusCode DeletePlace(int id)
+        /// <summary>
+        ///  Deletes an individual Place
+        /// </summary>
+        /// <param name="request"> Place Id </param>
+        /// <returns> Returns true or false </returns>
+        public bool DeletePlace(PlaceIdRequest request)
         {
-            var response = DeleteAsync($"places/{id}").Result;
-            var status = response.StatusCode;
-            return response.StatusCode;
+            var response = DeleteAsync($"places/{request.Id}").Result;
+
+            return response.IsSuccessStatusCode;
         }
     }
 }
