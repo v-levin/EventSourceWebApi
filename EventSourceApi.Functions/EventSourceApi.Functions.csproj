@@ -8,10 +8,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EventSource.Tests\EventSource.Tests.csproj" />
-    <ProjectReference Include="..\EventSourceWebApi.Contracts\EventSourceWebApi.Contracts.csproj" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\EventSourceApiHttpClient\EventSourceApiHttpClient.csproj" />
     <ProjectReference Include="..\EventSourceWebApi.Contracts\EventSourceWebApi.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
