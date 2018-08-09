@@ -13,7 +13,7 @@ namespace EventSource.Tests
             var baseUrl = "http://localhost:49999/api/";
             var mediaType = "application/json";
 
-            var client = new BaseHttpclient(baseUrl, mediaType);
+            var client = new BaseHttpClient(baseUrl, mediaType);
            
             var placesTest = new PlacesTests(client);
             placesTest.Run();

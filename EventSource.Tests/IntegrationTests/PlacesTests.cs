@@ -10,8 +10,8 @@ namespace EventSource.Tests.IntegrationTests
 {
     public class PlacesTests
     {
-        private static BaseHttpclient _client;
-        public PlacesTests(BaseHttpclient client)
+        private static BaseHttpClient _client;
+        public PlacesTests(BaseHttpClient client)
         {
             _client = client;
         }
