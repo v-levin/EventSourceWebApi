@@ -98,7 +98,7 @@ namespace EventSourceApiHttpClient
             {
                 return null;
             }
-
+            var newplace = response.Content.ReadAsStringAsync().Result;
             return JsonConvert.DeserializeObject<Place>(response.Content.ReadAsStringAsync().Result);
         }
 

@@ -93,7 +93,7 @@ namespace EventSourceWebApi.Controllers
             if (!placeResponse.Result)
                 return BadRequest(placeResponse.Errors);
             
-            return Ok(placeResponse.Place.Id);
+            return Ok(placeResponse.Place);
         }
 
         /// <summary>

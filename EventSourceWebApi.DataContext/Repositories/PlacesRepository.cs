@@ -88,8 +88,8 @@ namespace EventSourceWebApi.DataContext.Repositories
                     _place.Description = !string.IsNullOrEmpty(request.Payload.Description) ? request.Payload.Description : _place.Description;
                     _place.City = !string.IsNullOrEmpty(request.Payload.City) ? request.Payload.City.ToLower() : _place.City;
                     _place.Capacity = request.Payload.Capacity > 0 ? request.Payload.Capacity : _place.Capacity;
-                    _place.Name = !string.IsNullOrEmpty(request.Payload.Name.ToLower()) ? request.Payload.Name.ToLower() : _place.Name;
-                    _place.Location = !string.IsNullOrEmpty(request.Payload.Location.ToLower()) ? request.Payload.Location.ToLower() : _place.Location;
+                    _place.Name = !string.IsNullOrEmpty(request.Payload.Name) ? request.Payload.Name.ToLower() : _place.Name;
+                    _place.Location = !string.IsNullOrEmpty(request.Payload.Location) ? request.Payload.Location.ToLower() : _place.Location;
 
                     db.Places.Attach(_place);
                     db.SaveChanges();

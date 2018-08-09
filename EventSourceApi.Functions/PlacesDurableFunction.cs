@@ -50,6 +50,7 @@ namespace EventSourceApi.Functions
         {
             var newPlace = new Place()
             {
+                Description = "Update Place...",
                 City = "Radovis"
             };
 
