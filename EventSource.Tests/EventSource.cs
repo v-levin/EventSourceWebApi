@@ -17,7 +17,7 @@ namespace EventSource.Tests
            
             var placesTest = new PlacesTests(client);
             placesTest.Run();
-
+          
 
         }
     }
