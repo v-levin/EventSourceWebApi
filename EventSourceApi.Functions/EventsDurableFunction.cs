@@ -4,6 +4,8 @@ using EventSourceApiHttpClient;
 using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Requests;
 using Microsoft.Azure.WebJobs;
+using Serilog;
+using Serilog.Core;
 
 namespace EventSourceApi.Functions
 {
@@ -12,6 +14,7 @@ namespace EventSourceApi.Functions
         private const string baseUrl = "http://localhost:49999/api/";
         private const string mediaType = "application/json";
         private static BaseHttpClient client = new BaseHttpClient(baseUrl, mediaType);
+        private static Logger log = new LoggerConfiguration().WriteTo.Console().WriteTo.File("log.txt").CreateLogger();
 
         [FunctionName("EventsDurableFunction")]
         public static async Task Run([OrchestrationTrigger] DurableOrchestrationContext context)
@@ -27,13 +30,22 @@ namespace EventSourceApi.Functions
                 DateRegistered = DateTime.Now
             };
 
-            var newEventId = await context.CallActivityAsync<int>("CreateEvent", newEvent);
-            
-            var updatedEvent = await context.CallActivityAsync<Event>("UpdateEvent", newEventId);
+            try
+            {
+                var newEventId = await context.CallActivityAsync<int>("CreateEvent", newEvent);
+                
+                var updatedEvent = await context.CallActivityAsync<Event>("UpdateEvent", newEventId);
+                
+                var isDeleted = await context.CallActivityAsync<bool>("DeleteEvent", updatedEvent.Id);
+                
+                var anEvent = await context.CallActivityAsync<Event>("GetEvent", newEventId);
 
-            var isDeleted = await context.CallActivityAsync<bool>("DeleteEvent", updatedEvent.Id);
-
-            var anEvent = await context.CallActivityAsync<Event>("GetEvent", newEventId);
+                log.Information("Done!");
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+            }
         }
 
         [FunctionName("CreateEvent")]
