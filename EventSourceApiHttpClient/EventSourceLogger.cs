@@ -3,9 +3,9 @@ using Serilog.Core;
 
 namespace EventSourceApiHttpClient
 {
-    public class EventSourceLogger
+    public static class EventSourceLogger
     {
-        public Logger InitializeLogger() 
+        public static Logger InitializeLogger()
         {
             return new LoggerConfiguration()
                                             .WriteTo.Console()
