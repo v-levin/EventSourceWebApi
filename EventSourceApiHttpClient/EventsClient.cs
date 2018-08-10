@@ -16,7 +16,15 @@ namespace EventSourceApiHttpClient
             BaseAddress = new Uri(baseUrl);
             Timeout = new TimeSpan(0, 5, 0);
             DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse(mediaType));
-            DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "Your Oauth token");
+        }
+
+        public EventsClient(string baseUrl, string mediaType, string timeout, string authenticationScheme, string authenticationToken)
+        {
+            BaseAddress = new Uri(baseUrl);
+            Timeout = new TimeSpan(0, 5, 0);
+            DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse(mediaType));
+            DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authenticationScheme, authenticationToken);
+
         }
 
         /// <summary>

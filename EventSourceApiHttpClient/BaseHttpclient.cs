@@ -6,10 +6,10 @@
 
         private EventsClient _eventsClient { get; set; }
 
-        public BaseHttpClient(string baseUrl, string mediaType)
+        public BaseHttpClient(string baseUrl, string mediaType, string timeout, string authenticationScheme, string authenticationToken)
         {
-            _placesClient = new PlacesClient(baseUrl, mediaType);
-            _eventsClient = new EventsClient(baseUrl, mediaType);
+            _placesClient = new PlacesClient(baseUrl, mediaType, timeout, authenticationScheme, authenticationToken);
+            _eventsClient = new EventsClient(baseUrl, mediaType, timeout, authenticationScheme, authenticationToken);
         }
 
         public PlacesClient PlacesClient { get { return _placesClient; } }
