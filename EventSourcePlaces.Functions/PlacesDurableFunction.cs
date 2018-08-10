@@ -6,6 +6,7 @@ using Microsoft.Azure.WebJobs;
 using Serilog;
 using Serilog.Core;
 using System;
+using System.Configuration;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -13,10 +14,13 @@ namespace EventSourceApi.Functions
 {
     public static class PlacesDurableFunction
     {
-        private const string baseUrl = "http://localhost:49999/api/";
-        private const string mediaType = "application/json";
-        private static BaseHttpClient client = new BaseHttpClient(baseUrl, mediaType);
-        private static readonly Logger log = new LoggerConfiguration().WriteTo.Console().WriteTo.File("log.txt").CreateLogger();
+
+        private static BaseHttpClient client = InitializeClient();
+        private static readonly Logger log = new LoggerConfiguration()
+                                            .WriteTo.Console()
+                                            .WriteTo.File("log.txt")
+                                            .CreateLogger();
+
 
         [FunctionName(PlacesConstants.FunctionName)]
         public static async Task<bool> RunAsync(
@@ -103,6 +107,32 @@ namespace EventSourceApi.Functions
             var request = new PlaceIdRequest() { Id = placeId };
 
             return client.PlacesClient.GetPlace(request);
+        }
+
+        public static BaseHttpClient InitializeClient()
+        {
+            var baseUrl = ConfigurationManager.AppSettings["BaseUrl"];
+            var mediaType = ConfigurationManager.AppSettings["MediaType"];
+            var authenticationScheme = ConfigurationManager.AppSettings["AuthenticationScheme"];
+            var authenticationToken = ConfigurationManager.AppSettings["AuthenticationToken"];
+            var timeout = ConfigurationManager.AppSettings["Timeout"];
+
+            if (string.IsNullOrEmpty(baseUrl))
+                log.Information("The Url configuration is missing.");
+
+            if (string.IsNullOrEmpty(mediaType))
+                log.Information("The MediaType configuration is missing.");
+
+            if (string.IsNullOrEmpty(authenticationScheme))
+                log.Information("The AuthenticationScheme configuration is missing.");
+
+            if (string.IsNullOrEmpty(authenticationToken))
+                log.Information("The AuthenticationToken configuration is missing.");
+
+            if (string.IsNullOrEmpty(timeout))
+                log.Information("The timeout configuration is missing.");
+
+            return new BaseHttpClient(baseUrl, mediaType, timeout, authenticationScheme, authenticationToken);
         }
     }
 }
