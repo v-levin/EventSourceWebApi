@@ -1,4 +1,6 @@
-﻿namespace EventSourceApiHttpClient
+﻿using System.Configuration;
+
+namespace EventSourceApiHttpClient
 {
     public class BaseHttpClient
     {
@@ -15,5 +17,7 @@
         public PlacesClient PlacesClient { get { return _placesClient; } }
 
         public EventsClient EventsClient { get { return _eventsClient; } }
+
+       
     }
 }
