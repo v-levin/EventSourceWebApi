@@ -14,26 +14,51 @@ namespace EventSourceEvents.Functions
         private static Logger log = EventSourceLogger.InitializeLogger();
 
         [FunctionName("EventsDurableFunction")]
-        public static async Task Run([OrchestrationTrigger] DurableOrchestrationContext context)
+        public static async Task<bool> Run([OrchestrationTrigger] DurableOrchestrationContext context)
         {
-            var newEvent = new Event()
+            var newEvent = context.GetInput<Event>();
+
+            try
             {
-                Name = "Durable",
-                Description = "Desc",
-                City = "Kumanovo",
-                Category = "Party",
-                Location = "City Square",
-                Seats = 150,
-                DateRegistered = DateTime.Now
-            };
+                log.Information("Calling CreateEvent function");
+                newEvent.Id = await context.CallActivityAsync<int>("CreateEvent", newEvent);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, $"Error occured in CreateEvent function {ex.Message} ");
+            }
 
-            var newEventId = await context.CallActivityAsync<int>("CreateEvent", newEvent);
+            try
+            {
+                log.Information($"Calling UpdateEvent function for Event with Id: {newEvent.Id}");
+                newEvent = await context.CallActivityAsync<Event>("UpdateEvent", newEvent.Id);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, $"Error occured in UpdateEvent function {ex.Message}");
+            }
 
-            var updatedEvent = await context.CallActivityAsync<Event>("UpdateEvent", newEventId);
+            try
+            {
+                log.Information($"Calling DeleteEvent function for Event with Id: {newEvent.Id}");
+                var isDeleted = await context.CallActivityAsync<bool>("DeleteEvent", newEvent.Id);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, $"Error occured in DeleteEvent function {ex.Message}");
+            }
 
-            var isDeleted = await context.CallActivityAsync<bool>("DeleteEvent", updatedEvent.Id);
+            try
+            {
+                log.Information($"Calling GetEvent function with eventId : {newEvent.Id}");
+                newEvent = await context.CallActivityAsync<Event>("GetEvent", newEvent.Id);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, $"Error occured in GetPlace function {ex.Message}");
+            }
 
-            var anEvent = await context.CallActivityAsync<Event>("GetEvent", newEventId);
+            return newEvent != null;
         }
 
         [FunctionName("CreateEvent")]

@@ -14,7 +14,7 @@ namespace EventSourceApi.Functions
 {
     public static class PlacesDurableFunction
     {
-        private static Logger log = new EventSourceLogger().InitializeLogger();
+        private static Logger log = EventSourceLogger.InitializeLogger();
 
         private static BaseHttpClient client = Client.InitializeClient();
 
