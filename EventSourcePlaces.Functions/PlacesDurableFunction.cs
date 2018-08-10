@@ -24,89 +24,85 @@ namespace EventSourceApi.Functions
         {
             var place = context.GetInput<Place>();
 
-            var placeId = await context.CallActivityAsync<int>(PlacesConstants.CreatePlace, place);
+            try
+            {
+                log.Information("Calling CreatePlace function");
+                place.Id = await context.CallActivityAsync<int>(PlacesConstants.CreatePlace, place);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, $"Error occured in CreatePlace function {ex.Message} ");
+            }
 
-            var updatePlace = await context.CallActivityAsync<Place>(PlacesConstants.UpdatePlace, placeId);
+            try
+            {
+                log.Information($"Calling UpdatePlace function for Place with Id: {place.Id}");
+                place = await context.CallActivityAsync<Place>(PlacesConstants.UpdatePlace, place.Id);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, $"Error occured in UpdatePlace function {ex.Message}");
+            }
 
-            var isDeletedPlace = await context.CallActivityAsync<HttpStatusCode>(PlacesConstants.DeletePlace, updatePlace.Id);
+            try
+            {
+                log.Information($"Calling DeletePlace function for Place with Id: {place.Id}");
+                var deleted = await context.CallActivityAsync<bool>(PlacesConstants.DeletePlace, place.Id);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, $"Error occured in DeletePlace function {ex.Message}");
+            }
 
-            var getPlace = await context.CallActivityAsync<Place>(PlacesConstants.GetPlace, placeId);
+            try
+            {
+                log.Information($"Calling GetPlace function with palceId : {place.Id}");
+                place = await context.CallActivityAsync<Place>(PlacesConstants.GetPlace, place.Id);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, $"Error occured in GetPlace function {ex.Message}");
+            }
 
-            return getPlace != null;
+            return place != null;
         }
 
         [FunctionName(PlacesConstants.CreatePlace)]
         public static int? CreatePlace([ActivityTrigger] Place place)
         {
-            log.Information("Calling CreatePlace function");
-            try
-            {
-                var request = new PostRequest<Place>() { Payload = place };
+            var request = new PostRequest<Place>() { Payload = place };
 
-                return client.PlacesClient.PostPlace(request);
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex, $"Error occured in CreatePlace function {ex.Message}");
-                return null;
-            }
+            return client.PlacesClient.PostPlace(request);
         }
 
         [FunctionName(PlacesConstants.UpdatePlace)]
         public static Place UpdatePlace([ActivityTrigger] int placeId)
         {
-            log.Information($"Calling UpdatePlace function for Place with Id: {placeId}");
-            try
+            var newPlace = new Place()
             {
-                var newPlace = new Place()
-                {
-                    Description = "Update Place...",
-                    City = "Radovis"
-                };
+                Description = "Update Place...",
+                City = "Radovis"
+            };
 
-                var request = new PutRequest<Place>() { Id = placeId, Payload = newPlace };
+            var request = new PutRequest<Place>() { Id = placeId, Payload = newPlace };
 
-                return client.PlacesClient.PutPlace(request);
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex.Message);
-                return null;
-            }
+            return client.PlacesClient.PutPlace(request);
         }
 
         [FunctionName(PlacesConstants.DeletePlace)]
         public static bool DeletePlace([ActivityTrigger] int placeId)
         {
-            log.Information($"Calling DeletePlace function for Place with Id: {placeId}");
-            try
-            {
-                var request = new PlaceIdRequest() { Id = placeId };
+            var request = new PlaceIdRequest() { Id = placeId };
 
-                return client.PlacesClient.DeletePlace(request);
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex.Message);
-                return false;
-            }
+            return client.PlacesClient.DeletePlace(request);
         }
 
         [FunctionName(PlacesConstants.GetPlace)]
         public static Place GetPlace([ActivityTrigger] int placeId)
         {
-            log.Information($"Calling GetPlace function with palceId : {placeId}");
-            try
-            {
-                var request = new PlaceIdRequest() { Id = placeId };
+            var request = new PlaceIdRequest() { Id = placeId };
 
-                return client.PlacesClient.GetPlace(request);
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex.Message);
-                return null;
-            }
+            return client.PlacesClient.GetPlace(request);
         }
     }
 }
