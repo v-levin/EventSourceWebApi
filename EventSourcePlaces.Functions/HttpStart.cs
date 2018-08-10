@@ -1,4 +1,5 @@
-﻿using EventSourcePlaces.Functions;
+﻿using EventSourceApiHttpClient;
+using EventSourcePlaces.Functions;
 using EventSourceWebApi.Contracts;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -15,10 +16,7 @@ namespace EventSourceApi.Functions
 {
     public static class HttpStart
     {
-        private static readonly Logger log = new LoggerConfiguration()
-                                                 .WriteTo.Console()
-                                                 .WriteTo.File("log.txt")
-                                                 .CreateLogger();
+        private static Logger log = EventSourceLogger.InitializeLogger();
 
         [FunctionName("HttpStart")]
         public static async Task<HttpResponseMessage> Run(
@@ -36,11 +34,11 @@ namespace EventSourceApi.Functions
                 res.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromSeconds(10));
                 return res;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 log.Error(ex, $"Error occured in HttpStart {ex.Message}");
 
-                return new HttpResponseMessage() { StatusCode = HttpStatusCode.BadRequest};
+                return new HttpResponseMessage() { StatusCode = HttpStatusCode.BadRequest };
             }
         }
     }

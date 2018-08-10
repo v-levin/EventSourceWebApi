@@ -8,7 +8,7 @@ namespace EventSourceApiHttpClient
 {
     public static class Client 
     {
-        private static Logger log = new EventSourceLogger().InitializeLogger();
+        private static Logger log = EventSourceLogger.InitializeLogger();
 
         public static BaseHttpClient InitializeClient()
         {
