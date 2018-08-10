@@ -21,10 +21,9 @@ namespace EventSourceApiHttpClient
         public EventsClient(string baseUrl, string mediaType, string timeout, string authenticationScheme, string authenticationToken)
         {
             BaseAddress = new Uri(baseUrl);
-            Timeout = new TimeSpan(0, 5, 0);
+            Timeout = TimeSpan.Parse(timeout);
             DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse(mediaType));
             DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authenticationScheme, authenticationToken);
-
         }
 
         /// <summary>
