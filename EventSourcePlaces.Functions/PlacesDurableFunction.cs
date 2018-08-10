@@ -19,7 +19,7 @@ namespace EventSourceApi.Functions
         private static readonly Logger log = new LoggerConfiguration().WriteTo.Console().WriteTo.File("log.txt").CreateLogger();
 
         [FunctionName(PlacesConstants.FunctionName)]
-        public static async Task RunAsync(
+        public static async Task<bool> RunAsync(
             [OrchestrationTrigger] DurableOrchestrationContextBase context)
         {
             var place = context.GetInput<Place>();
@@ -32,6 +32,7 @@ namespace EventSourceApi.Functions
 
             var getPlace = await context.CallActivityAsync<Place>(PlacesConstants.GetPlace, placeId);
 
+            return getPlace != null;
         }
 
         [FunctionName(PlacesConstants.CreatePlace)]
