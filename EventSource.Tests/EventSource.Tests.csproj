@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="RhinoMocks" Version="3.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\EventSourceApiHttpClient\EventSourceApiHttpClient.csproj" />
     <ProjectReference Include="..\EventSourceWebApi.Contracts\EventSourceWebApi.Contracts.csproj" />
   </ItemGroup>

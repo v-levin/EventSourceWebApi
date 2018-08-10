@@ -6,10 +6,10 @@ namespace EventSource.Tests
     {
         static void Main(string[] args)
         {
-            var baseUrl = "http://localhost:49999/api/";
+            var config = new AppConfig();
             var mediaType = "application/json";
 
-            var client = new BaseHttpClient(baseUrl, mediaType);
+            var client = new BaseHttpClient(config.BaseUrl, mediaType);
            
             //var placesTest = new PlacesTests(client);
             //placesTest.Run();
