@@ -66,16 +66,7 @@ namespace EventSourceEvents.Functions
         {
             var request = new PostRequest<Event>() { Payload = @event };
 
-            try
-            {
-                log.Information("Calling CreateEvent function.");
-                return client.EventsClient.PostEvent(request);
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex.Message);
-                return null;
-            }
+            return client.EventsClient.PostEvent(request);
         }
 
         [FunctionName("UpdateEvent")]
@@ -84,17 +75,7 @@ namespace EventSourceEvents.Functions
             var newEvent = new Event() { City = "Skopje" };
             var request = new PutRequest<Event>() { Id = eventId, Payload = newEvent };
 
-            try
-            {
-                log.Information("Calling UpdateEvent function.");
-                return client.EventsClient.PutEvent(request);
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex.Message);
-                return null;
-            }
-
+            return client.EventsClient.PutEvent(request);
         }
 
         [FunctionName("DeleteEvent")]
@@ -102,16 +83,7 @@ namespace EventSourceEvents.Functions
         {
             var request = new EventIdRequest() { Id = eventId };
 
-            try
-            {
-                log.Information("Calling DeleteEvent function.");
-                return client.EventsClient.DeleteEvent(request);
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex.Message);
-                return false;
-            }
+            return client.EventsClient.DeleteEvent(request);
         }
 
         [FunctionName("GetEvent")]
@@ -119,16 +91,7 @@ namespace EventSourceEvents.Functions
         {
             var request = new EventIdRequest() { Id = eventId };
 
-            try
-            {
-                log.Information("Calling GetEvent function.");
-                return client.EventsClient.GetEvent(request);
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex.Message);
-                return null;
-            }
+            return client.EventsClient.GetEvent(request);
         }
     }
 }
