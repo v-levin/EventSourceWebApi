@@ -30,22 +30,13 @@ namespace EventSourceApi.Functions
                 DateRegistered = DateTime.Now
             };
 
-            try
-            {
-                var newEventId = await context.CallActivityAsync<int>("CreateEvent", newEvent);
-                
-                var updatedEvent = await context.CallActivityAsync<Event>("UpdateEvent", newEventId);
-                
-                var isDeleted = await context.CallActivityAsync<bool>("DeleteEvent", updatedEvent.Id);
-                
-                var anEvent = await context.CallActivityAsync<Event>("GetEvent", newEventId);
+            var newEventId = await context.CallActivityAsync<int>("CreateEvent", newEvent);
 
-                log.Information("Done!");
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex.Message);
-            }
+            var updatedEvent = await context.CallActivityAsync<Event>("UpdateEvent", newEventId);
+
+            var isDeleted = await context.CallActivityAsync<bool>("DeleteEvent", updatedEvent.Id);
+
+            var anEvent = await context.CallActivityAsync<Event>("GetEvent", newEventId);
         }
 
         [FunctionName("CreateEvent")]
@@ -53,7 +44,16 @@ namespace EventSourceApi.Functions
         {
             var request = new PostRequest<Event>() { Payload = @event };
 
-            return client.EventsClient.PostEvent(request);
+            try
+            {
+                log.Information("Calling CreateEvent function.");
+                return client.EventsClient.PostEvent(request);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                return null;
+            }
         }
 
         [FunctionName("UpdateEvent")]
@@ -62,7 +62,17 @@ namespace EventSourceApi.Functions
             var newEvent = new Event() { City = "Skopje" };
             var request = new PutRequest<Event>() { Id = eventId, Payload = newEvent };
 
-            return client.EventsClient.PutEvent(request);
+            try
+            {
+                log.Information("Calling UpdateEvent function.");
+                return client.EventsClient.PutEvent(request);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                return null;
+            }
+            
         }
 
         [FunctionName("DeleteEvent")]
@@ -70,7 +80,16 @@ namespace EventSourceApi.Functions
         {
             var request = new EventIdRequest() { Id = eventId };
 
-            return client.EventsClient.DeleteEvent(request);
+            try
+            {
+                log.Information("Calling DeleteEvent function.");
+                return client.EventsClient.DeleteEvent(request);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                return false;
+            }
         }
 
         [FunctionName("GetEvent")]
@@ -78,7 +97,16 @@ namespace EventSourceApi.Functions
         {
             var request = new EventIdRequest() { Id = eventId };
 
-            return client.EventsClient.GetEvent(request);
+            try
+            {
+                log.Information("Calling GetEvent function.");
+                return client.EventsClient.GetEvent(request);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                return null;
+            }
         }
     }
 }
