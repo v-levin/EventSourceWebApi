@@ -1,6 +1,4 @@
-﻿using System.Configuration;
-
-namespace EventSourceApiHttpClient
+﻿namespace EventSourceApiHttpClient
 {
     public class BaseHttpClient
     {

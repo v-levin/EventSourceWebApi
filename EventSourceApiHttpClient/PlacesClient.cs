@@ -12,17 +12,17 @@ namespace EventSourceApiHttpClient
 {
     public class PlacesClient : HttpClient
     {
-        public PlacesClient(string baseUrl, string mediaType)
+        public PlacesClient(string baseUrl, string timeout, string mediaType)
         {
             BaseAddress = new Uri(baseUrl);
-            Timeout = new TimeSpan(0, 5, 0);
+            Timeout = TimeSpan.Parse(timeout);
             DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse(mediaType));
         }
 
         public PlacesClient(string baseUrl, string mediaType, string timeout, string authenticationScheme, string authenticationToken)
         {
             BaseAddress = new Uri(baseUrl);
-            Timeout = new TimeSpan(0, 5, 0);
+            Timeout = TimeSpan.Parse(timeout);
             DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse(mediaType));
             DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authenticationScheme, authenticationToken);
 

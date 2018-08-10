@@ -3,11 +3,8 @@ using EventSourcePlaces.Functions;
 using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Requests;
 using Microsoft.Azure.WebJobs;
-using Serilog;
 using Serilog.Core;
 using System;
-using System.Configuration;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace EventSourceApi.Functions
