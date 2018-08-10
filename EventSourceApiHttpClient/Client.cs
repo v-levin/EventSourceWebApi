@@ -8,15 +8,19 @@ namespace EventSourceApiHttpClient
         private static readonly Logger log = EventSourceLogger.InitializeLogger();
         private static readonly string path = Path.GetFullPath(@"..\..\..\..\");
         private static readonly string appConfigPath = @"EventSourceApiHttpClient\App.config";
-        private static readonly ConfigFileAppSettingResolver config = new ConfigFileAppSettingResolver($@"{path}\{appConfigPath}");
+        private static ConfigFileAppSettingResolver _config;
 
-        public static BaseHttpClient InitializeClient()
+        public static BaseHttpClient InitializeClient(string path)
         {
-            var baseUrl = config.GetSetting("BaseUrl");
-            var mediaType = config.GetSetting("MediaType");
-            var authenticationScheme = config.GetSetting("AuthenticationScheme");
-            var authenticationToken = config.GetSetting("AuthenticationToken");
-            var timeout = config.GetSetting("Timeout");
+            var configFilePath = $"{path}\\bin\\EventSourceApiHttpClient.dll.config";
+
+            _config = new ConfigFileAppSettingResolver(configFilePath);
+
+            var baseUrl = _config.GetSetting("BaseUrl");
+            var mediaType = _config.GetSetting("MediaType");
+            var authenticationScheme = _config.GetSetting("AuthenticationScheme");
+            var authenticationToken = _config.GetSetting("AuthenticationToken");
+            var timeout = _config.GetSetting("Timeout");
 
             return new BaseHttpClient(baseUrl, mediaType, timeout, authenticationScheme, authenticationToken);
         }

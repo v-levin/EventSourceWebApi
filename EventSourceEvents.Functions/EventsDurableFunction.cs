@@ -10,12 +10,14 @@ namespace EventSourceEvents.Functions
 {
     public static class EventsDurableFunction
     {
-        private static BaseHttpClient client = Client.InitializeClient();
+        private static BaseHttpClient _client;
         private static Logger log = EventSourceLogger.InitializeLogger();
 
         [FunctionName("EventsDurableFunction")]
-        public static async Task<bool> Run([OrchestrationTrigger] DurableOrchestrationContext context)
+        public static async Task<bool> Run([OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext eContext)
         {
+            _client = Client.InitializeClient(eContext.FunctionAppDirectory);
+
             var newEvent = context.GetInput<Event>();
 
             try
@@ -66,7 +68,7 @@ namespace EventSourceEvents.Functions
         {
             var request = new PostRequest<Event>() { Payload = @event };
 
-            return client.EventsClient.PostEvent(request);
+            return _client.EventsClient.PostEvent(request);
         }
 
         [FunctionName("UpdateEvent")]
@@ -75,7 +77,7 @@ namespace EventSourceEvents.Functions
             var newEvent = new Event() { City = "Skopje" };
             var request = new PutRequest<Event>() { Id = eventId, Payload = newEvent };
 
-            return client.EventsClient.PutEvent(request);
+            return _client.EventsClient.PutEvent(request);
         }
 
         [FunctionName("DeleteEvent")]
@@ -83,7 +85,7 @@ namespace EventSourceEvents.Functions
         {
             var request = new EventIdRequest() { Id = eventId };
 
-            return client.EventsClient.DeleteEvent(request);
+            return _client.EventsClient.DeleteEvent(request);
         }
 
         [FunctionName("GetEvent")]
@@ -91,7 +93,7 @@ namespace EventSourceEvents.Functions
         {
             var request = new EventIdRequest() { Id = eventId };
 
-            return client.EventsClient.GetEvent(request);
+            return _client.EventsClient.GetEvent(request);
         }
     }
 }
