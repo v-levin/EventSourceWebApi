@@ -1,14 +1,17 @@
-using System;
-using System.Configuration;
-using System.Threading.Tasks;
-using EventSourceApiHttpClient;
+﻿using EventSourceApiHttpClient;
 using EventSourceWebApi.Contracts;
 using EventSourceWebApi.Contracts.Requests;
 using Microsoft.Azure.WebJobs;
 using Serilog;
 using Serilog.Core;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace EventSourceApi.Functions
+namespace EventSourceEvents.Functions
 {
     public static class EventsDurableFunction
     {
@@ -71,7 +74,7 @@ namespace EventSourceApi.Functions
                 log.Error(ex.Message);
                 return null;
             }
-            
+
         }
 
         [FunctionName("DeleteEvent")]
