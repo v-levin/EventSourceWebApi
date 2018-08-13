@@ -11,7 +11,11 @@ namespace EventSourceApi.Functions
 {
     public static class HttpStart
     {
-        private static readonly Logger log = new LoggerConfiguration().WriteTo.Console().WriteTo.File("log.txt").CreateLogger();
+        private static readonly Logger log = 
+            new LoggerConfiguration()
+            .WriteTo.Console()
+            .WriteTo.File("log.txt")
+            .CreateLogger();
 
         [FunctionName("HttpStart")]
         public static async Task<HttpResponseMessage> Run(

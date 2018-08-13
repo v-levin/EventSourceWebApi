@@ -12,7 +12,7 @@ namespace EventSourceApiHttpClient
 {
     public class PlacesClient : HttpClient
     {
-        public PlacesClient(string baseUrl, string timeout, string mediaType)
+        public PlacesClient(string baseUrl, string mediaType, string timeout)
         {
             BaseAddress = new Uri(baseUrl);
             Timeout = TimeSpan.Parse(timeout);
