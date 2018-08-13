@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventSourceApiHttpClient", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventSource.Tests", "EventSource.Tests\EventSource.Tests.csproj", "{3C03DAE6-7084-4007-B583-234786BF360F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventSourceDurableFunctions.Tests", "EventSourceDurableFunctions.Tests\EventSourceDurableFunctions.Tests.csproj", "{99F107E5-E5AB-411B-8DED-C96616AB39F8}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventSourcePlaces.Functions", "EventSourcePlaces.Functions\EventSourcePlaces.Functions.csproj", "{95777291-5051-46A9-9586-1B24F4B37BF1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventSourceEvents.Functions", "EventSourceEvents.Functions\EventSourceEvents.Functions.csproj", "{DE0BE509-8EAC-4E66-BBFB-E7BF7D1DE0DF}"
@@ -51,10 +49,6 @@ Global
 		{3C03DAE6-7084-4007-B583-234786BF360F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C03DAE6-7084-4007-B583-234786BF360F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C03DAE6-7084-4007-B583-234786BF360F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{99F107E5-E5AB-411B-8DED-C96616AB39F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{99F107E5-E5AB-411B-8DED-C96616AB39F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{99F107E5-E5AB-411B-8DED-C96616AB39F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{99F107E5-E5AB-411B-8DED-C96616AB39F8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{95777291-5051-46A9-9586-1B24F4B37BF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{95777291-5051-46A9-9586-1B24F4B37BF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95777291-5051-46A9-9586-1B24F4B37BF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
