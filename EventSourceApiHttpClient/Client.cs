@@ -5,9 +5,6 @@ namespace EventSourceApiHttpClient
 {
     public static class Client 
     {
-        private static readonly Logger log = EventSourceLogger.InitializeLogger();
-        private static readonly string path = Path.GetFullPath(@"..\..\..\..\");
-        private static readonly string appConfigPath = @"EventSourceApiHttpClient\App.config";
         private static ConfigFileAppSettingResolver _config;
 
         public static BaseHttpClient InitializeClient(string path)
