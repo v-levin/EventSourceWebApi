@@ -13,13 +13,15 @@ namespace EventSourceApi.Functions
     {
         private static Logger log = EventSourceLogger.InitializeLogger();
 
-        private static BaseHttpClient client = Client.InitializeClient();
+        private static BaseHttpClient _client;
 
 
         [FunctionName(PlacesConstants.FunctionName)]
         public static async Task<bool> RunAsync(
-            [OrchestrationTrigger] DurableOrchestrationContextBase context)
+            [OrchestrationTrigger] DurableOrchestrationContextBase context, ExecutionContext eContext)
         {
+            _client = Client.InitializeClient(eContext.FunctionAppDirectory);
+
             var place = context.GetInput<Place>();
 
             try
@@ -70,7 +72,7 @@ namespace EventSourceApi.Functions
         {
             var request = new PostRequest<Place>() { Payload = place };
 
-            return client.PlacesClient.PostPlace(request);
+            return _client.PlacesClient.PostPlace(request);
         }
 
         [FunctionName(PlacesConstants.UpdatePlace)]
@@ -84,7 +86,7 @@ namespace EventSourceApi.Functions
 
             var request = new PutRequest<Place>() { Id = placeId, Payload = newPlace };
 
-            return client.PlacesClient.PutPlace(request);
+            return _client.PlacesClient.PutPlace(request);
         }
 
         [FunctionName(PlacesConstants.DeletePlace)]
@@ -92,7 +94,7 @@ namespace EventSourceApi.Functions
         {
             var request = new PlaceIdRequest() { Id = placeId };
 
-            return client.PlacesClient.DeletePlace(request);
+            return _client.PlacesClient.DeletePlace(request);
         }
 
         [FunctionName(PlacesConstants.GetPlace)]
@@ -100,7 +102,7 @@ namespace EventSourceApi.Functions
         {
             var request = new PlaceIdRequest() { Id = placeId };
 
-            return client.PlacesClient.GetPlace(request);
+            return _client.PlacesClient.GetPlace(request);
         }
 
     }

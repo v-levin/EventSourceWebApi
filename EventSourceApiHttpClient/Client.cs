@@ -1,7 +1,4 @@
-﻿using Serilog.Core;
-using System.IO;
-
-namespace EventSourceApiHttpClient
+﻿namespace EventSourceApiHttpClient
 {
     public static class Client 
     {
